@@ -8,7 +8,7 @@ y consultar si la pila esta llena o vacia. La memoria utilizada debe liberarse
 correctamente cuando la pila deje de usarse. Usa aritmetica de punteros
 para el manejo interno de la estructura.
 */
-
+/*
 struct Pila {
 
 	int tamano;
@@ -112,5 +112,114 @@ int main() {
 
 		cout << sacar<<endl;
 	}
+
+}
+*/
+
+
+
+/*
+VERSION CON TEMPLATES
+*/
+
+
+#include <iostream>
+using namespace std;
+/*
+Pila pero TEMPLATES
+*/
+template <class T>
+struct Pila {
+
+	int tamano;
+	T* arreglo;
+	T* top = nullptr;
+
+	Pila(int n);
+	~Pila();
+
+	bool Push(T valor);
+		
+	bool Pop(T& valor);
+
+	bool EstaLleno();
+
+	bool EstaVacio();
+
+};
+template <class T>
+Pila<T>::Pila(int n) {
+	tamano = n;
+	arreglo = new T[tamano];
+	top = nullptr;
+}
+
+template <class T>
+Pila<T>::~Pila() {
+	delete[] arreglo;
+}
+
+template <class T>
+bool Pila<T>::EstaLleno() {
+	if (top == (arreglo + tamano - 1)) {
+		return true;
+	}else{
+		return false;
+	}
+}
+template <class T>
+bool Pila<T>::EstaVacio() {
+	if (top == nullptr) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+
+template <class T>
+bool Pila<T>::Push(T valor){
+
+	if (EstaLleno()) {
+		cout << "No puedo agregar mas!" << endl;
+		return false;
+
+	}else if(EstaVacio()){
+		top = arreglo;
+		*top = valor;
+	}else{
+		top++;
+		*top = valor;
+	}
+
+	return true;
+}
+template <class T>
+bool Pila<T>::Pop(T& valor) {
+
+	if (EstaVacio()) {
+		cout << "No puedo sacar nada, no hay nada." << endl;
+		return false;
+	}else {
+		valor = *top;
+		top--;
+	}
+
+	if (top < arreglo) {
+		cout << "Pila totalmente vacia "<<endl;
+		top = nullptr;
+		return false;
+	}
+
+	return true;
+}
+
+
+int main() {
+
+	Pila<char> pila(6);
+
+	pila.Push('a');
 
 }
