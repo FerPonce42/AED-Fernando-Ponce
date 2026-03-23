@@ -45,38 +45,27 @@ bool Pop(T& elemento) : SACA POR LA CABEZA
 
 si llego a pop al utlimo elemento, todos apuntan a nullptr ya no hay mas p
 */
-
-
 #include <iostream>
 using namespace std;
 
-
 template<class T>
 struct Cola {
-
 	int tamano;
 
 	T* arr;
-
 	T* head = nullptr;
 	T* tail = nullptr;
 
 	Cola(int nro_tamano);
-
 	~Cola();
-
 
 	bool EstaLleno();
 	bool EstaVacio();
-
-
 	bool Push(T valor);
-
 	bool Pop(T& valor);
-
 };
 
-//constructor que me lo inciacizliza p
+//Inicializar tamaño del arreglo.
 template<class T>
 Cola<T>::Cola(int nro_tamano) {
 	tamano = nro_tamano;
@@ -84,43 +73,41 @@ Cola<T>::Cola(int nro_tamano) {
 	head = arr;
 	tail = arr;
 }
-
-
-// destuctore
+// Liberar tamaño
 template<class T>
 Cola<T>::~Cola() {
 	delete[] arr;
 }
 
-/*
-ESTA VACIO CHECK
-*/
+
+
+
+
 template<class T>
 bool Cola<T>::EstaVacio() {
-	if (head == tail) {
+	
+	if (tail == head) { // tail y head apuntan a lo mismo
 		return true;
-	}else if (head < tail) {
-		return false;
-	}else if (tail < head) {
+	}
+	else {
 		return false;
 	}
 
 }
 
-/*
-ESTA LLENO CHECK
-*/
+
 template<class T>
 bool Cola<T>::EstaLleno() {
-	if (head == tail) {
-		return false;
-	}else if (head < tail) {
-		return false;
-	}
-	else if (head > tail) {
+	
+	if (tail + 1 == head) { //caso normal: si tail alcanzó a head
 		return true;
 	}
-
+	else if ((tail == arr + tamano - 1) && (head == arr)) { //caso cuando dió una vuelta
+		return true;
+	}
+	else {
+		return false; // en caso de no estar lleno.
+	}
 }
 
 
@@ -129,28 +116,19 @@ template<class T>
 bool Cola<T>::Push(T valor) {
 
 	if (EstaLleno()) {
-		
 		return false;
-
 	}
-	else if (EstaVacio()) {
-		tail = arr;
+	else if ((tail == arr + tamano - 1)) {
+		*tail = valor;
+		tail = arr; 
+	}
+	else {
 		*tail = valor;
 		tail++;
-		
-	}
-	//El caso normal p
-	else{
-		*tail = valor;
-		tail++;
-		//Por si te piden push y ya tas full, buscar al incio.
-		if(tail >= arr + tamano){
-			tail = arr;
-		}
-		
 	}
 
 	return true;
+
 }
 
 
@@ -159,15 +137,13 @@ template<class T>
 bool Cola<T>::Pop(T& valor) {
 
 	if (EstaVacio()) {
-		
 		return false;
-
+	}else if ((head == arr + tamano - 1)) {
+		valor = *head;
+		head = arr;
 	}else{
 		valor = *head;
 		head++;
-		if (head >= arr + tamano) {
-			head = arr;
-		}
 	}
 
 	return true;
@@ -190,7 +166,7 @@ int main() {
 	cola.Pop(x);
 
 	cola.Push(13);
-	
-	
+
+
 
 }
