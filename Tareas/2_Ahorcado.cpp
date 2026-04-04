@@ -27,12 +27,9 @@
 using namespace std;
 
 struct Estado {
-
 	string palabra_progreso = "";
 	int vidas = 0;
-
 };
-
 
 struct Ahorcado {
 	int vidas;
@@ -44,19 +41,16 @@ struct Ahorcado {
 
 	Estado historial[10];
 	int indice_historial;
-
+	int cant_movimientos;
 
 	Ahorcado();
 	~Ahorcado();
 
 	bool RecibirLetra(char letraopcion);
-
 	void MarcarAciertos();
-
 	bool VerificarVictoria();
-
+	bool VerificarRepetida(char letraopcion);
 	void CtrlZ();
-
 };
 
 Ahorcado::Ahorcado() {
@@ -64,12 +58,11 @@ Ahorcado::Ahorcado() {
 	arreglo_palabras = new string[10]{ "AMBIENTE", "FERROCARRIL", "CELULAR", "ELEFANTE", "UNIVERSIDAD", "SANPABLO", "CHOCOLATE", "PIZARRA", "MONITOR", "AHORCADO" };
 
 	letra = '\0';
-
 	palabra_actual = "";
 	letra_acertada = false;
 	palabra_progreso = "";
-
 	indice_historial = 0;
+	cant_movimientos = 0;
 
 	srand(time(NULL));
 	int indice = rand() % 10;
@@ -89,9 +82,9 @@ bool Ahorcado::RecibirLetra(char letraopcion) {
 	historial[indice_historial].palabra_progreso = palabra_progreso;
 	historial[indice_historial].vidas = vidas;
 	indice_historial = (indice_historial + 1) % 10;
+	cant_movimientos++;
 
 	letra = letraopcion;
-
 	letra_acertada = false;
 
 	for (int i = 0; i < palabra_actual.length(); i++) {
@@ -119,11 +112,17 @@ bool Ahorcado::VerificarVictoria() {
 			return false;
 		}
 	}
-
 	return true;
 }
 
-
+bool Ahorcado::VerificarRepetida(char letraopcion) {
+	for (int i = 0; i < palabra_progreso.length(); i++) {
+		if (palabra_progreso[i] == letraopcion) {
+			return true;
+		}
+	}
+	return false;
+}
 
 void Ahorcado::CtrlZ() {
 	int indice_anterior = (indice_historial + 9) % 10;
@@ -132,15 +131,15 @@ void Ahorcado::CtrlZ() {
 	vidas = historial[indice_anterior].vidas;
 
 	indice_historial = indice_anterior;
+	cant_movimientos--;
 }
-
-
 
 int main() {
 
 	Ahorcado juego1;
 
 	char letraopcion = '\0';
+	int cant_retrocesos = 0;
 
 	cout << "\n===============================" << endl;
 	cout << "         AHORCADO" << endl;
@@ -150,10 +149,26 @@ int main() {
 	while ((juego1.vidas > 0) && (juego1.VerificarVictoria() == false)) {
 		cout << "\n-------------------------------" << endl;
 		cout << "Vidas: " << juego1.vidas << " / 15" << endl;
+		cout << "Movimiento: " << juego1.cant_movimientos << endl;
 		cout << "Ingresa una letra (* para retroceder): "; cin >> letraopcion;
 
 		if (letraopcion == '*') {
-			juego1.CtrlZ();
+			if (juego1.cant_movimientos == 0) {
+				cout << "No hay movimientos para retroceder!" << endl;
+			}
+			else if (cant_retrocesos >= 10) {
+				cout << "Ya pasaste tu limite de retrocesos, intenta sin ayuda!" << endl;
+			}
+			else {
+				juego1.CtrlZ();
+				cant_retrocesos++;
+			}
+		}
+		else if (letraopcion < 'A' || letraopcion > 'Z') {
+			cout << "Solo letras de A-Z en mayusculas!" << endl;
+		}
+		else if (juego1.VerificarRepetida(letraopcion)) {
+			cout << "Ya adivinaste esa letra, intenta otra!" << endl;
 		}
 		else {
 			juego1.RecibirLetra(letraopcion);
