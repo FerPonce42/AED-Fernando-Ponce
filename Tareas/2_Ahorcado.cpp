@@ -26,18 +26,25 @@
 #include <ctime>
 using namespace std;
 
+struct Estado {
+
+	string palabra_progreso = "";
+	int vidas = 0;
+
+};
+
 
 struct Ahorcado {
 	int vidas;
 	string* arreglo_palabras;
-	int cant_estado;
 	char letra;
-
 	string palabra_actual;
-
 	bool letra_acertada;
-
 	string palabra_progreso;
+
+	Estado historial[10];
+	int indice_historial;
+
 
 	Ahorcado();
 	~Ahorcado();
@@ -48,17 +55,21 @@ struct Ahorcado {
 
 	bool VerificarVictoria();
 
+	void CtrlZ();
+
 };
 
 Ahorcado::Ahorcado() {
 	vidas = 15;
 	arreglo_palabras = new string[10]{ "AMBIENTE", "FERROCARRIL", "CELULAR", "ELEFANTE", "UNIVERSIDAD", "SANPABLO", "CHOCOLATE", "PIZARRA", "MONITOR", "AHORCADO" };
-	cant_estado = 10;
+
 	letra = '\0';
 
 	palabra_actual = "";
 	letra_acertada = false;
 	palabra_progreso = "";
+
+	indice_historial = 0;
 
 	srand(time(NULL));
 	int indice = rand() % 10;
@@ -74,6 +85,11 @@ Ahorcado::~Ahorcado() {
 }
 
 bool Ahorcado::RecibirLetra(char letraopcion) {
+
+	historial[indice_historial].palabra_progreso = palabra_progreso;
+	historial[indice_historial].vidas = vidas;
+	indice_historial = (indice_historial + 1) % 10;
+
 	letra = letraopcion;
 
 	letra_acertada = false;
@@ -107,11 +123,24 @@ bool Ahorcado::VerificarVictoria() {
 	return true;
 }
 
+
+
+void Ahorcado::CtrlZ() {
+	int indice_anterior = (indice_historial + 9) % 10;
+
+	palabra_progreso = historial[indice_anterior].palabra_progreso;
+	vidas = historial[indice_anterior].vidas;
+
+	indice_historial = indice_anterior;
+}
+
+
+
 int main() {
 
 	Ahorcado juego1;
 
-	char letraopcion;
+	char letraopcion = '\0';
 
 	cout << "\n===============================" << endl;
 	cout << "         AHORCADO" << endl;
@@ -121,8 +150,15 @@ int main() {
 	while ((juego1.vidas > 0) && (juego1.VerificarVictoria() == false)) {
 		cout << "\n-------------------------------" << endl;
 		cout << "Vidas: " << juego1.vidas << " / 15" << endl;
-		cout << "Ingresa una letra: "; cin >> letraopcion;
-		juego1.RecibirLetra(letraopcion);
+		cout << "Ingresa una letra (* para retroceder): "; cin >> letraopcion;
+
+		if (letraopcion == '*') {
+			juego1.CtrlZ();
+		}
+		else {
+			juego1.RecibirLetra(letraopcion);
+		}
+
 		cout << "Palabra: ";
 		juego1.MarcarAciertos();
 	}
