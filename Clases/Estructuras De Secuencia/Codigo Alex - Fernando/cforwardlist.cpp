@@ -64,10 +64,67 @@ int& CForwardList::operator[](unsigned long i)
 }
 
 void CForwardList::push_back(int x)
-{}
+{
+    CNode* nodo_actual = new CNode(x);
+
+    if (nelem == 0) {
+        head = nodo_actual;
+
+        nodo_actual->value = x;
+        nodo_actual->next = nullptr;
+
+        nelem++;
+    }
+    else {
+
+        CNode* tmp = head;
+
+        nodo_actual->value = x;
+        nodo_actual->next = nullptr;
+
+        for (tmp; tmp->next != nullptr; tmp = tmp->next);
+
+
+        tmp->next = nodo_actual;
+
+
+        nelem++;
+    }
+}
 
 void CForwardList::pop_back()
-{}
+{
+    CNode* tmp = head;
+
+    if (nelem == 0) {
+        cout << "No hay elemento para sacar";
+    }
+    else if (nelem == 1) {
+        delete tmp;
+        head = nullptr;
+        nelem--;
+    }
+    else {
+
+        int x=0;
+
+        for (tmp, x; x < nelem - 2; tmp = tmp->next, x++);
+
+        CNode* tmp2 = tmp;
+        tmp = tmp->next;
+
+        delete tmp;
+
+        tmp = tmp2;
+
+        tmp->next = nullptr;
+
+        nelem--;
+
+
+    }
+
+}
 
 void CForwardList::push_front(int x)
 {
@@ -99,7 +156,9 @@ void CForwardList::push_front(int x)
 void CForwardList::pop_front()
 {
 
-    if (nelem == 1) {
+    if (nelem == 0) {
+        cout << "No hay elementos que sacar";
+    }else if (nelem == 1) {
 
         delete head;
 
@@ -122,27 +181,20 @@ int main()
 {
     CForwardList xv;
 
-    xv.push_back(3);
-    xv.push_back(8);
-    xv.push_back(2);
-    xv.print();
-    xv.push_front(6);
     xv.push_front(5);
+    xv.push_front(2);
+
     xv.print();
-    xv[1] = 20;
+
+    xv.push_back(10);
+
+    xv.push_back(29);
     xv.print();
 
     xv.pop_back();
-    xv.print();
-    xv.pop_front();
-    xv.print();
     xv.pop_back();
     xv.pop_back();
-    xv.print();
     xv.pop_back();
-    xv.print();
 
-    xv.push_back(33);
     xv.print();
-    return 0;
 }

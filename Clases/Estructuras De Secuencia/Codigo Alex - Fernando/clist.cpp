@@ -99,7 +99,9 @@ void CList::push_back(int x)
 
 void CList::pop_back()
 {
-    if (nelem == 1) {
+    if(nelem == 0){
+        cout<<"No hay elementos que sacar";
+    }else if (nelem == 1) {
 
         delete tail;
 
@@ -156,7 +158,9 @@ void CList::push_front(int x)
 
 void CList::pop_front()
 {
-    if (nelem == 1) {
+    if(nelem == 0){
+        cout<<"No hay elementos que sacar";
+    }else if (nelem == 1) {
 
         delete head;
 
