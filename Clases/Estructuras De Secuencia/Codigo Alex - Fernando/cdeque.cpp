@@ -18,6 +18,8 @@ public:
         m_fin = m_ini;
     }
 
+    ~cDeque();
+
     void push_front(int n);
     void print();
 
@@ -29,6 +31,19 @@ public:
     int& operator[](int id);
 
 };
+
+
+cDeque::~cDeque() {
+    int** m_actual = m_ini;
+    int** m_final = m_fin;
+
+    while (m_actual <= m_final) {
+        delete[] * m_actual;
+        m_actual++;
+    }
+
+    delete[] mapa;
+}
 
 void cDeque::push_front(int n)
 {
