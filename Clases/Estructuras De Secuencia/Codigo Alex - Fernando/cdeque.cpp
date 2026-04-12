@@ -21,6 +21,8 @@ public:
     void push_front(int n);
     void print();
 
+    int pop_front();
+
 };
 
 void cDeque::push_front(int n)
@@ -53,7 +55,44 @@ void cDeque::push_front(int n)
         v_ini--;
         *v_ini = n;
     }
+   
+}
 
+int cDeque::pop_front() {
+
+    int valor = 0;
+    if (v_ini == nullptr) {
+        cout << "Sin nada que sacar..." << endl;
+
+        return 0;
+    }
+    else if (m_ini == m_fin) {
+        if (v_ini == v_fin) {
+            valor = *v_ini;
+            delete[] * m_ini;
+
+            m_ini = nullptr;
+            m_fin = nullptr;
+            v_ini = nullptr;
+            v_fin = nullptr;
+        }
+        else {
+            valor = *v_ini;
+            v_ini++;
+        }
+    }
+    else if (v_ini == *m_ini + 4) {
+        valor = *v_ini;
+        delete[] * m_ini;
+        m_ini++;
+        v_ini = *m_ini;
+    }
+    else {
+        valor = *v_ini;
+        v_ini++;
+    }
+
+    return valor;
 }
 
 
@@ -86,25 +125,97 @@ void cDeque::print() {
             v_actual++;
         }
     }
+
 }
 
 int main()
 {
     cDeque prueba;
+    cout << "PUSH FRONTS: " << endl;
+
     prueba.push_front(1);
-    prueba.push_front(2);
-    prueba.push_front(3);
-    prueba.push_front(4);
-    prueba.push_front(5);
-    prueba.push_front(6);
-    prueba.push_front(7);
-    prueba.push_front(8);
-    prueba.push_front(9);
-    prueba.push_front(10);
-    prueba.push_front(11);
-    prueba.push_front(12);
-    prueba.push_front(13);
-    prueba.push_front(14);
     prueba.print();
+    cout << endl;
+    prueba.push_front(2);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(3);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(4);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(5);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(6);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(7);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(8);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(9);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(10);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(11);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(12);
+    prueba.print();
+    cout << endl;
+    prueba.push_front(13);
+    prueba.print();
+    cout << endl;
+
+
+    ////
+
+    cout << "POP FRONTS: " << endl;
+    prueba.pop_front();
+    
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
+    prueba.pop_front();
+    prueba.print();
+    cout << endl;
 
 }
