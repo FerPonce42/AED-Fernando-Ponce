@@ -26,6 +26,7 @@ public:
     void push_back(int n);
     int pop_back();
 
+    int& operator[](int id);
 
 };
 
@@ -176,7 +177,62 @@ int cDeque::pop_back() {
 }
 
 
+int& cDeque::operator[](int id) {
 
+    int** m_actual = m_ini;
+    int* v_actual = v_ini;
+    int contador = 0;
+    static int error = -1;
+
+    while (m_actual <= m_fin) {
+        if (v_actual == nullptr) {
+            cout << "Sin nada que mostrar..." << endl;
+            return error;
+        }
+        else if (m_actual == m_fin) {
+            if (v_actual == v_fin) {
+                if (contador == id) {
+                    return *v_actual;
+                }
+                else {
+                    return error;
+                }
+            }
+            else {
+                if (contador == id) {
+                    return *v_actual;
+                }
+                else {
+                    v_actual++;
+                    contador++;
+                }
+            }
+        }
+        else if (v_actual == *m_actual + 4) {
+            if (contador == id) {
+                return *v_actual;
+            }
+            else {
+                m_actual++;
+                v_actual = *m_actual;
+                contador++;
+            }
+        }
+        else {
+            if (contador == id) {
+                return *v_actual;
+            }
+            else {
+                v_actual++;
+                contador++;
+            }
+            
+        }
+    }
+
+    return error;
+
+}
 
 void cDeque::print() {
     int** m_actual = m_ini;
@@ -214,27 +270,25 @@ int main()
 {
     cDeque prueba;
 
-    cout << "PUSH FRONTS: " << endl;
-    for (int i = 1; i <= 13; i++) {
-        prueba.push_front(i);
-        prueba.print(); cout << endl;
-    }
+    prueba.push_front(10);
+    prueba.push_back(20);
+    prueba.push_front(9);
+    prueba.push_back(21);
+    prueba.push_front(8);
+    prueba.push_back(22);
+    prueba.push_front(7);
+    prueba.push_back(23);
+    prueba.push_front(6);
 
-    cout << "POP FRONTS: " << endl;
-    for (int i = 0; i < 14; i++) {
-        prueba.pop_front();
-        prueba.print(); cout << endl;
-    }
+    prueba.print(); cout << endl;
 
-    cout << "PUSH BACKS: " << endl;
-    for (int i = 1; i <= 13; i++) {
-        prueba.push_back(i);
-        prueba.print(); cout << endl;
-    }
-
-    cout << "POP BACKS: " << endl;
-    for (int i = 0; i < 14; i++) {
-        prueba.pop_back();
-        prueba.print(); cout << endl;
-    }
+    cout << "prueba[0]: " << prueba[0] << endl;
+    cout << "prueba[1]: " << prueba[1] << endl;
+    cout << "prueba[2]: " << prueba[2] << endl;
+    cout << "prueba[3]: " << prueba[3] << endl;
+    cout << "prueba[4]: " << prueba[4] << endl;
+    cout << "prueba[5]: " << prueba[5] << endl;
+    cout << "prueba[6]: " << prueba[6] << endl;
+    cout << "prueba[7]: " << prueba[7] << endl;
+    cout << "prueba[8]: " << prueba[8] << endl;
 }
