@@ -6,7 +6,7 @@ class cDeque
 private:
     int** mapa = NULL;
     int** m_ini = NULL;
-    int** m_fin= NULL;
+    int** m_fin = NULL;
     int* v_ini = NULL;
     int* v_fin = NULL;
 
@@ -19,11 +19,8 @@ public:
     }
 
     void push_front(int n);
-    void push_back(int n);
-    int  pop_front();
-    int  pop_back();
-    int& operator[](int id);
     void print();
+
 };
 
 void cDeque::push_front(int n)
@@ -34,95 +31,80 @@ void cDeque::push_front(int n)
         v_fin = v_ini;
 
         *v_ini = n;
-        v_ini--;
     }
-    else if (v_ini == *m_ini) {
-
-        if (m_ini == mapa) {
-            *v_ini = n;
-            cout << "Estas al limite del mapa!!!";
-            return;
+    else if (mapa == m_ini) {
+        if (v_ini == *m_ini) {
+            cout << "Push Fronts llenos." << endl;
         }
         else {
+            v_ini--;
             *v_ini = n;
-            m_ini--;
-
-            *m_ini = new int[5];
-            v_ini = *m_ini + 4;
         }
     }
-    else {
+    else if (v_ini == *m_ini) {
+        m_ini--;
+
+        *m_ini = new int[5];
+        v_ini = *m_ini + 4;
+
         *v_ini = n;
-        v_ini--;
-    }
-    
-}
-
-int cDeque::pop_front()
-{
-    int valor = 0;
-
-    if (v_ini == nullptr) {
-        cout << "No hay valor para sacar";
-        return 0;
-
-    }
-    else if (m_ini == mapa) {
-
-        if (v_ini == *m_ini) {
-            valor = *v_ini;
-            v_ini++;
-        }
-
-    }
-    else if (v_ini == *m_ini + 4) {
-        valor = *v_ini;
-        delete[] *m_ini;
-        m_ini++;
-        v_ini = *m_ini;
-
-    }
-    else if ((v_ini == *m_ini + 2) && (v_ini == v_fin)) {
-        valor = *v_ini;
-        delete[] * m_ini;
-        m_ini = nullptr;
-        v_ini = nullptr;
-        v_fin = nullptr;
     }
     else {
-        valor = *v_ini;
-        v_ini++;
+        v_ini--;
+        *v_ini = n;
     }
 
-
-    return valor;
 }
 
 
-void cDeque::push_back(int n)
-{
+void cDeque::print() {
+    int** m_actual = m_ini;
+    int* v_actual = v_ini;
 
-}
-
-
-int cDeque::pop_back()
-{
-
-}
-
-int& cDeque::operator[](int id)
-{
-
-}
-
-void cDeque::print()
-{
-
-
+    while (m_actual <= m_fin) {
+        if (v_actual == nullptr) {
+            cout << "Sin nada que mostrar..." << endl;
+            return;
+        }
+        else if (m_actual == m_fin) {
+            if (v_actual == v_fin) {
+                cout << *v_actual<<" ";
+                return;
+            }
+            else {
+                cout << *v_actual << " ";
+                v_actual++;
+            }
+        }
+        else if (v_actual == *m_actual + 4) {
+            cout << *v_actual << " ";
+            m_actual++;
+            v_actual = *m_actual;
+        }
+        else {
+            cout << *v_actual << " ";
+            v_actual++;
+        }
+    }
 }
 
 int main()
 {
     cDeque prueba;
     prueba.push_front(1);
+    prueba.push_front(2);
+    prueba.push_front(3);
+    prueba.push_front(4);
+    prueba.push_front(5);
+    prueba.push_front(6);
+    prueba.push_front(7);
+    prueba.push_front(8);
+    prueba.push_front(9);
+    prueba.push_front(10);
+    prueba.push_front(11);
+    prueba.push_front(12);
+    prueba.push_front(13);
+    prueba.push_front(14);
+    prueba.print();
+
 }
