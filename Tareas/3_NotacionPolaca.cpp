@@ -1,6 +1,92 @@
 #include <iostream>
 using namespace std;
 
+/*
+----------------------------------------------------------------------------------------------------------------------------
+                                               Lógica de de de eso
+*/
+struct Logica {
+
+    void RecibirNotacion(string notacion);
+
+    bool EsNumero(char n);
+    bool EsOperador(char a);
+    void Jerarquia();
+};
+
+void Logica::RecibirNotacion(string notacion) {
+
+    for (int i = 0; i < notacion.size(); i++){
+
+    }
+}
+
+bool Logica::EsNumero(char n) {
+    if (n >= '1' && n <= '9') {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+    return true;
+}
+
+bool Logica::EsOperador(char n) {
+    switch (n) {
+    case '+': return true;
+    case '-': return true;
+    case '*': return true;
+    case '/': return true;
+    case '(': return true;
+    case ')': return true;
+    default:  return false;
+    }
+
+    return true;
+}
+
+/*
+----------------------------------------------------------------------------------------------------------------------------
+                                        Lógica de la PilaOperadores
+*/
+struct PilaOperadores {
+   
+    char* arr_operadores;
+    char* top;
+
+
+    PilaOperadores();
+    ~PilaOperadores();
+
+    void MeterPila();
+    void SacarPila();
+
+};
+
+PilaOperadores::PilaOperadores() {
+
+    arr_operadores = new char[10];
+
+    top = nullptr;
+
+}
+
+
+
+
+
+
+
+
+
+
+/*
+----------------------------------------------------------------------------------------------------------------------------
+
+                                                Lógica del Dque
+*/
+
 template <typename T>
 class cDeque
 {
@@ -231,6 +317,10 @@ void cDeque<T>::print() {
     }
 }
 
+
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                            el main p
+*/
 
 
 int main()
