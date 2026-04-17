@@ -3,86 +3,6 @@ using namespace std;
 
 /*
 ----------------------------------------------------------------------------------------------------------------------------
-                                               Lógica de de de eso
-*/
-struct Logica {
-
-    void RecibirNotacion(string notacion);
-
-    bool EsNumero(char n);
-    bool EsOperador(char a);
-    void Jerarquia();
-};
-
-void Logica::RecibirNotacion(string notacion) {
-
-    for (int i = 0; i < notacion.size(); i++){
-
-    }
-}
-
-bool Logica::EsNumero(char n) {
-    if (n >= '1' && n <= '9') {
-        return true;
-    }
-    else {
-        return false;
-    }
-
-    return true;
-}
-
-bool Logica::EsOperador(char n) {
-    switch (n) {
-    case '+': return true;
-    case '-': return true;
-    case '*': return true;
-    case '/': return true;
-    case '(': return true;
-    case ')': return true;
-    default:  return false;
-    }
-
-    return true;
-}
-
-/*
-----------------------------------------------------------------------------------------------------------------------------
-                                        Lógica de la PilaOperadores
-*/
-struct PilaOperadores {
-   
-    char* arr_operadores;
-    char* top;
-
-
-    PilaOperadores();
-    ~PilaOperadores();
-
-    void MeterPila();
-    void SacarPila();
-
-};
-
-PilaOperadores::PilaOperadores() {
-
-    arr_operadores = new char[10];
-
-    top = nullptr;
-
-}
-
-
-
-
-
-
-
-
-
-
-/*
-----------------------------------------------------------------------------------------------------------------------------
 
                                                 Lógica del Dque
 */
@@ -318,12 +238,176 @@ void cDeque<T>::print() {
 }
 
 
+
+/*
+----------------------------------------------------------------------------------------------------------------------------
+                                        Lógica de la PilaOperadores
+*/
+struct PilaOperadores {
+
+    char* arr_operadores;
+    char* top;
+    int elementos;
+
+
+    PilaOperadores();
+    ~PilaOperadores();
+
+    void PushPila(char n);
+    char& PopPila();
+
+    char VerTop();
+
+};
+
+PilaOperadores::PilaOperadores() {
+
+    arr_operadores = new char[10];
+
+    top = nullptr;
+
+    elementos = 0;
+
+}
+
+PilaOperadores::~PilaOperadores() {
+    delete[] arr_operadores;
+}
+
+void PilaOperadores::PushPila(char n) {
+    if (top == nullptr) {
+        top = arr_operadores;
+        *top = n;
+    }
+    else {
+        top++;
+        *top = n;
+
+    }
+
+    elementos++;
+}
+
+
+char& PilaOperadores::PopPila() {
+
+    char& operador = *top; 
+    top--;
+    elementos--;
+    return operador;
+
+}
+
+
+char PilaOperadores::VerTop() {
+    return *top;
+}
+
+
+
+
+/*
+----------------------------------------------------------------------------------------------------------------------------
+                                               Lógica de de de eso
+*/
+struct Logica {
+
+    cDeque<char> resultado;
+    PilaOperadores pila;
+
+    void RecibirNotacion(string notacion);
+
+    bool EsNumero(char n);
+    bool EsOperador(char a);
+    int Jerarquia(char operador);
+};
+
+void Logica::RecibirNotacion(string notacion) {
+
+    for (int i = 0; i < notacion.size(); i++) {
+        if (EsNumero(notacion[i])) {
+
+            resultado.push_back(notacion[i]);
+        }
+        else if (EsOperador(notacion[i])) {
+
+            while (  (pila.elementos > 0) && (Jerarquia(pila.VerTop()) >= Jerarquia(notacion[i]))   ) {
+
+                resultado.push_back(pila.PopPila());
+             
+            }
+
+            pila.PushPila(notacion[i]);
+        }
+        else if (notacion[i] == '(') {
+            pila.PushPila(notacion[i]);
+        }
+        else if (notacion[i] == ')') {
+
+            while (pila.VerTop() != '(') { // sacar todo hasta encontrar el ' ( '
+                resultado.push_back(pila.PopPila());
+            }
+
+            pila.PopPila(); // aqui ya sacamos el ' ( ' pues es donde el bucle murio.
+        }
+
+    }
+
+
+
+    // para vaciar la pila:
+    while (pila.elementos > 0) {
+        resultado.push_back(pila.PopPila());
+    }
+
+
+}
+
+bool Logica::EsNumero(char n) {
+    if (n >= '1' && n <= '9') {
+        return true;
+    }
+    else {
+        return false;
+    }
+
+    return true;
+}
+
+bool Logica::EsOperador(char n) {
+    switch (n) {
+    case '+': return true;
+    case '-': return true;
+    case '*': return true;
+    case '/': return true;
+    default:  return false;
+    }
+
+    return true;
+}
+
+int Logica::Jerarquia(char operador) {
+    switch (operador) {
+    case '+': return 1;
+    case '-': return 1;
+    case '*': return 2;
+    case '/': return 2;
+    default: return 0;
+    }
+}
+
+
+
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                             el main p
 */
 
 
-int main()
-{
+int main() {
+    Logica infija;
+    infija.RecibirNotacion("3 + 4 * 2 / (1 - 5)");
 
+
+
+    infija.resultado.print();
 }
