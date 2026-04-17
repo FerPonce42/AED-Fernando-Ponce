@@ -8,16 +8,14 @@ using namespace std;
 */
 
 template <typename T>
-class cDeque
-{
-private:
+struct cDeque{
+
     T** mapa = NULL;
     T** m_ini = NULL;
     T** m_fin = NULL;
     T* v_ini = NULL;
     T* v_fin = NULL;
 
-public:
     cDeque()
     {
         mapa = new T * [11];
@@ -41,6 +39,11 @@ public:
 
 template <typename T>
 cDeque<T>::~cDeque() {
+    if (v_ini == nullptr) {
+        delete[] mapa;
+        return;
+    }
+
     T** m_actual = m_ini;
     T** m_final = m_fin;
 
@@ -241,40 +244,39 @@ void cDeque<T>::print() {
 
 /*
 ----------------------------------------------------------------------------------------------------------------------------
-                                        Lógica de la PilaOperadores
+                                        Lógica de la PilaOperadores y luego para verificar, asi que templates p
 */
+
+template <class T>
 struct PilaOperadores {
 
-    char* arr_operadores;
-    char* top;
+    T* arr_operadores;
+    T* top;
     int elementos;
-
 
     PilaOperadores();
     ~PilaOperadores();
 
-    void PushPila(char n);
-    char& PopPila();
+    void PushPila(T n);
+    T& PopPila();
 
-    char VerTop();
-
+    T VerTop();
 };
 
-PilaOperadores::PilaOperadores() {
-
-    arr_operadores = new char[10];
-
+template <class T>
+PilaOperadores<T>::PilaOperadores() {
+    arr_operadores = new T[10];
     top = nullptr;
-
     elementos = 0;
-
 }
 
-PilaOperadores::~PilaOperadores() {
+template <class T>
+PilaOperadores<T>::~PilaOperadores() {
     delete[] arr_operadores;
 }
 
-void PilaOperadores::PushPila(char n) {
+template <class T>
+void PilaOperadores<T>::PushPila(T n) {
     if (top == nullptr) {
         top = arr_operadores;
         *top = n;
@@ -282,28 +284,27 @@ void PilaOperadores::PushPila(char n) {
     else {
         top++;
         *top = n;
-
     }
-
     elementos++;
 }
 
-
-char& PilaOperadores::PopPila() {
-
-    char& operador = *top; 
-    top--;
+template <class T>
+T& PilaOperadores<T>::PopPila() {
+    T& valor = *top;
     elementos--;
-    return operador;
-
+    if (elementos == 0) {
+        top = nullptr;
+    }
+    else {
+        top--;
+    }
+    return valor;
 }
 
-
-char PilaOperadores::VerTop() {
+template <class T>
+T PilaOperadores<T>::VerTop() {
     return *top;
 }
-
-
 
 
 /*
@@ -313,13 +314,15 @@ char PilaOperadores::VerTop() {
 struct Logica {
 
     cDeque<char> resultado;
-    PilaOperadores pila;
+    PilaOperadores<char> pila;
 
     void RecibirNotacion(string notacion);
 
     bool EsNumero(char n);
     bool EsOperador(char a);
     int Jerarquia(char operador);
+
+    int Evaluar();
 };
 
 void Logica::RecibirNotacion(string notacion) {
@@ -398,6 +401,56 @@ int Logica::Jerarquia(char operador) {
 
 
 
+
+
+int Logica::Evaluar() {
+    PilaOperadores<int> numeros;
+
+    while (resultado.v_ini != nullptr) {
+        char c = resultado.pop_front();
+
+        if (EsNumero(c)) {
+
+            numeros.PushPila(c - '0'); // en ascii en la primerra somos '3'- '0' eso en posicoones el 3 es 51 y el 0 es48 entonces... 51 - 38 = 3 justito el numero que queremos que sea entero.
+            
+            // entonces metemos un entero a nuestra pila templentiada 
+
+            cout << "->: " << (c - '0') << endl; //imprimir noma p.
+        }
+        else if (EsOperador(c)) {
+
+            // por la naturalzea de la pila. lifo ? esa cosa.
+            // primero sacaré al segnudo que es el b y luego al primero qeu es a
+
+
+            int b = numeros.PopPila(); // segundo termino
+
+            int a = numeros.PopPila(); // primer termino
+
+            if (c == '+') {
+                numeros.PushPila(a + b);
+            }
+            else if (c == '-') {
+                numeros.PushPila(a - b);
+            }
+            else if (c == '*') {
+                numeros.PushPila(a * b);
+            }
+            else if (c == '/') {
+                numeros.PushPila(a / b);
+            }
+
+            cout << "Op: " << a << " " << c << " " << b << endl; // primer termino  "  operador   "  segundo termino
+        }
+    }
+
+    cout << endl;
+    cout << "=== Resultado ===" << endl;
+    return numeros.PopPila(); // el ultimo elemento de la pilita, basicamente el acumulado de todas las operaciones dentro.
+}
+
+
+
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                             el main p
 */
@@ -405,9 +458,23 @@ int Logica::Jerarquia(char operador) {
 
 int main() {
     Logica infija;
-    infija.RecibirNotacion("3 + 4 * 2 / (1 - 5)");
+
+    string exp_matematica = "3 + 4 * 2 / (1 - 5)";
 
 
+    cout << "Exp. Matematica: [ ";
+    for (int i = 0; i < exp_matematica.size(); i++) {
+        cout << exp_matematica[i];
+    }
+    cout << " ] " << endl;
 
+    infija.RecibirNotacion(exp_matematica);
+    cout << "Exp. Postfija: [ ";
     infija.resultado.print();
+    cout << "] ";
+    cout << endl;
+
+    cout << endl;
+    cout << "=== Procedimiento ===" << endl;
+    cout << infija.Evaluar() << endl;
 }
