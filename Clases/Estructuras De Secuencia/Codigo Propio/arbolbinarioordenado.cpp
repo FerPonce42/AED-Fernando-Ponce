@@ -8,7 +8,7 @@ struct CNode {
 	CNode* right;
 
 	CNode(int v) {
-		value = v; 
+		value = v;
 		left = nullptr;
 		right = nullptr;
 	}
@@ -24,7 +24,7 @@ struct CTree {
 	~CTree();
 
 	bool find(int x, CNode**& p);
-	
+
 	bool ins(int x);
 
 	bool rem(int x);
@@ -75,24 +75,29 @@ bool CTree::ins(int x) {
 bool CTree::rem(int x) {
 	CNode** p;
 
-	if (find(x, p)) {
+	if (find(x, p) == false) {
 		return false;
 	}
-	else if (*p == nullptr) { // Caso sin hijos CASO 0
+	else if (((*p)->right == nullptr && (*p)->left == nullptr)) { // Caso 0 Hijos
+
 		delete* p;
 		*p = nullptr;
-	}
-	else if ((*p)->right) { // Caso con 1 hijo CASO 1
-		CNode* tmp = *p;
 
-		*p = (*p)->right;
 	}
-	else {
-		*p = (*p)->left;
-	}
+	else if ((*p)->right != nullptr) {
+		CNode* tmp = *p; // guardo 7
 
-	delete tmp;
-	// EL CASO 2 LO TRANSFORMA PAR QUE EL CASO 0  o 1 lo arregle.
+		*p = ((*p)->right); // conecto 5 con 9
+
+		delete tmp; //mato 7
+	}
+	else if ((*p)->left != nullptr) {
+		CNode* tmp = *p; // guardo 7
+
+		*p = ((*p)->left); // conecto 5 con 9
+
+		delete tmp; //mato 7
+	}
 }
 
 void CTree::print() {
