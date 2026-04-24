@@ -24,7 +24,7 @@ struct ASC{
 
 template <class T>
 bool ASC<T>::operator()(T a, T b) {
-    return a < b;
+    return a > b;
 }
 
 
@@ -37,7 +37,7 @@ struct DESC {
 
 template <class T>
 bool DESC<T>::operator()(T a, T b) {
-    return a > b;
+    return a < b;
 }
 
 
@@ -82,15 +82,17 @@ CSortedList<T,O>::~CSortedList()
 template <class T, class O>
 bool CSortedList<T,O>::find(T x, CNode<T>**& p)
 {
+    O ordenamiento;
+
     p = &head;
 
-    while (*p != nullptr && x > ((*p)->value)) {
+    while (*p != nullptr && ordenamiento(x , ((*p)->value))) {
 
         p = &((*p)->next);
 
     }
 
-    return *p != nullptr && x == ((*p)->value);
+    return *p != nullptr && (x == ((*p)->value));
 
 }
 
@@ -157,5 +159,32 @@ void CSortedList<T,O>::print()
 
 int main()
 {
+    CSortedList<int, ASC<int>> listaASC;
 
+    cout << "ASCENDENTE: " << endl;
+
+    listaASC.ins(5);
+    listaASC.ins(10);
+    listaASC.ins(8);
+    listaASC.ins(2);
+    listaASC.ins(33);
+    listaASC.ins(24);
+    listaASC.ins(42);
+    listaASC.ins(15);
+    listaASC.print();
+
+
+    CSortedList<int, DESC<int>> listaDESC;
+
+    cout << "DESCENDENTE: " << endl;
+
+    listaDESC.ins(5);
+    listaDESC.ins(10);
+    listaDESC.ins(8);
+    listaDESC.ins(2);
+    listaDESC.ins(33);
+    listaDESC.ins(24);
+    listaDESC.ins(42);
+    listaDESC.ins(15);
+    listaDESC.print();
 }
