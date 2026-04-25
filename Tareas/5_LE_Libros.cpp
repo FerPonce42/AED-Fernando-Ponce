@@ -233,12 +233,13 @@ void CSortedList<T, O>::print()
         return;
     }
 
-    for (mover; mover != nullptr; mover = mover->next) {
+    while (mover != nullptr) {
         cout << "Titulo:       " << mover->value.titulo << endl;
         cout << "Autor:        " << mover->value.autor << endl;
         cout << "Precio:       S/. " << mover->value.precio << endl;
         cout << "Calificacion: " << mover->value.calificacion << endl;
         cout << "--------------------------------------------" << endl;
+        mover = mover->next;
     }
     cout << endl;
 }
@@ -280,6 +281,10 @@ int main()
 
         CSortedList<Libro, ASC_LIBRO<Libro>> lista(filtro);
 
+        lista.ins({"El nombre de la rosa",    "Umberto Eco",       52.10, 5});
+        lista.ins({"Ficciones",               "Jorge Luis Borges", 38.50, 5});
+        lista.ins({"Los detectives salvajes",  "Roberto Bolano",   61.20, 4});
+
         while (opcion != 4) {
 
             cout << "  1. Insertar libro" << endl;
@@ -294,10 +299,10 @@ int main()
             if (opcion == 1) {
 
                 Libro nuevo;
-                cout << "  Titulo:  "; cin >> nuevo.titulo;
-                cout << "  Autor:   "; cin >> nuevo.autor;
-                cout << "  Precio:  "; cin >> nuevo.precio;
-                cout << "  Calificacion (1-5): "; cin >> nuevo.calificacion;
+                cout << "  Titulo:              "; cin.ignore(); getline(cin, nuevo.titulo);
+                cout << "  Autor:               "; getline(cin, nuevo.autor);
+                cout << "  Precio:          S/. "; cin >> nuevo.precio;
+                cout << "  Calificacion (1-5):  "; cin >> nuevo.calificacion;
                 cout << endl;
 
                 if (lista.ins(nuevo)) {
@@ -315,10 +320,10 @@ int main()
                 }
                 else {
                     Libro buscar;
-                    cout << "  Titulo del libro a eliminar: "; cin >> buscar.titulo;
-                    cout << "  Autor del libro a eliminar:  "; cin >> buscar.autor;
-                    buscar.precio = 0;
-                    buscar.calificacion = 0;
+                    cout << "  Titulo del libro a eliminar:         "; cin.ignore(); getline(cin, buscar.titulo);
+                    cout << "  Autor del libro a eliminar:          "; getline(cin, buscar.autor);
+                    cout << "  Precio del libro a eliminar:     S/. "; cin >> buscar.precio;
+                    cout << "  Calificacion del libro a eliminar:   "; cin >> buscar.calificacion;
                     cout << endl;
 
                     if (lista.rem(buscar)) {
@@ -346,6 +351,10 @@ int main()
 
         CSortedList<Libro, DESC_LIBRO<Libro>> lista(filtro);
 
+        lista.ins({"El nombre de la rosa",    "Umberto Eco",       52.10, 5});
+        lista.ins({"Ficciones",               "Jorge Luis Borges", 38.50, 5});
+        lista.ins({"Los detectives salvajes",  "Roberto Bolano",   61.20, 4});
+
         while (opcion != 4) {
 
             cout << "  1. Insertar libro" << endl;
@@ -360,10 +369,10 @@ int main()
             if (opcion == 1) {
 
                 Libro nuevo;
-                cout << "  Titulo:  "; cin >> nuevo.titulo;
-                cout << "  Autor:   "; cin >> nuevo.autor;
-                cout << "  Precio:  "; cin >> nuevo.precio;
-                cout << "  Calificacion (1-5): "; cin >> nuevo.calificacion;
+                cout << "  Titulo:              "; cin.ignore(); getline(cin, nuevo.titulo);
+                cout << "  Autor:               "; getline(cin, nuevo.autor);
+                cout << "  Precio:          S/. "; cin >> nuevo.precio;
+                cout << "  Calificacion (1-5):  "; cin >> nuevo.calificacion;
                 cout << endl;
 
                 if (lista.ins(nuevo)) {
@@ -381,10 +390,10 @@ int main()
                 }
                 else {
                     Libro buscar;
-                    cout << "  Titulo del libro a eliminar: "; cin >> buscar.titulo;
-                    cout << "  Autor del libro a eliminar:  "; cin >> buscar.autor;
-                    buscar.precio = 0;
-                    buscar.calificacion = 0;
+                    cout << "  Titulo del libro a eliminar:         "; cin.ignore(); getline(cin, buscar.titulo);
+                    cout << "  Autor del libro a eliminar:          "; getline(cin, buscar.autor);
+                    cout << "  Precio del libro a eliminar:     S/. "; cin >> buscar.precio;
+                    cout << "  Calificacion del libro a eliminar:   "; cin >> buscar.calificacion;
                     cout << endl;
 
                     if (lista.rem(buscar)) {
