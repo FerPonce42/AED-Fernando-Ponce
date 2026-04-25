@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <iomanip>
 using namespace std;
 
 
@@ -18,19 +19,28 @@ struct CNode
 
 
 struct Libro {
+
     string titulo;
     string autor;
-    double precio;
-    int calificacion;
+    double precio = 0.0;
+    int calificacion = 0;
 };
 
 /*-------ASC_LIBRO------------*/
+
+string toLower(string s)
+{
+    for (int i = 0; i < (int)s.size(); i++) {
+        s[i] = tolower(s[i]);
+    }
+    return s;
+}
+
 template <class T>
 struct ASC_LIBRO {
 
     string filtro;
     ASC_LIBRO(string);
-
 
     bool operator()(T libro1, T libro2);
 };
@@ -44,10 +54,10 @@ template <class T>
 bool ASC_LIBRO<T>::operator()(T libro1, T libro2) {
 
     if (filtro == "titulo") {
-        return (libro1.titulo < libro2.titulo);
+        return (toLower(libro1.titulo) < toLower(libro2.titulo));
     }
     else if (filtro == "autor") {
-        return (libro1.autor < libro2.autor);
+        return (toLower(libro1.autor) < toLower(libro2.autor));
     }
     else if (filtro == "precio") {
         return (libro1.precio < libro2.precio);
@@ -64,9 +74,9 @@ bool ASC_LIBRO<T>::operator()(T libro1, T libro2) {
 /*-------DESC_LIBRO------------*/
 template <class T>
 struct DESC_LIBRO {
+
     string filtro;
     DESC_LIBRO(string f);
-
 
     bool operator()(T libro1, T libro2);
 };
@@ -74,7 +84,6 @@ struct DESC_LIBRO {
 
 template <class T>
 DESC_LIBRO<T>::DESC_LIBRO(string f) {
-
     filtro = f;
 }
 
@@ -83,10 +92,10 @@ template <class T>
 bool DESC_LIBRO<T>::operator()(T libro1, T libro2) {
 
     if (filtro == "titulo") {
-        return (libro1.titulo > libro2.titulo);
+        return (toLower(libro1.titulo) > toLower(libro2.titulo));
     }
     else if (filtro == "autor") {
-        return (libro1.autor > libro2.autor);
+        return (toLower(libro1.autor) > toLower(libro2.autor));
     }
     else if (filtro == "precio") {
         return (libro1.precio > libro2.precio);
@@ -105,8 +114,6 @@ bool DESC_LIBRO<T>::operator()(T libro1, T libro2) {
 
 template <class T>
 struct IGUAL_LIBRO {
-
-
     bool operator()(T libro1, T libro2);
 };
 
@@ -114,7 +121,8 @@ struct IGUAL_LIBRO {
 template <class T>
 bool IGUAL_LIBRO<T>::operator()(T libro1, T libro2) {
 
-    return libro1.titulo == libro2.titulo && libro1.autor == libro2.autor;
+    return toLower(libro1.titulo) == toLower(libro2.titulo)
+        && toLower(libro1.autor) == toLower(libro2.autor);
 
 }
 
@@ -134,6 +142,7 @@ struct CSortedList
 
     CNode<T>* head;
     string filtro;
+    int cantidad;
 };
 
 template <class T, class O>
@@ -141,6 +150,7 @@ CSortedList<T, O>::CSortedList(string f)
 {
     head = 0;
     filtro = f;
+    cantidad = 0;
 }
 
 
@@ -194,6 +204,7 @@ bool CSortedList<T, O>::ins(T x)
         nodo->next = *p;
 
         *p = nodo;
+        cantidad++;
     }
 
     return true;
@@ -211,6 +222,7 @@ bool CSortedList<T, O>::rem(T x)
         tmp = (*p)->next;
         delete* p;
         *p = tmp;
+        cantidad--;
 
     }
     else
@@ -234,14 +246,124 @@ void CSortedList<T, O>::print()
     }
 
     while (mover != nullptr) {
-        cout << "Titulo:       " << mover->value.titulo << endl;
-        cout << "Autor:        " << mover->value.autor << endl;
-        cout << "Precio:       S/. " << mover->value.precio << endl;
+
+        string titulo = mover->value.titulo;
+        string autor = mover->value.autor;
+
+        if (!titulo.empty()) { titulo[0] = toupper(titulo[0]); }
+        if (!autor.empty()) { autor[0] = toupper(autor[0]); }
+
+        cout << "Titulo:       " << titulo << endl;
+        cout << "Autor:        " << autor << endl;
+        cout << "Precio:       S/. " << fixed << setprecision(2) << mover->value.precio << endl;
         cout << "Calificacion: " << mover->value.calificacion << endl;
-        cout << "--------------------------------------------" << endl;
         mover = mover->next;
+        if (mover != nullptr) {
+            cout << "--------------------------------------------" << endl;
+        }
     }
     cout << endl;
+}
+
+
+/*--------- LOGICA DEL MENU ----------*/
+
+template <class T, class O>
+void ejecutarMenu(CSortedList<T, O>& lista, string orden, string filtro)
+{
+    int opcion = 0;
+
+    while (opcion != 4) {
+
+        cout << "  1. Insertar libro" << endl;
+        cout << "  2. Eliminar libro" << endl;
+        cout << "  3. Mostrar lista" << endl;
+        cout << "  4. Salir" << endl;
+        cout << endl;
+        cout << "  Opcion: ";
+        cin >> opcion;
+        cout << endl;
+
+        if (opcion == 1) {
+
+            Libro nuevo;
+
+            // Fix: titulo no puede estar vacio
+            cout << "  Titulo: "; cin.ignore(); getline(cin, nuevo.titulo);
+            while (nuevo.titulo.empty()) {
+                cout << "  Titulo no puede estar vacio. Titulo: "; getline(cin, nuevo.titulo);
+            }
+
+            // Fix: autor no puede estar vacio
+            cout << "  Autor:  "; getline(cin, nuevo.autor);
+            while (nuevo.autor.empty()) {
+                cout << "  Autor no puede estar vacio. Autor: "; getline(cin, nuevo.autor);
+            }
+
+            // Fix: precio no puede ser negativo
+            cout << "  Precio: S/. "; cin >> nuevo.precio;
+            while (nuevo.precio < 0) {
+                cout << "  Precio no puede ser negativo. Precio: S/. "; cin >> nuevo.precio;
+            }
+
+            // Fix: validacion calificacion 1-5
+            cout << "  Calificacion (1-5): "; cin >> nuevo.calificacion;
+            while (nuevo.calificacion < 1 || nuevo.calificacion > 5) {
+                cout << "  Opcion invalida. Calificacion (1-5): "; cin >> nuevo.calificacion;
+            }
+            cout << endl;
+
+            if (lista.ins(nuevo)) {
+                cout << "*************************************************" << endl;
+                cout << "  >>>>>>>>>>>>>>> Libro insertado correctamente." << endl;
+                cout << "*************************************************" << endl;
+            }
+            else {
+                cout << "********************************************************" << endl;
+                cout << "  >>>>>>>>>>>>>> Libro ya existe en la lista de libros." << endl;
+                cout << "********************************************************" << endl;
+            }
+
+        }
+        else if (opcion == 2) {
+
+            if (lista.head == nullptr) {
+                cout << "********************************************************" << endl;
+                cout << "  >>>>>>>>>>>>>> La lista esta vacia." << endl;
+                cout << "********************************************************" << endl;
+            }
+            else {
+                Libro buscar;
+                cout << "  Titulo del libro a eliminar: "; cin.ignore(); getline(cin, buscar.titulo);
+                cout << "  Autor del libro a eliminar:  "; getline(cin, buscar.autor);
+                cout << endl;
+
+                if (lista.rem(buscar)) {
+                    cout << "********************************************************" << endl;
+                    cout << "  >>>>>>>>>>>>>> Libro eliminado correctamente." << endl;
+                    cout << "********************************************************" << endl;
+                }
+                else {
+                    cout << "********************************************************" << endl;
+                    cout << "  >>>>>>>>>>>>>> Libro no encontrado." << endl;
+                    cout << "********************************************************" << endl;
+                }
+            }
+
+        }
+        else if (opcion == 3) {
+            cout << "======================================" << endl;
+            cout << "  Orden: " << orden << "  |  Filtro: " << filtro << endl;
+            cout << "  Libros en biblioteca: " << lista.cantidad << endl;
+            cout << "======================================" << endl;
+            lista.print();
+        }
+        else if (opcion != 4) {
+            cout << "  >> Opcion invalida." << endl;
+        }
+
+        cout << endl;
+    }
 }
 
 
@@ -270,152 +392,28 @@ int main()
     }
 
     cout << endl;
-    cout << "============================================" << endl;
-    cout << "  Orden: " << orden << "  |  Filtro: " << filtro << endl;
-    cout << "============================================" << endl;
-    cout << endl;
-
-    int opcion = 0;
 
     if (orden == "ASC") {
 
         CSortedList<Libro, ASC_LIBRO<Libro>> lista(filtro);
 
-        lista.ins({"El nombre de la rosa",    "Umberto Eco",       52.10, 5});
-        lista.ins({"Ficciones",               "Jorge Luis Borges", 38.50, 5});
-        lista.ins({"Los detectives salvajes",  "Roberto Bolano",   61.20, 4});
+        lista.ins({ "el nombre de la rosa",    "umberto eco",       52.10, 5 });
+        lista.ins({ "ficciones",               "jorge luis borges", 38.50, 5 });
+        lista.ins({ "los detectives salvajes",  "roberto bolano",   61.20, 4 });
 
-        while (opcion != 4) {
-
-            cout << "  1. Insertar libro" << endl;
-            cout << "  2. Eliminar libro" << endl;
-            cout << "  3. Mostrar lista" << endl;
-            cout << "  4. Salir" << endl;
-            cout << endl;
-            cout << "  Opcion: ";
-            cin >> opcion;
-            cout << endl;
-
-            if (opcion == 1) {
-
-                Libro nuevo;
-                cout << "  Titulo:              "; cin.ignore(); getline(cin, nuevo.titulo);
-                cout << "  Autor:               "; getline(cin, nuevo.autor);
-                cout << "  Precio:          S/. "; cin >> nuevo.precio;
-                cout << "  Calificacion (1-5):  "; cin >> nuevo.calificacion;
-                cout << endl;
-
-                if (lista.ins(nuevo)) {
-                    cout << "  >> Libro insertado correctamente." << endl;
-                }
-                else {
-                    cout << "  >> Libro ya existe en la lista." << endl;
-                }
-
-            }
-            else if (opcion == 2) {
-
-                if (lista.head == nullptr) {
-                    cout << "  >> La lista esta vacia." << endl;
-                }
-                else {
-                    Libro buscar;
-                    cout << "  Titulo del libro a eliminar:         "; cin.ignore(); getline(cin, buscar.titulo);
-                    cout << "  Autor del libro a eliminar:          "; getline(cin, buscar.autor);
-                    cout << "  Precio del libro a eliminar:     S/. "; cin >> buscar.precio;
-                    cout << "  Calificacion del libro a eliminar:   "; cin >> buscar.calificacion;
-                    cout << endl;
-
-                    if (lista.rem(buscar)) {
-                        cout << "  >> Libro eliminado correctamente." << endl;
-                    }
-                    else {
-                        cout << "  >> Libro no encontrado." << endl;
-                    }
-                }
-
-            }
-            else if (opcion == 3) {
-                cout << "============================================" << endl;
-                lista.print();
-            }
-            else if (opcion != 4) {
-                cout << "  >> Opcion invalida." << endl;
-            }
-
-            cout << endl;
-        }
+        ejecutarMenu(lista, orden, filtro);
 
     }
     else {
 
         CSortedList<Libro, DESC_LIBRO<Libro>> lista(filtro);
 
-        lista.ins({"El nombre de la rosa",    "Umberto Eco",       52.10, 5});
-        lista.ins({"Ficciones",               "Jorge Luis Borges", 38.50, 5});
-        lista.ins({"Los detectives salvajes",  "Roberto Bolano",   61.20, 4});
+        lista.ins({ "el nombre de la rosa",    "umberto eco",       52.10, 5 });
+        lista.ins({ "ficciones",               "jorge luis borges", 38.50, 5 });
+        lista.ins({ "los detectives salvajes",  "roberto bolano",   61.20, 4 });
 
-        while (opcion != 4) {
+        ejecutarMenu(lista, orden, filtro);
 
-            cout << "  1. Insertar libro" << endl;
-            cout << "  2. Eliminar libro" << endl;
-            cout << "  3. Mostrar lista" << endl;
-            cout << "  4. Salir" << endl;
-            cout << endl;
-            cout << "  Opcion: ";
-            cin >> opcion;
-            cout << endl;
-
-            if (opcion == 1) {
-
-                Libro nuevo;
-                cout << "  Titulo:              "; cin.ignore(); getline(cin, nuevo.titulo);
-                cout << "  Autor:               "; getline(cin, nuevo.autor);
-                cout << "  Precio:          S/. "; cin >> nuevo.precio;
-                cout << "  Calificacion (1-5):  "; cin >> nuevo.calificacion;
-                cout << endl;
-
-                if (lista.ins(nuevo)) {
-                    cout << "  >> Libro insertado correctamente." << endl;
-                }
-                else {
-                    cout << "  >> Libro ya existe en la lista." << endl;
-                }
-
-            }
-            else if (opcion == 2) {
-
-                if (lista.head == nullptr) {
-                    cout << "  >> La lista esta vacia." << endl;
-                }
-                else {
-                    Libro buscar;
-                    cout << "  Titulo del libro a eliminar:         "; cin.ignore(); getline(cin, buscar.titulo);
-                    cout << "  Autor del libro a eliminar:          "; getline(cin, buscar.autor);
-                    cout << "  Precio del libro a eliminar:     S/. "; cin >> buscar.precio;
-                    cout << "  Calificacion del libro a eliminar:   "; cin >> buscar.calificacion;
-                    cout << endl;
-
-                    if (lista.rem(buscar)) {
-                        cout << "  >> Libro eliminado correctamente." << endl;
-                    }
-                    else {
-                        cout << "  >> Libro no encontrado." << endl;
-                    }
-                }
-
-            }
-            else if (opcion == 3) {
-                cout << "============================================" << endl;
-                lista.print();
-            }
-            else if (opcion != 4) {
-                cout << "  >> Opcion invalida." << endl;
-            }
-
-            cout << endl;
-        }
     }
-
 
 }
