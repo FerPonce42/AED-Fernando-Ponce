@@ -5,7 +5,7 @@ using namespace std;
 template <class T>
 struct CNode
 {
-    CNode(int v)
+    CNode(T v)
     {
         value = v; next = 0;
     }
