@@ -8,7 +8,7 @@ using namespace std;
 */
 
 template <typename T>
-struct cDeque{
+struct cDeque {
 
     T** mapa = NULL;
     T** m_ini = NULL;
@@ -334,10 +334,10 @@ void Logica::RecibirNotacion(string notacion) {
         }
         else if (EsOperador(notacion[i])) {
 
-            while (  (pila.elementos > 0) && (Jerarquia(pila.VerTop()) >= Jerarquia(notacion[i]))   ) {
+            while ((pila.elementos > 0) && (Jerarquia(pila.VerTop()) >= Jerarquia(notacion[i]))) {
 
                 resultado.push_back(pila.PopPila());
-             
+
             }
 
             pila.PushPila(notacion[i]);
@@ -412,8 +412,8 @@ int Logica::Evaluar() {
         if (EsNumero(c)) {
 
             numeros.PushPila(c - '0'); // en ascii en la primerra somos '3'- '0' eso en posicoones el 3 es 51 y el 0 es48 entonces... 51 - 38 = 3 justito el numero que queremos que sea entero.
-            
-            // entonces metemos un entero a nuestra pila templentiada 
+
+            // entonces metemos un entero a nuestra pila templentiada
 
             cout << "->: " << (c - '0') << endl; //imprimir noma p.
         }
@@ -437,6 +437,10 @@ int Logica::Evaluar() {
                 numeros.PushPila(a * b);
             }
             else if (c == '/') {
+                if (b == 0) {
+                    cout << "Error!!! Division entre cero no existe." << endl;
+                    return 0;
+                }
                 numeros.PushPila(a / b);
             }
 
@@ -459,7 +463,7 @@ int Logica::Evaluar() {
 int main() {
     Logica infija;
 
-    string exp_matematica = "3 + 4 * 2 / (1 - 5)";
+    string exp_matematica = "(8 - 2) / (1 - 1)";
 
 
     cout << "Exp. Matematica: [ ";
