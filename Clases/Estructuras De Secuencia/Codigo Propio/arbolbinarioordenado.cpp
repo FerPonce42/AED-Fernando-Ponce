@@ -22,14 +22,14 @@ struct CTree {
 
 	CTree();
 	~CTree();
-
+	void Destruir(CNode* matanza);
 	bool find(int x, CNode**& p);
 
 	bool ins(int x);
 
 	bool rem(int x);
 
-
+	void printRecursivo(CNode* p);
 	void print();
 };
 
@@ -37,6 +37,26 @@ struct CTree {
 CTree::CTree() {
 	root = nullptr;
 }
+
+
+void CTree::Destruir(CNode* matanza) {
+
+	if (matanza == nullptr) {
+		return;
+	}
+	else {
+		Destruir(matanza->left);
+		Destruir(matanza->right);
+
+		delete matanza;
+	}
+}
+
+CTree::~CTree() {
+	
+	Destruir(root);
+}
+
 
 
 bool CTree::find(int x, CNode**& p) {
@@ -78,29 +98,68 @@ bool CTree::rem(int x) {
 	if (find(x, p) == false) {
 		return false;
 	}
-	else if (((*p)->right == nullptr && (*p)->left == nullptr)) { // Caso 0 Hijos
+	else if (((*p)->right != nullptr && (*p)->left != nullptr)) { // 2 hijos
+
+		CNode** q;
+
+		q = &((*p)->right);
+
+		while ((*q)->left != nullptr) {
+			q = &((*q)->left);
+		}
+
+		(*p)->value = (*q)->value;
+
+		delete* q;
+
+		*q = nullptr;
+
+
+	}
+	else if ((*p)->right != nullptr) { // 1 hijo derecho
+		CNode* tmp = *p; 
+
+		*p = ((*p)->right); 
+
+		delete tmp; 
+	}
+	else if ((*p)->left != nullptr) { // 1 hijo izquierdo
+		CNode* tmp = *p;
+
+		*p = ((*p)->left); 
+
+		delete tmp; 
+	}
+	else { // 0 hijos
 
 		delete* p;
 		*p = nullptr;
-
 	}
-	else if ((*p)->right != nullptr) {
-		CNode* tmp = *p; // guardo 7
 
-		*p = ((*p)->right); // conecto 5 con 9
+	return true;
+	
+}
 
-		delete tmp; //mato 7
+
+void CTree::printRecursivo(CNode* p) {
+
+	if (p == nullptr) {
+		return;
 	}
-	else if ((*p)->left != nullptr) {
-		CNode* tmp = *p; // guardo 7
+	else {
 
-		*p = ((*p)->left); // conecto 5 con 9
+		printRecursivo(p->left);
 
-		delete tmp; //mato 7
+		cout << p->value << " ";
+
+		printRecursivo(p->right);
 	}
+
 }
 
 void CTree::print() {
+
+	printRecursivo(root);
 
 }
 
@@ -112,6 +171,33 @@ void CTree::print() {
 
 
 int main() {
+	CTree tree;
+	tree.ins(50);
+	tree.ins(20);
+	tree.ins(70);
+	tree.ins(10);
+	tree.ins(30);
+	tree.ins(60);
+	tree.ins(80);
+	tree.ins(25);
+	tree.ins(35);
 
+	cout << "Original: ";
+	tree.print();
+	cout << endl;
 
+	tree.rem(20); // 2 hijos
+	cout << "Rem 20: ";
+	tree.print();
+	cout << endl;
+
+	tree.rem(80); // 0 hijos
+	cout << "Rem 80: ";
+	tree.print();
+	cout << endl;
+
+	tree.rem(70); // 1 hijo
+	cout << "Rem 70: ";
+	tree.print();
+	cout << endl;
 }
