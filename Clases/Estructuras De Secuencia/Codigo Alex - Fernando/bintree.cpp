@@ -1,5 +1,283 @@
+
 /*
-// Version 1
+
+// Version 2:
+
+#include <iostream>
+using namespace std;
+
+struct CNode {
+
+	int value;
+
+	CNode* lados[2];
+
+	CNode(int v) {
+		value = v;
+		lados[0] = nullptr;
+		lados[1] = nullptr;
+	}
+};
+
+
+
+struct CTree {
+
+	CNode* root;
+
+	CTree();
+	~CTree();
+	void Destruir(CNode* matanza);
+	bool find(int x, CNode**& p);
+
+	bool ins(int x);
+
+	bool rem(int x);
+
+	bool alternar;
+
+	CNode** buscarReemplazo(CNode** q);
+
+
+	void printInorden(CNode* p);
+	
+	void printPreorden(CNode* p);
+	void printPostorden(CNode* p);
+	void printReversa(CNode* p);
+
+
+
+	void print();
+};
+
+
+CTree::CTree() {
+	root = nullptr;
+	alternar = false;
+}
+
+
+void CTree::Destruir(CNode* matanza) {
+
+	if (matanza == nullptr) {
+		return;
+	}
+	else {
+		Destruir(matanza->lados[0]);
+		Destruir(matanza->lados[1]);
+
+		delete matanza;
+	}
+}
+
+CTree::~CTree() {
+
+	Destruir(root);
+}
+
+
+
+bool CTree::find(int x, CNode**& p) {
+
+	for (p = &root; *p != nullptr && (*p)->value != x; p = &((*p)->lados[x > (*p)->value]));
+
+	return *p && (*p)->value == x;
+
+}
+
+
+bool CTree::ins(int x) {
+	CNode** p;
+	if (find(x, p)) {
+		return false;
+	}
+	else {
+
+		CNode* nodo = new CNode(x);
+
+		*p = nodo;
+	}
+
+	return true;
+}
+
+bool CTree::rem(int x) {
+	CNode** p;
+
+	if (find(x, p) == false) {
+		return false;
+	}
+	else if (((*p)->lados[1] != nullptr && (*p)->lados[0] != nullptr)) { // 2 hijos
+
+		CNode** q = buscarReemplazo(p);
+
+		(*p)->value = (*q)->value;
+
+		CNode* tmp = *q;
+		*q = (*q)->lados[1];
+		delete tmp;
+
+
+	}
+	else if ((*p)->lados[1] != nullptr) { // 1 hijo derecho
+		CNode* tmp = *p;
+
+		*p = ((*p)->lados[1]);
+
+		delete tmp;
+	}
+	else if ((*p)->lados[0] != nullptr) { // 1 hijo izquierdo
+		CNode* tmp = *p;
+
+		*p = ((*p)->lados[0]);
+
+		delete tmp;
+	}
+	else { // 0 hijos
+
+		delete* p;
+		*p = nullptr;
+	}
+
+	return true;
+
+}
+
+
+
+CNode** CTree::buscarReemplazo(CNode** p) {
+
+	CNode** q;
+
+	for (q = &((*p)->lados[!alternar]); (*q)->lados[alternar] != nullptr; q = &((*q)->lados[alternar]));
+
+	alternar = !alternar;
+
+	return q;
+
+}
+
+
+void CTree::printInorden(CNode* p) {
+
+	if (p == nullptr) {
+		return;
+	}
+	else {
+
+		printInorden(p->lados[0]);
+
+		cout << p->value << " ";
+
+		printInorden(p->lados[1]);
+	}
+
+}
+
+void CTree::printPreorden(CNode* p) {
+
+	if (p == nullptr) {
+		return;
+	}
+	else {
+
+		cout << p->value << " ";
+
+		printPreorden(p->lados[0]);
+
+		printPreorden(p->lados[1]);
+	}
+
+}
+void CTree::printPostorden(CNode* p) {
+
+	if (p == nullptr) {
+		return;
+	}
+	else {
+
+		printPostorden(p->lados[0]);
+
+		printPostorden(p->lados[1]);
+
+		cout << p->value << " ";
+	}
+}
+void CTree::printReversa(CNode* p) {
+
+
+	if (p == nullptr) {
+		return;
+	}
+	else {
+
+		printReversa(p->lados[1]);
+
+		cout << p->value << " ";
+
+		printReversa(p->lados[0]);
+	}
+
+}
+
+
+
+
+
+
+void CTree::print() {
+
+	cout << "Inorden: ";
+	printInorden(root);
+	cout << endl;
+
+	cout << "Preorden: ";
+	printPreorden(root);
+	cout << endl;
+
+	cout << "Postorden: ";
+	printPostorden(root);
+	cout << endl;
+
+	cout << "Reversa: ";
+	printReversa(root);
+	cout << endl;
+
+
+}
+
+
+
+
+
+
+
+
+int main() {
+	CTree tree;
+	tree.ins(50);
+	tree.ins(20);
+	tree.ins(70);
+	tree.ins(10);
+	tree.ins(30);
+	tree.ins(60);
+	tree.ins(80);
+	tree.ins(25);
+	tree.ins(35);
+
+	tree.print();
+
+
+
+}
+
+*/
+
+
+/************************************************************************************************** */
+
+/*
+// Version 1:
 
 #include <iostream>
 using namespace std;
@@ -215,7 +493,7 @@ int main() {
 //*************************************************************************************************** */
 
 /*
-// Version 0
+// Version 0:
 
 #include <iostream>
 using namespace std;
