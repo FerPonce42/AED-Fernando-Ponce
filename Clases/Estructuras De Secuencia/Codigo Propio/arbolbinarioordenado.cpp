@@ -100,9 +100,7 @@ bool CTree::rem(int x) {
 	}
 	else if (((*p)->right != nullptr && (*p)->left != nullptr)) { // 2 hijos
 
-		CNode** q;
-
-		q = &((*p)->right);
+		CNode** q = &((*p)->right);
 
 		while ((*q)->left != nullptr) {
 			q = &((*q)->left);
@@ -110,9 +108,9 @@ bool CTree::rem(int x) {
 
 		(*p)->value = (*q)->value;
 
-		delete* q;
-
-		*q = nullptr;
+		CNode* tmp = *q;
+		*q = (*q)->right;
+		delete tmp;
 
 
 	}
