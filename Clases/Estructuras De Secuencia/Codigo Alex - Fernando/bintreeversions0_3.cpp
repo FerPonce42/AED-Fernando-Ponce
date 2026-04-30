@@ -5,6 +5,7 @@
 #include <iostream>
 #include <deque>
 #include <stack>
+#include <queue>
 
 using namespace std;
 
@@ -38,11 +39,12 @@ struct CTree {
 
 	bool alternar;
 
+	int altura(CNode* p);
+
 	CNode** buscarReemplazo(CNode** q);
 
-
+	
 	void printInorden(CNode* p);
-
 	void printPreorden(CNode* p);
 	void printPostorden(CNode* p);
 	void printReversa(CNode* p);
@@ -52,6 +54,14 @@ struct CTree {
 	void printPreordenStack(CNode* p);
 	void printPostordenStack(CNode* p);
 	void printReversaStack(CNode* p);
+
+
+
+	void printAmplitud(CNode* p);
+
+
+
+
 
 	void print();
 };
@@ -197,7 +207,7 @@ void CTree::printPreorden(CNode* p) {
 }
 
 
-void CTree::printInordenStack(CNode* p) { 
+void CTree::printInordenStack(CNode* p) {
 
 	stack<pair<int, CNode*>> pila;
 
@@ -205,7 +215,7 @@ void CTree::printInordenStack(CNode* p) {
 
 
 
-	while ( ! pila.empty()) {
+	while (!pila.empty()) {
 
 		int& estado = pila.top().first;
 
@@ -216,13 +226,13 @@ void CTree::printInordenStack(CNode* p) {
 		case 0:
 			estado++;
 			if (nodo->lados[0]) {
-				pila.push(make_pair(0,nodo->lados[0]));
+				pila.push(make_pair(0, nodo->lados[0]));
 			}
 
 			break;
 		case 1:
 			estado++;
-			cout << nodo->value <<" ";
+			cout << nodo->value << " ";
 
 			break;
 		case 2:
@@ -411,13 +421,59 @@ void CTree::printReversa(CNode* p) {
 
 }
 
+//----------- ALTURA ARBOL ---------------
+
+int CTree::altura(CNode* p) {
+
+	if (p == nullptr) {
+		return 0;
+	}
+
+	int l = altura(p->lados[0]);
+	int r = altura(p->lados[1]);
+
+	return max(l, r) + 1;
+}
+
+
+//
+//------- POR AMPLITUD -------
+//
+
+
+void CTree::printAmplitud(CNode* p) {
+
+	queue<CNode*> fila;
+
+	fila.push(p);
+
+	while (!fila.empty()) {
+
+		if (fila.front()->lados[0] != nullptr) {
+			fila.push(fila.front()->lados[0]);
+		}
+		if (fila.front()->lados[1] != nullptr) {
+			fila.push(fila.front()->lados[1]);
+		}
+
+		cout << fila.front()->value << " ";
+
+		fila.pop();
+	}
+
+}
+
+
 
 
 
 
 
 void CTree::print() {
+	cout << "==================================================" << endl;
 
+	cout << "BUSQUEDA POR PROFUNDIDAD" << endl;
+	cout << "==================================================" << endl;
 	cout << "Inorden: ";
 	printInorden(root);
 	cout << endl;
@@ -435,7 +491,8 @@ void CTree::print() {
 	cout << endl;
 
 
-	cout << "==================================================" << endl;
+	cout << "--------------------------------------------------" << endl;
+
 
 	cout << "InordenStack: ";
 	printInordenStack(root);
@@ -453,6 +510,21 @@ void CTree::print() {
 	printReversaStack(root);
 	cout << endl;
 
+	cout << "==================================================" << endl;
+
+	cout << "ALTURA DEL ARBOL" << endl;
+	cout << "==================================================" << endl;
+
+	cout <<"     "<< altura(root) << endl;
+
+	cout << "==================================================" << endl;
+
+	cout << "BUSQUEDA POR AMPLITUD" << endl;
+	cout << "==================================================" << endl;
+
+	cout << "Amplitud: ";
+	printAmplitud(root);
+	cout << endl;
 
 }
 
@@ -461,20 +533,21 @@ void CTree::print() {
 int main() {
 	CTree tree;
 	tree.ins(50);
-	tree.ins(20);
+	tree.ins(33);
 	tree.ins(70);
-	tree.ins(10);
-	tree.ins(30);
+	tree.ins(11);
+	tree.ins(44);
 	tree.ins(60);
-	tree.ins(80);
-	tree.ins(25);
-	tree.ins(35);
+	tree.ins(81);
+	tree.ins(63);
+
 
 	tree.print();
 
 
 
 }
+
 */
 
 
