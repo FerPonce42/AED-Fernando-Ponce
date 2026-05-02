@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <cctype>
+#include <limits>
 using namespace std;
 
 
@@ -17,7 +19,6 @@ struct CNode
 
 /*--------- LOGICA DEL LIBRO ----------*/
 
-
 struct Libro {
 
     string titulo;
@@ -26,15 +27,37 @@ struct Libro {
     int calificacion = 0;
 };
 
-/*-------ASC_LIBRO------------*/
+/*-------FUNCIONES DE STRING------------*/
 
+// para comparar sin importar mayus/minus
 string toLower(string s)
 {
     for (int i = 0; i < (int)s.size(); i++) {
-        s[i] = tolower(s[i]);
+        s[i] = tolower((unsigned char)s[i]);
     }
     return s;
 }
+
+// para mostrar bonito: "hola mundo" -> "Hola Mundo"
+string toTitleCase(string s)
+{
+    bool nuevaPalabra = true;
+    for (int i = 0; i < (int)s.size(); i++) {
+        if (s[i] == ' ') {
+            nuevaPalabra = true;
+        }
+        else if (nuevaPalabra) {
+            s[i] = toupper((unsigned char)s[i]);
+            nuevaPalabra = false;
+        }
+        else {
+            s[i] = tolower((unsigned char)s[i]);
+        }
+    }
+    return s;
+}
+
+/*-------FUNCTORES DE ORDEN------------*/
 
 template <class T>
 struct ASC_LIBRO {
@@ -66,12 +89,10 @@ bool ASC_LIBRO<T>::operator()(T libro1, T libro2) {
         return (libro1.calificacion < libro2.calificacion);
     }
 
-
     return false;
 }
 
 
-/*-------DESC_LIBRO------------*/
 template <class T>
 struct DESC_LIBRO {
 
@@ -81,12 +102,10 @@ struct DESC_LIBRO {
     bool operator()(T libro1, T libro2);
 };
 
-
 template <class T>
 DESC_LIBRO<T>::DESC_LIBRO(string f) {
     filtro = f;
 }
-
 
 template <class T>
 bool DESC_LIBRO<T>::operator()(T libro1, T libro2) {
@@ -104,19 +123,14 @@ bool DESC_LIBRO<T>::operator()(T libro1, T libro2) {
         return (libro1.calificacion > libro2.calificacion);
     }
 
-
     return false;
 }
 
-
-
-/*-------IGUAL_LIBRO------------*/
-
+// comparar solo por titulo y autor, sin importar mayus/minus
 template <class T>
 struct IGUAL_LIBRO {
     bool operator()(T libro1, T libro2);
 };
-
 
 template <class T>
 bool IGUAL_LIBRO<T>::operator()(T libro1, T libro2) {
@@ -127,7 +141,6 @@ bool IGUAL_LIBRO<T>::operator()(T libro1, T libro2) {
 }
 
 
-
 /*---------LOGICA DEL SORTED LIST find ins rem ----------*/
 
 template <class T, class O>
@@ -135,7 +148,8 @@ struct CSortedList
 {
     CSortedList(string filtro);
     ~CSortedList();
-    bool find(T x, CNode<T>**& p);
+    bool find(T x, CNode<T>**& p);     // busca rposicion de insercion segun orden
+    bool findNode(T x, CNode<T>**& p); // buscar nodo exacto por titulo y autor para REM
     bool ins(T x);
     bool rem(T x);
     void print();
@@ -153,7 +167,6 @@ CSortedList<T, O>::CSortedList(string f)
     cantidad = 0;
 }
 
-
 template <class T, class O>
 CSortedList<T, O>::~CSortedList()
 {
@@ -168,7 +181,7 @@ CSortedList<T, O>::~CSortedList()
 
 }
 
-
+// avanzar mientras el orden se cumpla, deja p apuntando a la posicion correcta, el find de toda la vida
 template <class T, class O>
 bool CSortedList<T, O>::find(T x, CNode<T>**& p)
 {
@@ -187,7 +200,27 @@ bool CSortedList<T, O>::find(T x, CNode<T>**& p)
 
 }
 
+// recorre toda la lista buscando por igualdad, sin depender del orden
+template <class T, class O>
+bool CSortedList<T, O>::findNode(T x, CNode<T>**& p)
+{
+    IGUAL_LIBRO<T> igualdad;
 
+    p = &head;
+
+    while (*p != nullptr) {
+
+        if (igualdad(x, (*p)->value)) {
+            return true;
+        }
+
+        p = &((*p)->next);
+
+    }
+
+    return false;
+
+}
 
 template <class T, class O>
 bool CSortedList<T, O>::ins(T x)
@@ -210,13 +243,12 @@ bool CSortedList<T, O>::ins(T x)
     return true;
 }
 
-
 template <class T, class O>
 bool CSortedList<T, O>::rem(T x)
 {
     CNode<T>** p;
 
-    if (find(x, p)) {
+    if (findNode(x, p)) {
 
         CNode<T>* tmp;
         tmp = (*p)->next;
@@ -233,8 +265,6 @@ bool CSortedList<T, O>::rem(T x)
     return true;
 }
 
-
-
 template <class T, class O>
 void CSortedList<T, O>::print()
 {
@@ -247,11 +277,9 @@ void CSortedList<T, O>::print()
 
     while (mover != nullptr) {
 
-        string titulo = mover->value.titulo;
-        string autor = mover->value.autor;
-
-        if (!titulo.empty()) { titulo[0] = toupper(titulo[0]); }
-        if (!autor.empty()) { autor[0] = toupper(autor[0]); }
+        // internamente todo es minusculas, se muestra con titlecase
+        string titulo = toTitleCase(mover->value.titulo);
+        string autor = toTitleCase(mover->value.autor);
 
         cout << "Titulo:       " << titulo << endl;
         cout << "Autor:        " << autor << endl;
@@ -281,37 +309,45 @@ void ejecutarMenu(CSortedList<T, O>& lista, string orden, string filtro)
         cout << "  4. Salir" << endl;
         cout << endl;
         cout << "  Opcion: ";
-        cin >> opcion;
+        while (!(cin >> opcion)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "  Opcion invalida. Opcion: ";
+        }
         cout << endl;
 
         if (opcion == 1) {
 
             Libro nuevo;
 
-            // Fix: titulo no puede estar vacio
-            cout << "  Titulo: "; cin.ignore(); getline(cin, nuevo.titulo);
+            cout << "  Titulo: "; cin.ignore(numeric_limits<streamsize>::max(), '\n'); getline(cin, nuevo.titulo);
             while (nuevo.titulo.empty()) {
                 cout << "  Titulo no puede estar vacio. Titulo: "; getline(cin, nuevo.titulo);
             }
 
-            // Fix: autor no puede estar vacio
             cout << "  Autor:  "; getline(cin, nuevo.autor);
             while (nuevo.autor.empty()) {
                 cout << "  Autor no puede estar vacio. Autor: "; getline(cin, nuevo.autor);
             }
 
-            // Fix: precio no puede ser negativo
             cout << "  Precio: S/. "; cin >> nuevo.precio;
-            while (nuevo.precio < 0) {
-                cout << "  Precio no puede ser negativo. Precio: S/. "; cin >> nuevo.precio;
+            while (cin.fail() || nuevo.precio < 0) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "  Precio invalido. Precio: S/. "; cin >> nuevo.precio;
             }
 
-            // Fix: validacion calificacion 1-5
             cout << "  Calificacion (1-5): "; cin >> nuevo.calificacion;
-            while (nuevo.calificacion < 1 || nuevo.calificacion > 5) {
+            while (cin.fail() || nuevo.calificacion < 1 || nuevo.calificacion > 5) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << "  Opcion invalida. Calificacion (1-5): "; cin >> nuevo.calificacion;
             }
             cout << endl;
+
+            // guardo en minusculas para que la comparacion no dependa de mayus/minus
+            nuevo.titulo = toLower(nuevo.titulo);
+            nuevo.autor = toLower(nuevo.autor);
 
             if (lista.ins(nuevo)) {
                 cout << "*************************************************" << endl;
@@ -334,7 +370,7 @@ void ejecutarMenu(CSortedList<T, O>& lista, string orden, string filtro)
             }
             else {
                 Libro buscar;
-                cout << "  Titulo del libro a eliminar: "; cin.ignore(); getline(cin, buscar.titulo);
+                cout << "  Titulo del libro a eliminar: "; cin.ignore(numeric_limits<streamsize>::max(), '\n'); getline(cin, buscar.titulo);
                 cout << "  Autor del libro a eliminar:  "; getline(cin, buscar.autor);
                 cout << endl;
 
