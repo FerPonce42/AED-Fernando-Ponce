@@ -12,25 +12,32 @@
 #include <iostream>
 using namespace std;
 
-struct Node {
+class Node {
+public:
     int value;
     Node* nodes[2];
     Node(int v) { value = v; nodes[0] = nodes[1] = 0; }
 };
 
-struct BST {
+class BST {
+private:
     Node* root;
+
+public:
     BST() { root = nullptr; }
+
     bool find(int x, Node**& p) {
         for (p = &root; *p && (*p)->value != x; p = &((*p)->nodes[x > (*p)->value]));
         return *p && (*p)->value == x;
     }
+
     bool ins(int x) {
         Node** p;
         if (find(x, p)) return false;
         *p = new Node(x);
         return true;
     }
+
     int nivelNodo(Node* n, int x, int nivel) {
         if (!n) return -1;
         if (n->value == x) return nivel;
@@ -38,18 +45,21 @@ struct BST {
         if (l != -1) return l;
         return nivelNodo(n->nodes[1], x, nivel + 1);
     }
+
     void imprimirNivel(Node* n, int k) {
         if (!n) return;
         if (k == 0) { cout << n->value << " "; return; }
         imprimirNivel(n->nodes[0], k - 1);
         imprimirNivel(n->nodes[1], k - 1);
     }
+
     void imprimirSobrinos(Node* n, int x) {
         // IMPLEMENTAR
         // Pista: encuentra el nivel de x
         // luego imprime los nodos del nivel+1
         // pero excluye los hijos directos de x
     }
+
     void print(int x) { imprimirSobrinos(root, x); cout << endl; }
 };
 

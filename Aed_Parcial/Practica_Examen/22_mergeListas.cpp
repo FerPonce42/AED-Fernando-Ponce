@@ -11,13 +11,15 @@
 #include <iostream>
 using namespace std;
 
-struct Nodo {
+class Nodo {
+public:
     int valor;
     Nodo* next;
     Nodo(int v) { valor = v; next = nullptr; }
 };
 
-struct Lista {
+class Lista {
+public:
     Nodo* head;
     Lista() { head = nullptr; }
 

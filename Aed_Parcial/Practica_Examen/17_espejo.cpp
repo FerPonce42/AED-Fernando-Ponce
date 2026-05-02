@@ -10,34 +10,43 @@
 #include <iostream>
 using namespace std;
 
-struct Node {
+class Node {
+public:
     int value;
     Node* nodes[2];
     Node(int v) { value = v; nodes[0] = nodes[1] = 0; }
 };
 
-struct BST {
+class BST {
+private:
     Node* root;
+
+public:
     BST() { root = nullptr; }
+
     bool find(int x, Node**& p) {
         for (p = &root; *p && (*p)->value != x; p = &((*p)->nodes[x > (*p)->value]));
         return *p && (*p)->value == x;
     }
+
     bool ins(int x) {
         Node** p;
         if (find(x, p)) return false;
         *p = new Node(x);
         return true;
     }
+
     void inorden(Node* n) {
         if (!n) return;
         inorden(n->nodes[0]);
         cout << n->value << " ";
         inorden(n->nodes[1]);
     }
+
     void espejo(Node* n) {
         // IMPLEMENTAR
     }
+
     void print() {
         espejo(root);
         inorden(root);

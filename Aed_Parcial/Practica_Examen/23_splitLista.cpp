@@ -14,14 +14,16 @@
 #include <iostream>
 using namespace std;
 
-struct Nodo {
+class Nodo {
+public:
     int valor;
     Nodo* next;
     Nodo* prev;
     Nodo(int v) { valor = v; next = nullptr; prev = nullptr; }
 };
 
-struct Lista {
+class Lista {
+public:
     Nodo* head;
     Nodo* tail;
     Lista() { head = nullptr; tail = nullptr; }

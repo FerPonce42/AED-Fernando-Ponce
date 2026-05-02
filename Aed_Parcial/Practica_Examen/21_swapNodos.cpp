@@ -12,14 +12,18 @@
 #include <iostream>
 using namespace std;
 
-struct Nodo {
+class Nodo {
+public:
     int valor;
     Nodo* next;
     Nodo(int v) { valor = v; next = nullptr; }
 };
 
-struct Lista {
+class Lista {
+private:
     Nodo* head;
+
+public:
     Lista() { head = nullptr; }
 
     void push_back(int x) {
