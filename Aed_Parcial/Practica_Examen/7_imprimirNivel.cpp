@@ -34,7 +34,18 @@ public:
     }
 
     void imprimirNivel(Node* n, int k) {
-        // IMPLEMENTAR
+        if (n == nullptr) {
+            return;
+        }
+
+        if (k == 0) {
+            cout << n->value << " ";
+            return;
+        }
+
+        imprimirNivel(n->nodes[0], k - 1);
+        imprimirNivel(n->nodes[1], k - 1);
+
     }
 
     void print(int k) { imprimirNivel(root, k); cout << endl; }
