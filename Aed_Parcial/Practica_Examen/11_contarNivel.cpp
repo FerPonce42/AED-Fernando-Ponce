@@ -34,7 +34,17 @@ public:
     }
 
     int contarNivel(Node* n, int k) {
-        // IMPLEMENTAR
+        
+        if (n == nullptr) {
+            return 0;
+        }
+
+        if (k == 0) {
+            return 1;
+        }
+
+        return contarNivel(n->nodes[0], k - 1) + contarNivel(n->nodes[1], k - 1);
+
     }
 
     void print(int k) { cout << contarNivel(root, k) << endl; }
