@@ -45,3 +45,4 @@ int main() {
     t.ins(50); t.ins(30); t.ins(70);
     t.ins(20); t.ins(40); t.ins(60); t.ins(80);
     t.print(); // Esperado:
+}

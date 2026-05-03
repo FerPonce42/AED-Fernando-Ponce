@@ -34,7 +34,17 @@ public:
     }
 
     int buscarMinimo(Node* n) {
-        // IMPLEMENTAR
+        if (n == nullptr) {
+            return 0;
+        }
+
+
+        if (n->nodes[0] == nullptr) {
+          
+            return  n->value;
+        }
+
+        return buscarMinimo(n->nodes[0]);
     }
 
     void print() { cout << buscarMinimo(root) << endl; }
