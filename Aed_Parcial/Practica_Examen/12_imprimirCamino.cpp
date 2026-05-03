@@ -33,10 +33,47 @@ public:
         *p = new Node(x);
         return true;
     }
+    bool buscar(Node* n, int x) {
+        if (n == nullptr) {
+            return false;
+        }
+
+        if (n->value == x) {
+            return true;
+        }
+
+        return buscar(n->nodes[0], x) || buscar(n->nodes[1], x);
+    }
 
     bool imprimirCamino(Node* n, int x) {
-        // IMPLEMENTAR
-        // Retorna true si encontró x, false si no
+
+        if (n == nullptr) {
+            return false;
+        }
+
+        // Solo buscar, sin imprimir nada
+        if (buscar(n, x) == false) {
+            cout << "Nada" << endl;
+            return false;
+        }
+
+        // Solo imprimir camino BST
+        if (x < n->value) {
+            cout << n->value << " ";
+            imprimirCamino(n->nodes[0], x);
+            return true;
+        }
+        else if (x > n->value) {
+            cout << n->value << " ";
+            imprimirCamino(n->nodes[1], x);
+            return true;
+        }
+        else if (x == n->value) {
+            cout << n->value << " ";
+            return true;
+        }
+
+        return false;
     }
 
     void print(int x) { imprimirCamino(root, x); cout << endl; }
