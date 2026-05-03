@@ -34,7 +34,20 @@ public:
     }
 
     int buscarMaximo(Node* n) {
-        // IMPLEMENTAR
+        
+        if (n == nullptr) {
+            return 0;
+        }
+
+
+        if (n->nodes[1] == nullptr) {
+            return n->value;
+        }
+
+
+        return buscarMaximo(n->nodes[1]);
+
+
     }
 
     void print() { cout << buscarMaximo(root) << endl; }
@@ -44,5 +57,5 @@ int main() {
     BST t;
     t.ins(50); t.ins(30); t.ins(70);
     t.ins(20); t.ins(40); t.ins(60); t.ins(80);
-    t.print(); // Esperado:
+    t.print(); // Esperado: 80
 }
