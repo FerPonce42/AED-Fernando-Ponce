@@ -34,7 +34,18 @@ public:
     }
 
     void imprimirHojas(Node* n) {
-        // IMPLEMENTAR
+        if (n == nullptr) {
+            return;
+        }
+
+        imprimirHojas(n->nodes[0]);
+
+        if (n->nodes[0] == nullptr && n->nodes[1] == nullptr) {
+            cout << n->value << " ";
+        }
+
+        imprimirHojas(n->nodes[1]);
+
     }
 
     void print() { imprimirHojas(root); cout << endl; }
