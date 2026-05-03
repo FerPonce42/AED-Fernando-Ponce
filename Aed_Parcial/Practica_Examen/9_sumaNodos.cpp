@@ -33,7 +33,12 @@ public:
     }
 
     int sumaNodos(Node* n) {
-        // IMPLEMENTAR
+        if (n == nullptr) {
+            return 0;
+        }
+
+        return sumaNodos(n->nodes[0]) + sumaNodos(n->nodes[1]) + n->value;
+
     }
 
     void print() { cout << sumaNodos(root) << endl; }
