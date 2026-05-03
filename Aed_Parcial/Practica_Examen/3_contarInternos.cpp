@@ -34,7 +34,17 @@ public:
     }
 
     int contarInternos(Node* n) {
-        // IMPLEMENTAR
+       
+        if (n == nullptr) {
+            return 0;
+        }
+
+        if (n->nodes[0] != nullptr || n->nodes[1] != nullptr) {
+            return contarInternos(n->nodes[0]) + contarInternos(n->nodes[1]) + 1;
+        }
+
+        return 0;
+
     }
 
     void print() { cout << contarInternos(root) << endl; }
