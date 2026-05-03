@@ -34,7 +34,18 @@ public:
     }
 
     int contarHojas(Node* n) {
-        // IMPLEMENTAR
+        
+        if (n == nullptr) { // caso base fin
+            return 0;
+        }
+
+        if (n->nodes[0] == nullptr && n->nodes[1] == nullptr) { // detectar que este nodo no tiene hijos
+            return 1;
+        }
+
+
+        return contarHojas(n->nodes[0]) + contarHojas(n->nodes[1]); // llamada recursiva para avanzar el arbol y sume los numeros acumulados.
+
     }
 
     void print() { cout << contarHojas(root) << endl; }

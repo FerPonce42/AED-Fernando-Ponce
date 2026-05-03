@@ -35,7 +35,9 @@ public:
 
     int contarNodos(Node* n) {
         if (n == nullptr) return 0;
+        
         return contarNodos(n->nodes[0]) + contarNodos(n->nodes[1]) + 1;
+        
     }
 
     void print() { cout << contarNodos(root) << endl; }
@@ -45,5 +47,6 @@ int main() {
     BST t;
     t.ins(50); t.ins(30); t.ins(70);
     t.ins(20); t.ins(40); t.ins(60); t.ins(80);
+
     t.print(); // Esperado: 7
 }
