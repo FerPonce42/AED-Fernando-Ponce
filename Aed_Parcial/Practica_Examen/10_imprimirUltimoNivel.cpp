@@ -48,8 +48,9 @@ public:
     }
 
     void imprimirUltimoNivel(Node* n) {
-        // IMPLEMENTAR
-        // Pista: usa altura() e imprimirNivel()
+
+        imprimirNivel(n, altura(n) - 1);
+
     }
 
     void print() { imprimirUltimoNivel(root); cout << endl; }
