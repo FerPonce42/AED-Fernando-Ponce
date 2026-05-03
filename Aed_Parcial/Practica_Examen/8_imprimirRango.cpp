@@ -36,7 +36,26 @@ public:
     }
 
     void imprimirRango(Node* n, int min, int max) {
-        // IMPLEMENTAR
+        
+        if (n == nullptr) {
+            return;
+        }
+
+        if (n->value < min) {
+            imprimirRango(n->nodes[1], min, max);
+        }
+        else if (n->value > max) {
+            imprimirRango(n->nodes[0], min, max);
+        }
+        else if (n->value >= min && n->value <= max) {
+
+            imprimirRango(n->nodes[0], min, max);
+            cout << n->value << " ";
+            imprimirRango(n->nodes[1], min, max);
+        }
+
+
+
     }
 
     void print(int min, int max) { imprimirRango(root, min, max); cout << endl; }
@@ -46,6 +65,8 @@ int main() {
     BST t;
     t.ins(50); t.ins(30); t.ins(70);
     t.ins(20); t.ins(40); t.ins(60); t.ins(80);
+
+
     t.print(25, 65); // Esperado: 30 40 50 60
     t.print(10, 35); // Esperado: 20 30
     t.print(60, 90); // Esperado: 60 70 80
