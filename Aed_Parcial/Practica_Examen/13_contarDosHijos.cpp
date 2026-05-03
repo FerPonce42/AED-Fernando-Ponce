@@ -33,7 +33,22 @@ public:
     }
 
     int contarDosHijos(Node* n) {
-        // IMPLEMENTAR
+       
+        if (n == nullptr) {
+            return 0;
+        }
+
+
+        if (n->nodes[0] != nullptr && n->nodes[1] != nullptr) {
+            return contarDosHijos(n->nodes[0]) + contarDosHijos(n->nodes[1]) + 1;
+        }
+        else {
+            return 0;
+        }
+
+
+
+
     }
 
     void print() { cout << contarDosHijos(root) << endl; }
