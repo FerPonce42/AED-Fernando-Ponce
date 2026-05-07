@@ -38,7 +38,27 @@ public:
     }
 
     int kesimoInorden(Node* n, int k, int& cont) {
-        // IMPLEMENTAR
+        
+        if (n == nullptr) {
+            return 0;
+        }
+
+
+        int actual = kesimoInorden(n->nodes[0], k, cont);
+        cont++;
+
+        if (actual != 0) {
+            return actual;
+        }
+        else if (k == cont) {
+            return n->value;
+        }
+        else {
+
+            return kesimoInorden(n->nodes[1], k, cont);
+            
+        }
+
     }
 
     void print(int k) {
