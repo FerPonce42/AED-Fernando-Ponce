@@ -41,7 +41,21 @@ public:
     }
 
     bool esBalanceado(Node* n) {
-        // IMPLEMENTAR
+        if (n == nullptr) {
+            return true;
+        }
+
+        int izq = altura(n->nodes[0]);
+        int der = altura(n->nodes[1]);
+
+        if (abs(izq - der) <= 1 && esBalanceado(n->nodes[0]) && esBalanceado(n->nodes[1])) {
+            return true;
+        }
+        else {
+            return false;
+        }
+
+
     }
 
     void print() { cout << boolalpha << esBalanceado(root) << endl; }
