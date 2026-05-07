@@ -44,11 +44,24 @@ public:
     }
 
     void espejo(Node* n) {
-        // IMPLEMENTAR
+        if (n == nullptr) {
+            return;
+        }
+        if (n != nullptr) {
+            Node* tmp = n->nodes[0];
+            n->nodes[0] = n->nodes[1];
+            n->nodes[1] = tmp;
+        }
+        espejo(n->nodes[0]);
+
+        espejo(n->nodes[1]);
+
+
     }
 
     void print() {
         espejo(root);
+        cout << endl;
         inorden(root);
         cout << endl;
     }
