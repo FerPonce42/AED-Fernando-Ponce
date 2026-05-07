@@ -37,8 +37,21 @@ public:
     }
 
     bool imprimirAncestros(Node* n, int x) {
-        // IMPLEMENTAR
-        // Retorna true si encontró x
+
+        for (n = root; n && (n)->value != x; n = ((n)->nodes[x > (n)->value])) {
+            cout << n->value <<" ";
+        }
+
+        if (n == root && n != nullptr) {
+            cout << "Nada, es la raiz";
+        }
+
+        if (n != nullptr && (x == n->value)) {
+            return true;
+        }
+
+
+        return false;
     }
 
     void print(int x) { imprimirAncestros(root, x); cout << endl; }
