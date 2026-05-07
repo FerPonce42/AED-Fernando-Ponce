@@ -39,8 +39,28 @@ public:
     }
 
     void imprimirPorAmplitud(Node* n) {
-        // IMPLEMENTAR
-        // Pista: usa queue<Node*>
+
+        queue<Node*> a;
+
+        a.push(n);
+
+        while (!a.empty()) {
+
+            if (a.front()->nodes[0] != nullptr) {
+                a.push(a.front()->nodes[0]);
+            }
+            
+            if (a.front()->nodes[1] != nullptr) {
+                a.push(a.front()->nodes[1]);
+            }
+            
+            cout << a.front()->value<<" ";
+
+            a.pop();
+
+        }
+
+
     }
 
     void print() { imprimirPorAmplitud(root); cout << endl; }
