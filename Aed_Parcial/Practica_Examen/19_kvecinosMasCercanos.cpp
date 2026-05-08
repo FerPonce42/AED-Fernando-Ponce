@@ -46,11 +46,42 @@ public:
         inorden(n->nodes[1], arr, i);
     }
 
+    // IMPLEMENTAR
+// Pista: guarda el inorden en un array
+// luego busca la posicion mas cercana a x
+// y expande k posiciones alrededor
     void kvecinosMasCercanos(int x, int k) {
-        // IMPLEMENTAR
-        // Pista: guarda el inorden en un array
-        // luego busca la posicion mas cercana a x
-        // y expande k posiciones alrededor
+
+        Node* inicio_arbol = root;
+        int arr[100];
+        int i = 0;
+
+        inorden(inicio_arbol, arr, i);
+
+        int posicion = 0;
+
+        for (int j = 0; j < i; j++) {
+
+            if (abs(arr[j] - x) < abs(arr[posicion] - x)) {
+                posicion = j;
+            }       
+        }
+
+        int inicio = posicion - (k / 2);
+        int final = posicion + (k / 2);
+
+        if (inicio < 0) {
+            inicio = 0;
+        }
+
+        if (final >= i) {
+            final = i - 1;
+        }
+
+
+        for (int r = inicio; r <= final; r++) {
+            cout << arr[r] << " ";
+        }
     }
 
     void print(int x, int k) { kvecinosMasCercanos(x, k); cout << endl; }
@@ -62,5 +93,5 @@ int main() {
     t.ins(20); t.ins(40); t.ins(60); t.ins(80);
     t.print(50, 3); // Esperado: 40 50 60
     t.print(35, 3); // Esperado: 30 40 50
-    t.print(75, 3); // Esperado: 70 80
+    t.print(75, 3); // Esperado: 60 70 80
 }

@@ -54,10 +54,31 @@ public:
     }
 
     void imprimirSobrinos(Node* n, int x) {
-        // IMPLEMENTAR
-        // Pista: encuentra el nivel de x
-        // luego imprime los nodos del nivel+1
-        // pero excluye los hijos directos de x
+        int nivel = nivelNodo(n, x, 0);
+
+        Node* nodoX = n;
+        for (nodoX; nodoX && nodoX->value != x; nodoX = nodoX->nodes[x > nodoX->value]);
+
+
+        if (nivel == 0) {
+            imprimirNivel(n, nivel + 2);
+            return;
+        }
+        if (nodoX == nullptr) {
+            return;
+        }
+        // Guardamos y desconectamos los hijos de x
+        Node* hijoIzq = nodoX->nodes[0];
+        Node* hijoDer = nodoX->nodes[1];
+        nodoX->nodes[0] = nullptr;
+        nodoX->nodes[1] = nullptr;
+
+        // Imprimimos nivel+1 sin los hijos de x
+        imprimirNivel(n, nivel + 1);
+
+        // Reconectamos
+        nodoX->nodes[0] = hijoIzq;
+        nodoX->nodes[1] = hijoDer;
     }
 
     void print(int x) { imprimirSobrinos(root, x); cout << endl; }

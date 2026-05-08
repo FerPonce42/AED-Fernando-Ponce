@@ -18,23 +18,53 @@ public:
     queue<int> q;
 
     void pushx(int x) {
-        // IMPLEMENTAR
+        int size = q.size();
+        // meter x al final
+        q.push(x);
+        // rotar hasta que x quede en su posición correcta
+        for (int i = 0; i < size; i++) {
+            if (q.front() <= x) {
+                q.push(q.front());
+                q.pop();
+            } else {
+                break;
+            }
+        }
+        // mover x al frente de los mayores
+        q.push(q.front());
+        q.pop();
+        // rotar el resto
+        for (int i = 0; i < size - 1; i++) {
+            q.push(q.front());
+            q.pop();
+        }
     }
 
     void popx() {
-        // IMPLEMENTAR
+        q.pop();
     }
 
     int frontx() {
-        // IMPLEMENTAR
+        return q.front();
     }
 
     void remx(int x) {
-        // IMPLEMENTAR
+        int size = q.size();
+        for (int i = 0; i < size; i++) {
+            if (q.front() != x) {
+                q.push(q.front());
+            }
+            q.pop();
+        }
     }
 
     void printx() {
-        // IMPLEMENTAR
+        queue<int> temp = q;
+        while (temp.empty() == false) {
+            cout << temp.front() << " ";
+            temp.pop();
+        }
+        cout << endl;
     }
 };
 

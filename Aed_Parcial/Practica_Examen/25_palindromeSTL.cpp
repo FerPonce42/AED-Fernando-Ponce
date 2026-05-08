@@ -17,15 +17,22 @@ template<class T>
 class MyStack {
     deque<T> data;
 public:
-    void push(T x)  { // IMPLEMENTAR
+    void push(T x) {
+        data.push_back(x);
     }
-    void pop()      { // IMPLEMENTAR
+    void pop() {
+        if (data.empty() == false) {
+            data.pop_back();
+        }
     }
-    T top()         { // IMPLEMENTAR
+    T top() {
+        return data.back();
     }
-    bool empty()    { // IMPLEMENTAR
+    bool empty() {
+        return data.empty();
     }
-    int size()      { // IMPLEMENTAR
+    int size() {
+        return data.size();
     }
 };
 
@@ -33,22 +40,43 @@ template<class T>
 class MyQueue {
     deque<T> data;
 public:
-    void push(T x)  { // IMPLEMENTAR
+    void push(T x) {
+        data.push_back(x);
     }
-    void pop()      { // IMPLEMENTAR
+    void pop() {
+        if (data.empty() == false) {
+            data.pop_front();
+        }
     }
-    T front()       { // IMPLEMENTAR
+    T front() {
+        return data.front();
     }
-    bool empty()    { // IMPLEMENTAR
+    bool empty() {
+        return data.empty();
     }
-    int size()      { // IMPLEMENTAR
+    int size() {
+        return data.size();
     }
 };
 
 bool isPalindromo(string s) {
     MyStack<char> pila;
     MyQueue<char> cola;
-    // IMPLEMENTAR
+
+    for (int i = 0; i < s.size(); i++) {
+        pila.push(s[i]);
+        cola.push(s[i]);
+    }
+
+    while (pila.empty() == false) {
+        if (pila.top() != cola.front()) {
+            return false;
+        }
+        pila.pop();
+        cola.pop();
+    }
+
+    return true;
 }
 
 int main() {

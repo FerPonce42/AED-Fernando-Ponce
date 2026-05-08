@@ -36,9 +36,66 @@ public:
         tail = nodo;
     }
 
-    void splitLista(Nodo* pivot) {
-        // IMPLEMENTAR
+void splitLista(Nodo* pivot) {
+    Nodo* menoresHead = nullptr;
+    Nodo* menoresTail = nullptr;
+    Nodo* mayoresHead = nullptr;
+    Nodo* mayoresTail = nullptr;
+
+    Nodo* actual = head;
+    while (actual != nullptr) {
+        Nodo* siguiente = actual->next;
+
+        if (actual == pivot) {
+            actual = siguiente;
+            continue;
+        }
+
+        // desconectar nodo
+        actual->next = nullptr;
+        actual->prev = nullptr;
+
+        if (actual->valor < pivot->valor) {
+            if (menoresHead == nullptr) {
+                menoresHead = menoresTail = actual;
+            } else {
+                menoresTail->next = actual;
+                actual->prev = menoresTail;
+                menoresTail = actual;
+            }
+        } else {
+            if (mayoresHead == nullptr) {
+                mayoresHead = mayoresTail = actual;
+            } else {
+                mayoresTail->next = actual;
+                actual->prev = mayoresTail;
+                mayoresTail = actual;
+            }
+        }
+
+        actual = siguiente;
     }
+
+    // unir: menores -> pivot -> mayores
+    pivot->next = nullptr;
+    pivot->prev = nullptr;
+
+    if (menoresTail != nullptr) {
+        menoresTail->next = pivot;
+        pivot->prev = menoresTail;
+        head = menoresHead;
+    } else {
+        head = pivot;
+    }
+
+    if (mayoresHead != nullptr) {
+        pivot->next = mayoresHead;
+        mayoresHead->prev = pivot;
+        tail = mayoresTail;
+    } else {
+        tail = pivot;
+    }
+}
 
     void print() {
         Nodo* p = head;

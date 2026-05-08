@@ -34,9 +34,41 @@ public:
         p->next = nodo;
     }
 
-    void swapNodos(int x, int y) {
-        // IMPLEMENTAR
+void swapNodos(int x, int y) {
+    if (x == y) return;
+
+    // Buscar prevX (anterior a x) y nodoX
+    Nodo* prevX = nullptr;
+    Nodo* nodoX = head;
+    while (nodoX && nodoX->valor != x) {
+        prevX = nodoX;
+        nodoX = nodoX->next;
     }
+
+    // Buscar prevY (anterior a y) y nodoY
+    Nodo* prevY = nullptr;
+    Nodo* nodoY = head;
+    while (nodoY && nodoY->valor != y) {
+        prevY = nodoY;
+        nodoY = nodoY->next;
+    }
+
+    // Si alguno no existe, no hacer nada
+    if (!nodoX || !nodoY) return;
+
+    // Reconectar el anterior de X para que apunte a nodoY
+    if (prevX) prevX->next = nodoY;
+    else head = nodoY;  // X era head
+
+    // Reconectar el anterior de Y para que apunte a nodoX
+    if (prevY) prevY->next = nodoX;
+    else head = nodoX;  // Y era head
+
+    // Intercambiar los next de ambos nodos
+    Nodo* temp = nodoX->next;
+    nodoX->next = nodoY->next;
+    nodoY->next = temp;
+}
 
     void print() {
         Nodo* p = head;

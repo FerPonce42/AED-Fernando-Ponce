@@ -32,8 +32,36 @@ public:
     }
 
     Nodo* merge(Nodo* h1, Nodo* h2) {
-        // IMPLEMENTAR
-        // Retorna el head de la lista mezclada
+        if (h1 == nullptr) return h2;
+        if (h2 == nullptr) return h1;
+
+        Nodo* resultado = nullptr;
+        Nodo* actual = nullptr;
+
+        if (h1->valor < h2->valor) {
+            resultado = h1;
+            h1 = h1->next;
+        } else {
+            resultado = h2;
+            h2 = h2->next;
+        }
+
+        actual = resultado;
+
+        for (; h1 != nullptr && h2 != nullptr; actual = actual->next) {
+            if (h1->valor < h2->valor) {
+                actual->next = h1;
+                h1 = h1->next;
+            } else {
+                actual->next = h2;
+                h2 = h2->next;
+            }
+        }
+
+        if (h1 != nullptr) actual->next = h1;
+        if (h2 != nullptr) actual->next = h2;
+
+        return resultado;
     }
 
     void print(Nodo* h) {

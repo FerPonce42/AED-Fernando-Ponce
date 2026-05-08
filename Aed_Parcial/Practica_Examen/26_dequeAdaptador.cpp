@@ -21,17 +21,27 @@ using namespace std;
 class PilaDoble {
     deque<int> d;
 public:
-    void pushA(int x) { // IMPLEMENTAR
+    void pushA(int x) {
+        d.push_front(x);
     }
-    void popA()       { // IMPLEMENTAR
+    void popA() {
+        if (d.empty() == false) {
+            d.pop_front();
+        }
     }
-    int topA()        { // IMPLEMENTAR
+    int topA() {
+        return d.front();
     }
-    void pushB(int x) { // IMPLEMENTAR
+    void pushB(int x) {
+        d.push_back(x);
     }
-    void popB()       { // IMPLEMENTAR
+    void popB() {
+        if (d.empty() == false) {
+            d.pop_back();
+        }
     }
-    int topB()        { // IMPLEMENTAR
+    int topB() {
+        return d.back();
     }
     void print() {
         for (int x : d) cout << x << " ";
