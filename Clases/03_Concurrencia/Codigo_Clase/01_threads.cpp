@@ -14,7 +14,7 @@ lo mejor es hacer sumas locales y luego recien hacer un proces oque sume todo po
 
 sum = S0+S1+S2+S3;
 
-LO QUE VAMOS HACER:
+LO QUE VAMOS HACER:DASDSA
 
 std:: thread t;
 std:: mutex m;std:: thread t;
