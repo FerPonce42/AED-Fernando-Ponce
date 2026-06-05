@@ -7,18 +7,20 @@ using namespace std;
 
 struct Node;
 
-void calcularPosiciones(Node* n, int nivel, int& contador, float ancho, float alto, map<Node*, sf::Vector2f>& posiciones)
+void CalcularPosiciones(Node* n, int nivel, int& contador, float ancho, float alto, map<Node*, sf::Vector2f>& posiciones)
 {
     if (n == nullptr) {
         return;
     }
-    calcularPosiciones(n->nodes[0], nivel + 1, contador, ancho, alto, posiciones);
+
+
+    CalcularPosiciones(n->nodes[0], nivel + 1, contador, ancho, alto, posiciones);
     posiciones[n] = sf::Vector2f(contador * ancho, nivel * alto + 50.f);
     contador++;
-    calcularPosiciones(n->nodes[1], nivel + 1, contador, ancho, alto, posiciones);
+    CalcularPosiciones(n->nodes[1], nivel + 1, contador, ancho, alto, posiciones);
 }
 
-sf::Vector2u calcularTamanoVentana(map<Node*, sf::Vector2f>& posiciones, float margen = 60.f)
+sf::Vector2u CalcularTamanoVentana(map<Node*, sf::Vector2f>& posiciones, float margen = 60.f)
 {
     float maxX = 0.f, maxY = 0.f, minX = 999999.f;
     for (auto& par : posiciones) {
@@ -29,11 +31,10 @@ sf::Vector2u calcularTamanoVentana(map<Node*, sf::Vector2f>& posiciones, float m
     return sf::Vector2u((unsigned int)(maxX - minX + margen * 2), (unsigned int)(maxY + margen * 2));
 }
 
-void drawTree(Node* raiz, sf::RenderWindow& window, sf::Font& font, map<Node*, sf::Vector2f>& posiciones)
+void DibujarArbol(Node* raiz, sf::RenderWindow& window, sf::Font& font, map<Node*, sf::Vector2f>& posiciones)
 {
     float radio = 20.f;
 
-    // LINEASS
     for (auto& par : posiciones) {
         Node* n = par.first;
         sf::Vector2f pos = par.second;
@@ -49,7 +50,6 @@ void drawTree(Node* raiz, sf::RenderWindow& window, sf::Font& font, map<Node*, s
         }
     }
 
-    // CIRCULOS Y VALORES
     for (auto& par : posiciones) {
         Node* n = par.first;
         sf::Vector2f pos = par.second;
@@ -76,7 +76,7 @@ void drawTree(Node* raiz, sf::RenderWindow& window, sf::Font& font, map<Node*, s
     }
 }
 
-void highlightNodos(vector<Node*>& nodos, sf::RenderWindow& window, sf::Font& font, map<Node*, sf::Vector2f>& posiciones)
+void PintarNodo(vector<Node*>& nodos, sf::RenderWindow& window, sf::Font& font, map<Node*, sf::Vector2f>& posiciones)
 {
     float radio = 20.f;
     sf::Color celeste(0, 180, 220);
@@ -85,6 +85,7 @@ void highlightNodos(vector<Node*>& nodos, sf::RenderWindow& window, sf::Font& fo
         if (posiciones.count(n) == 0) {
             continue;
         }
+
         sf::Vector2f pos = posiciones[n];
 
         sf::CircleShape circulo(radio);
@@ -99,6 +100,39 @@ void highlightNodos(vector<Node*>& nodos, sf::RenderWindow& window, sf::Font& fo
         texto.setString(to_string(n->value));
         texto.setCharacterSize(14);
         texto.setFillColor(sf::Color::Black);
+        sf::FloatRect bounds = texto.getLocalBounds();
+        texto.setOrigin(sf::Vector2f(
+            bounds.position.x + bounds.size.x / 2.f,
+            bounds.position.y + bounds.size.y / 2.f
+        ));
+        texto.setPosition(pos);
+        window.draw(texto);
+    }
+}
+
+void PintarNodoQuemado(vector<Node*>& nodos, sf::RenderWindow& window, sf::Font& font, map<Node*, sf::Vector2f>& posiciones)
+{
+    float radio = 20.f;
+    sf::Color naranja(220, 80, 0);
+
+    for (Node* n : nodos) {
+        if (posiciones.count(n) == 0) {
+            continue;
+        }
+        sf::Vector2f pos = posiciones[n];
+
+        sf::CircleShape circulo(radio);
+        circulo.setFillColor(naranja);
+        circulo.setOutlineColor(sf::Color::Black);
+        circulo.setOutlineThickness(2.f);
+        circulo.setOrigin(sf::Vector2f(radio, radio));
+        circulo.setPosition(pos);
+        window.draw(circulo);
+
+        sf::Text texto(font);
+        texto.setString(to_string(n->value));
+        texto.setCharacterSize(14);
+        texto.setFillColor(sf::Color::White);
         sf::FloatRect bounds = texto.getLocalBounds();
         texto.setOrigin(sf::Vector2f(
             bounds.position.x + bounds.size.x / 2.f,
