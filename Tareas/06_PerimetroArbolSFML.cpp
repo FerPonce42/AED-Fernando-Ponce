@@ -13,7 +13,7 @@ struct Node
     Node(int v) { value = v; nodes[0] = nodes[1] = nullptr; }
 };
 
-#include "dibujar.h"
+#include "Dibujar.h"
 
 class CBinTree
 {
@@ -124,7 +124,7 @@ int main()
 
     map<Node*, sf::Vector2f> posiciones;
     int contador = 0;
-    calcularPosiciones(t.root, 0, contador, 50.f, 80.f, posiciones);
+    CalcularPosiciones(t.root, 0, contador, 50.f, 80.f, posiciones);
 
     // CENTRAR horizontalmente
     float minX = 999999.f, maxX = 0.f;
@@ -133,7 +133,7 @@ int main()
         if (par.second.x > maxX) maxX = par.second.x;
     }
     float anchoArbol = maxX - minX;
-    sf::Vector2u tamano = calcularTamanoVentana(posiciones);
+    sf::Vector2u tamano = CalcularTamanoVentana(posiciones);
     float offsetX = (tamano.x - anchoArbol) / 2.f - minX;
     for (auto& par : posiciones) {
         posiciones[par.first].x += offsetX;
@@ -151,8 +151,8 @@ int main()
         }
 
         window.clear(sf::Color::White);
-        drawTree(t.root, window, font, posiciones);
-        highlightNodos(perim, window, font, posiciones);
+        DibujarArbol(t.root, window, font, posiciones);
+        PintarNodo(perim, window, font, posiciones);
         window.display();
     }
 
