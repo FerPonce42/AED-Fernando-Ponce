@@ -192,22 +192,22 @@ void RefrescarPos(Node* raiz, map<Node*, sf::Vector2f>& pos,
     }
 
     float anchoArbol = maxX - minX;
-    float altoArbol  = maxY - minY;
+    float altoArbol = maxY - minY;
 
     float anchoDisponible = (float)winW - margen * 2.f;
-    float altoDisponible  = (float)winH - margen * 2.f;
+    float altoDisponible = (float)winH - margen * 2.f;
 
     float escalaX = (anchoArbol > 0.f) ? (anchoDisponible / anchoArbol) : 1.f;
-    float escalaY = (altoArbol  > 0.f) ? (altoDisponible  / altoArbol)  : 1.f;
+    float escalaY = (altoArbol > 0.f) ? (altoDisponible / altoArbol) : 1.f;
 
     float escala = min(escalaX, escalaY);
     escala = min(escala, 1.f);
 
     float anchoEscalado = anchoArbol * escala;
-    float altoEscalado  = altoArbol  * escala;
+    float altoEscalado = altoArbol * escala;
 
     float offsetCentradoX = (anchoDisponible - anchoEscalado) / 2.f;
-    float offsetCentradoY = (altoDisponible  - altoEscalado)  / 2.f;
+    float offsetCentradoY = (altoDisponible - altoEscalado) / 2.f;
 
     for (auto& p : pos)
     {
@@ -354,7 +354,7 @@ int main()
         return 1;
     }
 
-    vector<int> valores = { 50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 5, 15, 22, 27, 33, 38, 42, 48 };
+    vector<int> valores = { 15, 9, 20, 6, 14, 17, 64, 13, 26, 72 };
 
     Node* raizBase = nullptr;
 
@@ -364,7 +364,7 @@ int main()
     vector<Node*> snaps = Podar(raizBase);
     LiberarArbol(raizBase);
 
-    int paso  = 0;
+    int paso = 0;
     int total = (int)snaps.size() - 1;
 
     const unsigned int WIN_W = 1000;
@@ -382,9 +382,9 @@ int main()
     map<Node*, sf::Vector2f> pos;
 
     auto refrescar = [&]()
-    {
-        RefrescarPos(snaps[paso], pos, WIN_W, WIN_H, MARGEN);
-    };
+        {
+            RefrescarPos(snaps[paso], pos, WIN_W, WIN_H, MARGEN);
+        };
 
     refrescar();
 
@@ -393,14 +393,14 @@ int main()
     string mensaje;
 
     auto actualizarMensaje = [&]()
-    {
-        bool balanceado = TodosFBCero(snaps[paso]);
+        {
+            bool balanceado = TodosFBCero(snaps[paso]);
 
-        if (balanceado)
-            mensaje = "Arbol balanceado - todos FB = 0";
-        else
-            mensaje = "[Espacio] Continuar   |   [Esc] Salir";
-    };
+            if (balanceado)
+                mensaje = "Arbol balanceado - todos FB = 0";
+            else
+                mensaje = "[Espacio] Continuar   |   [Esc] Salir";
+        };
 
     actualizarMensaje();
 
