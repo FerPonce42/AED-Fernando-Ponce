@@ -19,44 +19,17 @@ struct Node {
 
 #include "Dibujar.h"
 
-Node* construirArbolDesdeLista(const vector<int>& datos)
-{
-    int n = (int)datos.size();
-
-    vector<Node*> nodos(n, nullptr);
-
-    for (int i = 0; i < n; i++)
-    {
-        if (datos[i] != -1)
-        {
-            nodos[i] = new Node(datos[i]);
-        }
+Node* insertar(Node* raiz, int val, Node* padre = nullptr) {
+    if (!raiz) {
+        Node* n = new Node(val);
+        n->parent = padre;
+        return n;
     }
-
-    for (int i = 0; i < n; i++)
-    {
-        if (!nodos[i])
-        {
-            continue;
-        }
-
-        int indiceIzq = 2 * i + 1;
-        int indiceDer = 2 * i + 2;
-
-        if (indiceIzq < n && nodos[indiceIzq])
-        {
-            nodos[i]->nodes[0] = nodos[indiceIzq];
-            nodos[indiceIzq]->parent = nodos[i];
-        }
-
-        if (indiceDer < n && nodos[indiceDer])
-        {
-            nodos[i]->nodes[1] = nodos[indiceDer];
-            nodos[indiceDer]->parent = nodos[i];
-        }
-    }
-
-    return nodos[0];
+    if (val < raiz->value)
+        raiz->nodes[0] = insertar(raiz->nodes[0], val, raiz);
+    else
+        raiz->nodes[1] = insertar(raiz->nodes[1], val, raiz);
+    return raiz;
 }
 
 vector<vector<Node*>> calcularQuemado(Node* raiz, int objetivo) {
@@ -118,11 +91,9 @@ int main() {
         return 1;
     }
 
-    Node* raiz = construirArbolDesdeLista({ 50,
-        30, 70,
-        20, 40, 60, 80,
-        15, 25, 35, 45, 55, 65, 75, 90,
-        12, 17, 22, 28, 32, 38, 42, 48, 52, 58, 62, 68, 72, 78, 85, 95 });
+    Node* raiz = nullptr;
+    for (int v : {15, 9, 20, 6, 14, 17, 64, 13, 26, 72})
+        raiz = insertar(raiz, v, nullptr);
 
     const unsigned int ANCHO_VENTANA = 1000;
     const unsigned int ALTO_VENTANA = 650;
