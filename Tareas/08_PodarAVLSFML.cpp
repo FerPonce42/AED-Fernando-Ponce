@@ -118,22 +118,57 @@ void CalcPos(Node* n, int nivel, int& cnt, float aw, float ah, map<Node*, sf::Ve
 {
     if (!n) return;
     CalcPos(n->nodes[0], nivel + 1, cnt, aw, ah, pos);
-    pos[n] = sf::Vector2f(cnt * aw, nivel * ah + 70.f);
+    pos[n] = sf::Vector2f(cnt * aw, nivel * ah);
     cnt++;
     CalcPos(n->nodes[1], nivel + 1, cnt, aw, ah, pos);
 }
 
-void RefrescarPos(Node* raiz, map<Node*, sf::Vector2f>& pos, unsigned int winW,
+// Calcula posiciones escaladas y centradas dentro de un area fija
+void RefrescarPos(Node* raiz, map<Node*, sf::Vector2f>& pos,
+    unsigned int winW, unsigned int winH, float margen,
     float aw = 64.f, float ah = 88.f)
 {
     pos.clear();
     if (!raiz) return;
+
     int cnt = 0;
     CalcPos(raiz, 0, cnt, aw, ah, pos);
+
     float minX = 1e9f, maxX = -1e9f;
-    for (auto& p : pos) { minX = min(minX, p.second.x); maxX = max(maxX, p.second.x); }
-    float offset = ((float)winW - (maxX - minX)) / 2.f - minX;
-    for (auto& p : pos) p.second.x += offset;
+    float minY = 1e9f, maxY = -1e9f;
+    for (auto& p : pos)
+    {
+        minX = min(minX, p.second.x);
+        maxX = max(maxX, p.second.x);
+        minY = min(minY, p.second.y);
+        maxY = max(maxY, p.second.y);
+    }
+
+    float anchoArbol = maxX - minX;
+    float altoArbol = maxY - minY;
+
+    float anchoDisponible = (float)winW - margen * 2.f;
+    float altoDisponible = (float)winH - margen * 2.f;
+
+    float escalaX = (anchoArbol > 0.f) ? (anchoDisponible / anchoArbol) : 1.f;
+    float escalaY = (altoArbol > 0.f) ? (altoDisponible / altoArbol) : 1.f;
+
+    float escala = min(escalaX, escalaY);
+    escala = min(escala, 1.f);
+
+    float anchoEscalado = anchoArbol * escala;
+    float altoEscalado = altoArbol * escala;
+
+    float offsetCentradoX = (anchoDisponible - anchoEscalado) / 2.f;
+    float offsetCentradoY = (altoDisponible - altoEscalado) / 2.f;
+
+    for (auto& p : pos)
+    {
+        float x = (p.second.x - minX) * escala;
+        float y = (p.second.y - minY) * escala;
+        p.second.x = x + margen + offsetCentradoX;
+        p.second.y = y + margen + offsetCentradoY;
+    }
 }
 
 // ===================== DIBUJO =====================
@@ -174,8 +209,11 @@ void DibujarNodo(Node* n, sf::Vector2f pos, sf::RenderWindow& w, sf::Font& font,
 
 void DibujarArbol(sf::RenderWindow& window, sf::Font& font,
     map<Node*, sf::Vector2f>& pos,
-    const vector<int>& hojasNaranja = {})
+    const vector<int>& hojasAzules = {})
 {
+    // Color azul del perimetro
+    sf::Color azulPerimetro(0, 180, 220);
+
     // Aristas
     for (auto& par : pos)
     {
@@ -195,11 +233,11 @@ void DibujarArbol(sf::RenderWindow& window, sf::Font& font,
     for (auto& par : pos)
     {
         Node* n = par.first;
-        bool esNaranja = false;
-        for (int v : hojasNaranja) if (v == n->value) { esNaranja = true; break; }
+        bool esAzul = false;
+        for (int v : hojasAzules) if (v == n->value) { esAzul = true; break; }
 
-        if (esNaranja)
-            DibujarNodo(n, par.second, window, font, sf::Color(220, 80, 0), sf::Color::White);
+        if (esAzul)
+            DibujarNodo(n, par.second, window, font, azulPerimetro, sf::Color::White);
         else
             DibujarNodo(n, par.second, window, font, sf::Color::White, sf::Color::Black);
     }
@@ -218,14 +256,10 @@ void DibujarUI(sf::RenderWindow& window, sf::Font& font,
     barra.setFillColor(sf::Color(225, 225, 225, 235));
     window.draw(barra);
 
-    string instrTxt = yaBalanceado
-        ? "[Arbol balanceado - todos FB = 0]   [Esc] Salir"
-        : "[Space] Siguiente poda   [Esc] Salir";
-
     sf::Text ti(font);
-    ti.setString(instrTxt);
+    ti.setString(msg);
     ti.setCharacterSize(13);
-    ti.setFillColor(yaBalanceado ? sf::Color(0, 140, 60) : sf::Color(80, 80, 80));
+    ti.setFillColor(sf::Color(80, 80, 80));
     ti.setPosition(sf::Vector2f(10.f, y + 5.f));
     window.draw(ti);
 
@@ -236,23 +270,6 @@ void DibujarUI(sf::RenderWindow& window, sf::Font& font,
     sf::FloatRect btp = tp.getLocalBounds();
     tp.setPosition(sf::Vector2f((float)tam.x - btp.size.x - 12.f, y + 5.f));
     window.draw(tp);
-
-    if (!msg.empty())
-    {
-        sf::Text tm(font);
-        tm.setString(msg);
-        tm.setCharacterSize(15);
-        tm.setFillColor(sf::Color(20, 20, 180));
-        tm.setPosition(sf::Vector2f(10.f, y + 26.f));
-        window.draw(tm);
-    }
-
-    sf::Text tleg(font);
-    tleg.setString("numero sobre cada nodo = factor de balance  |  rojo = desbalanceado");
-    tleg.setCharacterSize(11);
-    tleg.setFillColor(sf::Color(170, 170, 170));
-    tleg.setPosition(sf::Vector2f(10.f, y + 46.f));
-    window.draw(tleg);
 }
 
 // ===================== MAIN =====================
@@ -267,8 +284,10 @@ int main()
         }
 
     // --- Arbol inicial: cambiar estos valores segun lo que pida el profe ---
+    vector<int> valores = { 50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 5, 15, 22, 27, 33, 38, 42, 48 };
+
     Node* raizBase = nullptr;
-    for (int v : {50, 30, 70, 20, 40, 60, 80, 10, 25, 35, 45, 5, 15, 22, 27, 33, 38, 42, 48})
+    for (int v : valores)
         raizBase = InsertBST(raizBase, v);
 
     // --- Generar todos los snapshots con Podar() ---
@@ -278,22 +297,38 @@ int main()
     int paso = 0;
     int total = (int)snaps.size() - 1;   // numero de podas disponibles
 
-    const unsigned int WIN_W = 820, WIN_H = 500;
-    sf::RenderWindow window(sf::VideoMode({ WIN_W, WIN_H }), "Arbol AVL - Poda");
+    const unsigned int WIN_W = 1000, WIN_H = 650;
+    const float MARGEN = 60.f;
+
+    sf::RenderWindow window(sf::VideoMode({ WIN_W, WIN_H }), "08_PodarAVLSFML");
     window.setFramerateLimit(60);
 
-    string msgTmp;
-    sf::Clock relojMsg;
-    auto setMsg = [&](const string& m) { msgTmp = m; relojMsg.restart(); };
+    sf::Vector2u tamanoPantalla = sf::VideoMode::getDesktopMode().size;
+    int posX = (int)((tamanoPantalla.x - WIN_W) / 2);
+    int posY = (int)((tamanoPantalla.y - WIN_H) / 2);
+    window.setPosition(sf::Vector2i(posX, posY));
 
-    // Flash naranja: valores de hojas justo antes de la poda
-    vector<int> flashVals;
-    bool flashActivo = false;
-    sf::Clock relojFlash;
-
+    // Posiciones del snapshot actual
     map<Node*, sf::Vector2f> pos;
-    auto refrescar = [&]() { RefrescarPos(snaps[paso], pos, WIN_W); };
+    auto refrescar = [&]() { RefrescarPos(snaps[paso], pos, WIN_W, WIN_H, MARGEN); };
     refrescar();
+
+    // Lista de valores que se van a podar (resaltados en azul) cuando estamos en preview
+    vector<int> hojasAPodar;
+    bool mostrandoPreview = false;
+
+    string mensaje;
+
+    auto actualizarMensaje = [&]()
+        {
+            bool balanceado = TodosFBCero(snaps[paso]);
+
+            if (balanceado)
+                mensaje = "Arbol balanceado - todos FB = 0";
+            else
+                mensaje = "[Espacio] Continuar   |   [Esc] Salir";
+        };
+    actualizarMensaje();
 
     while (window.isOpen())
     {
@@ -312,64 +347,48 @@ int main()
 
                     if (balanceado)
                     {
-                        setMsg("El arbol ya esta balanceado (todos FB = 0).");
+                        // Ya no hay nada que hacer
                     }
-                    else if (paso < total)
+                    else if (!mostrandoPreview)
                     {
-                        // Marcar las hojas mas profundas del snap actual para flash naranja
+                        // Primer Space: marcar en azul las hojas que se van a podar
                         int pm = ProfundidadMax(snaps[paso]);
                         vector<Node*> hojas;
                         RecolectarHojasProfundas(snaps[paso], 0, pm, hojas);
-                        flashVals.clear();
-                        for (Node* h : hojas) flashVals.push_back(h->value);
-                        flashActivo = true;
-                        relojFlash.restart();
 
-                        paso++;
-                        refrescar();
+                        hojasAPodar.clear();
+                        for (Node* h : hojas) hojasAPodar.push_back(h->value);
 
-                        if (TodosFBCero(snaps[paso]))
-                            setMsg("Arbol balanceado. Todos los FB = 0.");
-                        else
-                            setMsg("Poda " + to_string(paso) + " aplicada.");
+                        mostrandoPreview = true;
                     }
                     else
                     {
-                        setMsg("No quedan mas podas disponibles.");
+                        // Segundo Space: avanzar al siguiente snapshot
+                        if (paso < total)
+                        {
+                            paso++;
+                            refrescar();
+                        }
+
+                        hojasAPodar.clear();
+                        mostrandoPreview = false;
                     }
+
+                    actualizarMensaje();
                 }
             }
         }
 
-        // Apagar flash despues de 0.6 s
-        if (flashActivo && relojFlash.getElapsedTime().asSeconds() > 0.6f)
-        {
-            flashActivo = false; flashVals.clear();
-        }
-
-        // Limpiar mensaje despues de 3 s
-        if (!msgTmp.empty() && relojMsg.getElapsedTime().asSeconds() > 3.f)
-            msgTmp.clear();
-
         // --- Render ---
         window.clear(sf::Color(248, 248, 248));
 
-        if (snaps[paso])
-        {
-            if (flashActivo && paso > 0)
-            {
-                map<Node*, sf::Vector2f> posAnterior;
-                RefrescarPos(snaps[paso - 1], posAnterior, WIN_W);
-                DibujarArbol(window, font, posAnterior, flashVals);
-            }
-            else
-            {
-                DibujarArbol(window, font, pos, {});
-            }
-        }
+        if (mostrandoPreview)
+            DibujarArbol(window, font, pos, hojasAPodar);
+        else
+            DibujarArbol(window, font, pos, {});
 
         bool yaBalanceado = TodosFBCero(snaps[paso]);
-        DibujarUI(window, font, msgTmp, paso, total, yaBalanceado);
+        DibujarUI(window, font, mensaje, paso, total, yaBalanceado);
 
         window.display();
     }

@@ -19,33 +19,44 @@ struct Node {
 
 #include "Dibujar.h"
 
-Node* construirArbolProfe() {
-    Node* n12 = new Node(12);
-    Node* n19 = new Node(19);
-    Node* n82 = new Node(82);
-    Node* n41 = new Node(41);
-    Node* n2 = new Node(2);
-    Node* n15 = new Node(15);
-    Node* n95 = new Node(95);
-    Node* n21 = new Node(21);
-    Node* n7 = new Node(7);
-    Node* n16 = new Node(16);
+Node* construirArbolDesdeLista(const vector<int>& datos)
+{
+    int n = (int)datos.size();
 
-    n12->nodes[0] = n19;  n19->parent = n12;
-    n12->nodes[1] = n82;  n82->parent = n12;
+    vector<Node*> nodos(n, nullptr);
 
-    n19->nodes[0] = n41;  n41->parent = n19;
-    n19->nodes[1] = n2;   n2->parent = n19;
+    for (int i = 0; i < n; i++)
+    {
+        if (datos[i] != -1)
+        {
+            nodos[i] = new Node(datos[i]);
+        }
+    }
 
-    n82->nodes[0] = n15;  n15->parent = n82;
-    n82->nodes[1] = n95;  n95->parent = n82;
+    for (int i = 0; i < n; i++)
+    {
+        if (!nodos[i])
+        {
+            continue;
+        }
 
-    n15->nodes[0] = n21;  n21->parent = n15;
+        int indiceIzq = 2 * i + 1;
+        int indiceDer = 2 * i + 2;
 
-    n95->nodes[0] = n7;   n7->parent = n95;
-    n95->nodes[1] = n16;  n16->parent = n95;
+        if (indiceIzq < n && nodos[indiceIzq])
+        {
+            nodos[i]->nodes[0] = nodos[indiceIzq];
+            nodos[indiceIzq]->parent = nodos[i];
+        }
 
-    return n12;
+        if (indiceDer < n && nodos[indiceDer])
+        {
+            nodos[i]->nodes[1] = nodos[indiceDer];
+            nodos[indiceDer]->parent = nodos[i];
+        }
+    }
+
+    return nodos[0];
 }
 
 vector<vector<Node*>> calcularQuemado(Node* raiz, int objetivo) {
@@ -61,13 +72,11 @@ vector<vector<Node*>> calcularQuemado(Node* raiz, int objetivo) {
         }
     }
     if (!start) return {};
-
     vector<vector<Node*>> vueltas;
     set<Node*> quemados;
     queue<Node*> q;
     q.push(start);
     quemados.insert(start);
-
     while (!q.empty()) {
         int sz = (int)q.size();
         vector<Node*> vuelta;
@@ -109,22 +118,66 @@ int main() {
         return 1;
     }
 
-    Node* raiz = construirArbolProfe();
+    Node* raiz = construirArbolDesdeLista({ 50,
+        30, 70,
+        20, 40, 60, 80,
+        15, 25, 35, 45, 55, 65, 75, 90,
+        12, 17, 22, 28, 32, 38, 42, 48, 52, 58, 62, 68, 72, 78, 85, 95 });
+
+    const unsigned int ANCHO_VENTANA = 1000;
+    const unsigned int ALTO_VENTANA = 650;
+    const float MARGEN = 60.f;
 
     map<Node*, sf::Vector2f> posiciones;
     int contador = 0;
     CalcularPosiciones(raiz, 0, contador, 80.f, 90.f, posiciones);
 
     float minX = 999999.f;
-    for (auto& p : posiciones) minX = min(minX, p.second.x);
-    for (auto& p : posiciones) p.second.x -= minX - 60.f;
+    float maxX = -999999.f;
+    float minY = 999999.f;
+    float maxY = -999999.f;
 
-    sf::Vector2u tamano = CalcularTamanoVentana(posiciones, 60.f);
-    tamano.x = max(tamano.x, 400u);
-    tamano.y = max(tamano.y, 300u);
+    for (auto& par : posiciones) {
+        minX = min(minX, par.second.x);
+        maxX = max(maxX, par.second.x);
+        minY = min(minY, par.second.y);
+        maxY = max(maxY, par.second.y);
+    }
+
+    float anchoArbol = maxX - minX;
+    float altoArbol = maxY - minY;
+
+    float anchoDisponible = (float)ANCHO_VENTANA - MARGEN * 2.f;
+    float altoDisponible = (float)ALTO_VENTANA - MARGEN * 2.f;
+
+    float escalaX = (anchoArbol > 0.f) ? (anchoDisponible / anchoArbol) : 1.f;
+    float escalaY = (altoArbol > 0.f) ? (altoDisponible / altoArbol) : 1.f;
+
+    float escala = min(escalaX, escalaY);
+    escala = min(escala, 1.f);
+
+    float anchoEscalado = anchoArbol * escala;
+    float altoEscalado = altoArbol * escala;
+
+    float offsetCentradoX = (anchoDisponible - anchoEscalado) / 2.f;
+    float offsetCentradoY = (altoDisponible - altoEscalado) / 2.f;
+
+    for (auto& par : posiciones) {
+        float x = (par.second.x - minX) * escala;
+        float y = (par.second.y - minY) * escala;
+        par.second.x = x + MARGEN + offsetCentradoX;
+        par.second.y = y + MARGEN + offsetCentradoY;
+    }
+
+    sf::Vector2u tamano(ANCHO_VENTANA, ALTO_VENTANA);
 
     sf::RenderWindow window(sf::VideoMode(tamano), "07_ArbolQuemado");
     window.setFramerateLimit(60);
+
+    sf::Vector2u tamanoPantalla = sf::VideoMode::getDesktopMode().size;
+    int posX = (int)((tamanoPantalla.x - tamano.x) / 2);
+    int posY = (int)((tamanoPantalla.y - tamano.y) / 2);
+    window.setPosition(sf::Vector2i(posX, posY));
 
     vector<vector<Node*>> vueltas;
     vector<Node*> quemadosAcum;
@@ -141,6 +194,14 @@ int main() {
         while (const std::optional<sf::Event> event = window.pollEvent()) {
             if (event->is<sf::Event::Closed>())
                 window.close();
+
+            if (const auto* resized = event->getIf<sf::Event::Resized>()) {
+                sf::FloatRect area(
+                    sf::Vector2f(0.f, 0.f),
+                    sf::Vector2f((float)resized->size.x, (float)resized->size.y)
+                );
+                window.setView(sf::View(area));
+            }
 
             if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) {
                 if (keyPressed->scancode == sf::Keyboard::Scan::Escape)
@@ -171,7 +232,8 @@ int main() {
 
             if (const auto* click = event->getIf<sf::Event::MouseButtonPressed>()) {
                 if (click->button == sf::Mouse::Button::Left && !objetivoElegido) {
-                    sf::Vector2f mouse((float)click->position.x, (float)click->position.y);
+                    sf::Vector2i pixel(click->position.x, click->position.y);
+                    sf::Vector2f mouse = window.mapPixelToCoords(pixel);
                     Node* elegido = nodoBajoCursor(mouse, posiciones);
                     if (elegido) {
                         vueltas = calcularQuemado(raiz, elegido->value);

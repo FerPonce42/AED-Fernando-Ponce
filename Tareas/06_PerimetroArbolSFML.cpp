@@ -122,24 +122,59 @@ int main()
         return -1;
     }
 
+    const unsigned int ANCHO_VENTANA = 1000;
+    const unsigned int ALTO_VENTANA = 650;
+    const float MARGEN = 60.f;
+
     map<Node*, sf::Vector2f> posiciones;
     int contador = 0;
     CalcularPosiciones(t.root, 0, contador, 50.f, 80.f, posiciones);
 
-    // CENTRAR horizontalmente
-    float minX = 999999.f, maxX = 0.f;
+    float minX = 999999.f;
+    float maxX = -999999.f;
+    float minY = 999999.f;
+    float maxY = -999999.f;
+
     for (auto& par : posiciones) {
-        if (par.second.x < minX) minX = par.second.x;
-        if (par.second.x > maxX) maxX = par.second.x;
-    }
-    float anchoArbol = maxX - minX;
-    sf::Vector2u tamano = CalcularTamanoVentana(posiciones);
-    float offsetX = (tamano.x - anchoArbol) / 2.f - minX;
-    for (auto& par : posiciones) {
-        posiciones[par.first].x += offsetX;
+        minX = min(minX, par.second.x);
+        maxX = max(maxX, par.second.x);
+        minY = min(minY, par.second.y);
+        maxY = max(maxY, par.second.y);
     }
 
+    float anchoArbol = maxX - minX;
+    float altoArbol = maxY - minY;
+
+    float anchoDisponible = (float)ANCHO_VENTANA - MARGEN * 2.f;
+    float altoDisponible = (float)ALTO_VENTANA - MARGEN * 2.f;
+
+    float escalaX = (anchoArbol > 0.f) ? (anchoDisponible / anchoArbol) : 1.f;
+    float escalaY = (altoArbol > 0.f) ? (altoDisponible / altoArbol) : 1.f;
+
+    float escala = min(escalaX, escalaY);
+    escala = min(escala, 1.f);
+
+    float anchoEscalado = anchoArbol * escala;
+    float altoEscalado = altoArbol * escala;
+
+    float offsetCentradoX = (anchoDisponible - anchoEscalado) / 2.f;
+    float offsetCentradoY = (altoDisponible - altoEscalado) / 2.f;
+
+    for (auto& par : posiciones) {
+        float x = (par.second.x - minX) * escala;
+        float y = (par.second.y - minY) * escala;
+        par.second.x = x + MARGEN + offsetCentradoX;
+        par.second.y = y + MARGEN + offsetCentradoY;
+    }
+
+    sf::Vector2u tamano(ANCHO_VENTANA, ALTO_VENTANA);
+
     sf::RenderWindow window(sf::VideoMode(tamano), "06_Perimetro_ArbolSFML");
+
+    sf::Vector2u tamanoPantalla = sf::VideoMode::getDesktopMode().size;
+    int posX = (int)((tamanoPantalla.x - tamano.x) / 2);
+    int posY = (int)((tamanoPantalla.y - tamano.y) / 2);
+    window.setPosition(sf::Vector2i(posX, posY));
 
     vector<Node*> perim = t.perimeter();
 
