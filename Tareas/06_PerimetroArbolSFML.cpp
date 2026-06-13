@@ -53,22 +53,15 @@ public:
             return resultado;
         }
 
-        // BORDE IZQUIERDO (raiz incluida, hojas excluidas)
         Node* p = root;
-        while (p != nullptr) {
+        while (p != nullptr && p->nodes[0] != nullptr) {
             bool es_hoja = p->nodes[0] == nullptr && p->nodes[1] == nullptr;
             if (!es_hoja) {
                 resultado.push_back(p);
             }
-            if (p->nodes[0] != nullptr) {
-                p = p->nodes[0];
-            }
-            else {
-                p = p->nodes[1];
-            }
+            p = p->nodes[0];
         }
 
-        // BORDE INFERIOR: hojas de izq a der
         stack<Node*> pila;
         pila.push(root);
         while (!pila.empty()) {
@@ -83,7 +76,6 @@ public:
             }
         }
 
-        // BORDE DERECHO: camino der en stack, se imprime al reves
         stack<Node*> camino;
         p = root->nodes[1];
         while (p != nullptr) {
@@ -110,11 +102,7 @@ public:
 int main()
 {
     CBinTree t;
-    t.ins({ 50,
-            30, 70,
-            20, 40, 60, 80,
-            15, 25, 35, 45, 55, 65, 75, 90,
-            12, 17, 22, 28, 32, 38, 42, 48, 52, 58, 62, 68, 72, 78, 85, 95 });
+    t.ins({ 15, 9, 20, 6, 14, 17, 64, 13, 26, 72 });
 
     sf::Font font;
     if (!font.openFromFile("C:/Windows/Fonts/arial.ttf")) {
