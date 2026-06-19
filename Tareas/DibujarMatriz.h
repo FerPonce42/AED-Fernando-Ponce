@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <cmath>
 using namespace std;
 
 template <typename T> class CSparseMatrix;
@@ -19,210 +20,235 @@ inline bool cargarFuenteSistema(sf::Font& fuente) {
         "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
         "/System/Library/Fonts/Menlo.ttc",
     };
-    for (const auto& r : rutas)
-        if (fuente.openFromFile(r)) return true;
+    for (const auto& r : rutas) {
+        if (fuente.openFromFile(r)) {
+            return true;
+        }
+    }
     return false;
 }
 
-// ── Dibuja la matriz estilo pizarra ──────────────────────────────────────────
-// NUEVO: parametro "instruccion" para poder cambiar el texto de abajo
-// (ej. en el paso final ya no dice "click para continuar", dice "ESC o cierra la ventana")
+inline void recrearVentana(sf::RenderWindow& ventana, unsigned int w, unsigned int h, const string& titulo) {
+    auto desktop = sf::VideoMode::getDesktopMode();
+    int px = (int)(desktop.size.x - w) / 2;
+    int py = (int)(desktop.size.y - h) / 2;
+    ventana.close();
+    ventana.create(sf::VideoMode({ w, h }), titulo);
+    ventana.setFramerateLimit(60);
+    ventana.setPosition({ px, py });
+}
+
+template <typename T>
+string fmtNum(T val) {
+    if (abs((double)val) < 1e-10) {
+        return "0";
+    }
+    if (abs(val - round(val)) < 1e-9) {
+        ostringstream ss;
+        ss << (int)round(val);
+        return ss.str();
+    }
+    ostringstream ss;
+    ss.precision(2);
+    ss << fixed << val;
+    return ss.str();
+}
+
+inline sf::Vector2u tamanoParaN(int n, int opsCharMax = 18) {
+    const float CELDA_W = 72.f;
+    const float CELDA_H = 60.f;
+    const float MARGEN_IZQ = 50.f;
+    const float MARGEN_DER = 20.f;
+    const float CORCHETE = 20.f;
+    const float OPS_W = max(140.f, opsCharMax * 8.f);
+
+    float matrizW = CELDA_W * (n + 1);
+    float totalW = MARGEN_IZQ + CORCHETE + matrizW + CORCHETE + 12.f + OPS_W + MARGEN_DER;
+    float totalH = 60.f + CELDA_H * n + 60.f;
+
+    unsigned int w = (unsigned int)ceil(totalW);
+    unsigned int h = (unsigned int)ceil(totalH);
+    w = max(w, 480u);
+    h = max(h, 300u);
+    return { w, h };
+}
+
 template <typename T>
 void DibujarMatriz(CSparseMatrix<T>& A, sf::RenderWindow& ventana, sf::Font& fuente,
-    int paso, int n, const string& mensaje, const string& submensaje = "",
-    const string& instruccion = "click para continuar     ESC para salir")
+    int paso, int n, const string& titulo,
+    const vector<string>& ops = {},
+    const string& hint = "\u2192 continuar   \u2190 retroceder   ESC salir")
 {
-    ventana.clear(sf::Color(250, 250, 248)); // blanco hueso
+    const sf::Color BG = sf::Color(28, 32, 38);
+    const sf::Color C_WHITE = sf::Color(230, 235, 240);
+    const sf::Color C_CYAN = sf::Color(80, 190, 210);
+    const sf::Color C_CYAN2 = sf::Color(50, 155, 175);
+    const sf::Color C_GRAY = sf::Color(90, 100, 115);
+    const sf::Color C_HINT = sf::Color(65, 75, 90);
+    const sf::Color C_PIVOT = sf::Color(120, 210, 220);
+    const sf::Color C_ELIM = sf::Color(80, 190, 210);
 
-    // Calcular tamaño de celda según ventana
-    float margenX = 80.f;
-    float margenY = 100.f;
-    float areaW = ventana.getSize().x - margenX * 2.f;
-    float areaH = ventana.getSize().y - margenY - 80.f;
-    float celdaW = areaW / (n + 1);
-    float celdaH = areaH / n;
-    celdaW = min(celdaW, 90.f);
-    celdaH = min(celdaH, 70.f);
+    ventana.clear(BG);
+    float W = (float)ventana.getSize().x;
+    float H = (float)ventana.getSize().y;
 
-    float offsetX = (ventana.getSize().x - celdaW * (n + 1)) / 2.f;
-    float offsetY = margenY;
+    const float CELDA_W = 72.f;
+    const float CELDA_H = 60.f;
+    const float MARGEN_IZQ = 50.f;
+    const float CORCHETE = 20.f;
+    const unsigned int FS = 14u;
 
-    unsigned int fontSize = (unsigned int)max(12.f, min(18.f, celdaH * 0.35f));
+    float matrizW = CELDA_W * (n + 1);
 
-    // ── Título / paso actual ─────────────────
-    sf::Text titulo(fuente, mensaje, fontSize + 2);
-    titulo.setFillColor(sf::Color(30, 30, 30));
-    sf::FloatRect tb = titulo.getLocalBounds();
-    titulo.setOrigin({ tb.position.x + tb.size.x / 2.f, tb.position.y });
-    titulo.setPosition({ ventana.getSize().x / 2.f, 18.f });
-    ventana.draw(titulo);
+    int maxOpsLen = 0;
+    for (const auto& s : ops) {
+        maxOpsLen = max(maxOpsLen, (int)s.size());
+    }
+    float opsW = max(100.f, maxOpsLen * 8.f);
 
-    // ── Subtítulo (solución o hint) ──────────
-    if (!submensaje.empty()) {
-        sf::Text sub(fuente, submensaje, fontSize - 1);
-        sub.setFillColor(sf::Color(100, 100, 100));
-        sf::FloatRect sb = sub.getLocalBounds();
-        sub.setOrigin({ sb.position.x + sb.size.x / 2.f, sb.position.y });
-        sub.setPosition({ ventana.getSize().x / 2.f, 48.f });
-        ventana.draw(sub);
+    float bloqueW = MARGEN_IZQ + CORCHETE + matrizW + CORCHETE + 12.f + opsW;
+    float startX = (W - bloqueW) / 2.f;
+    float offsetX = startX + MARGEN_IZQ + CORCHETE;
+    float opsX = offsetX + matrizW + CORCHETE + 12.f;
+    float offsetY = 56.f;
+
+    {
+        sf::Text t(fuente, titulo, FS + 1);
+        t.setFillColor(C_WHITE);
+        sf::FloatRect b = t.getLocalBounds();
+        t.setOrigin({ b.position.x + b.size.x / 2.f, b.position.y });
+        t.setPosition({ W / 2.f, 16.f });
+        ventana.draw(t);
     }
 
-    // ── Instrucción abajo ────────────────────
-    sf::Text inst(fuente, instruccion, fontSize - 2);
-    inst.setFillColor(sf::Color(160, 160, 160));
-    sf::FloatRect ib = inst.getLocalBounds();
-    inst.setOrigin({ ib.position.x + ib.size.x / 2.f, ib.position.y });
-    inst.setPosition({ ventana.getSize().x / 2.f,
-                      ventana.getSize().y - 30.f });
-    ventana.draw(inst);
+    {
+        sf::Text t(fuente, hint, FS - 3);
+        t.setFillColor(C_HINT);
+        sf::FloatRect b = t.getLocalBounds();
+        t.setOrigin({ b.position.x + b.size.x / 2.f, b.position.y });
+        t.setPosition({ W / 2.f, H - 22.f });
+        ventana.draw(t);
+    }
 
-    // ── Línea separadora augmented matrix ───
-    // Línea vertical entre coefs y término independiente
-    float lineX = offsetX + n * celdaW;
-    sf::RectangleShape separador({ 1.5f, celdaH * n });
-    separador.setFillColor(sf::Color(180, 180, 180));
-    separador.setPosition({ lineX, offsetY });
-    ventana.draw(separador);
-
-    // ── Corchete izquierdo ───────────────────
-    float brkT = offsetY;
-    float brkB = offsetY + celdaH * n;
-    float brkX = offsetX - 14.f;
-    float brkW = 8.f;
-    float brkThick = 2.f;
-    // vertical
-    sf::RectangleShape bL({ brkThick, brkB - brkT });
-    bL.setFillColor(sf::Color(80, 80, 80));
-    bL.setPosition({ brkX, brkT });
-    ventana.draw(bL);
-    // horizontales
-    sf::RectangleShape bLT({ brkW, brkThick });
-    bLT.setFillColor(sf::Color(80, 80, 80));
-    bLT.setPosition({ brkX, brkT });
-    ventana.draw(bLT);
-    sf::RectangleShape bLB({ brkW, brkThick });
-    bLB.setFillColor(sf::Color(80, 80, 80));
-    bLB.setPosition({ brkX, brkB - brkThick });
-    ventana.draw(bLB);
-
-    // ── Corchete derecho ─────────────────────
-    float brkXR = offsetX + celdaW * (n + 1) + 6.f;
-    sf::RectangleShape bR({ brkThick, brkB - brkT });
-    bR.setFillColor(sf::Color(80, 80, 80));
-    bR.setPosition({ brkXR + brkW - brkThick, brkT });
-    ventana.draw(bR);
-    sf::RectangleShape bRT({ brkW, brkThick });
-    bRT.setFillColor(sf::Color(80, 80, 80));
-    bRT.setPosition({ brkXR, brkT });
-    ventana.draw(bRT);
-    sf::RectangleShape bRB({ brkW, brkThick });
-    bRB.setFillColor(sf::Color(80, 80, 80));
-    bRB.setPosition({ brkXR, brkB - brkThick });
-    ventana.draw(bRB);
-
-    // ── Encabezados ──────────────────────────
     for (int j = 0; j <= n; j++) {
         string s = (j == n) ? "b" : ("x" + to_string(j + 1));
-        sf::Text enc(fuente, s, fontSize - 2);
-        enc.setFillColor(sf::Color(150, 150, 150));
+        sf::Text enc(fuente, s, FS - 3);
+        enc.setFillColor(C_CYAN2);
         sf::FloatRect eb = enc.getLocalBounds();
         enc.setOrigin({ eb.position.x + eb.size.x / 2.f, eb.position.y });
-        enc.setPosition({ offsetX + j * celdaW + celdaW / 2.f,
-                         offsetY - fontSize - 8.f });
+        enc.setPosition({ offsetX + j * CELDA_W + CELDA_W / 2.f, offsetY - FS - 6.f });
         ventana.draw(enc);
     }
 
-    // ── Celdas ───────────────────────────────
+    {
+        sf::RectangleShape sep({ 1.f, CELDA_H * n });
+        sep.setFillColor(C_GRAY);
+        sep.setPosition({ offsetX + n * CELDA_W, offsetY });
+        ventana.draw(sep);
+    }
+
+    auto drawBracket = [&](float x, bool left) {
+        float bT = offsetY;
+        float bB = offsetY + CELDA_H * n;
+        float bW = 6.f;
+        float bTh = 1.5f;
+        float xV = left ? x : x + bW - bTh;
+        sf::RectangleShape v({ bTh, bB - bT });
+        v.setFillColor(C_WHITE);
+        v.setPosition({ xV, bT });
+        ventana.draw(v);
+        sf::RectangleShape hT({ bW, bTh });
+        hT.setFillColor(C_WHITE);
+        hT.setPosition({ x, bT });
+        ventana.draw(hT);
+        sf::RectangleShape hB({ bW, bTh });
+        hB.setFillColor(C_WHITE);
+        hB.setPosition({ x, bB - bTh });
+        ventana.draw(hB);
+        };
+    drawBracket(offsetX - 10.f, true);
+    drawBracket(offsetX + matrizW + 4.f, false);
+
     for (int i = 0; i < n; i++) {
-        // etiqueta fila
-        sf::Text etq(fuente, "f" + to_string(i + 1), fontSize - 2);
-        etq.setFillColor(sf::Color(150, 150, 150));
-        sf::FloatRect ef = etq.getLocalBounds();
-        etq.setOrigin({ ef.position.x + ef.size.x, ef.position.y + ef.size.y / 2.f });
-        etq.setPosition({ offsetX - 20.f,
-                         offsetY + i * celdaH + celdaH / 2.f });
-        ventana.draw(etq);
+        float cy = offsetY + i * CELDA_H + CELDA_H / 2.f;
+
+        if (i > 0) {
+            sf::RectangleShape lh({ matrizW, 1.f });
+            lh.setFillColor(C_GRAY);
+            lh.setPosition({ offsetX, offsetY + i * CELDA_H });
+            ventana.draw(lh);
+        }
+
+        {
+            sf::Text etq(fuente, "f" + to_string(i + 1), FS - 3);
+            etq.setFillColor(C_GRAY);
+            sf::FloatRect ef = etq.getLocalBounds();
+            etq.setOrigin({ ef.position.x + ef.size.x, ef.position.y + ef.size.y / 2.f });
+            etq.setPosition({ offsetX - 14.f, cy });
+            ventana.draw(etq);
+        }
 
         for (int j = 0; j <= n; j++) {
-            float cx = offsetX + j * celdaW + celdaW / 2.f;
-            float cy = offsetY + i * celdaH + celdaH / 2.f;
+            T val = A.get(i, j);
+            bool esZero = (abs((double)val) < 1e-10);
+            bool esPivote = (i == paso && paso >= 0);
+            bool esElim = (i > paso && paso >= 0 && j == paso);
 
-            // Línea horizontal separadora entre filas (sutil)
-            if (i > 0) {
-                sf::RectangleShape linH({ celdaW * (n + 1), 1.f });
-                linH.setFillColor(sf::Color(220, 220, 220));
-                linH.setPosition({ offsetX, offsetY + i * celdaH });
-                ventana.draw(linH);
+            sf::Color col;
+            if (esZero) {
+                col = C_GRAY;
+            }
+            else if (esPivote) {
+                col = C_PIVOT;
+            }
+            else if (esElim) {
+                col = C_ELIM;
+            }
+            else {
+                col = C_WHITE;
             }
 
-            T val = A.get(i, j);
-            ostringstream ss;
-            ss.precision(3);
-            // Mostrar enteros sin decimales
-            if (val == (T)(int)val && val != T(0))
-                ss << (int)val;
-            else
-                ss << val;
-
-            string valStr = ss.str();
-
-            // Color: rojo solo si es la fila pivote activa O la columna que se elimina
-            bool esPivote = (i == paso && paso >= 0);
-            bool esEliminar = (i > paso && paso >= 0); // filas que se modifican
-
-            sf::Color colorTexto;
-            if (esPivote)
-                colorTexto = sf::Color(200, 40, 40);   // rojo — fila pivote
-            else if (esEliminar && j == paso)
-                colorTexto = sf::Color(200, 40, 40);   // rojo — columna eliminada
-            else if (val == T(0))
-                colorTexto = sf::Color(200, 200, 200); // gris — cero
-            else
-                colorTexto = sf::Color(30, 30, 30);    // negro — normal
-
-            sf::Text celda(fuente, valStr, fontSize);
-            celda.setFillColor(colorTexto);
+            sf::Text celda(fuente, fmtNum(val), FS);
+            celda.setFillColor(col);
             sf::FloatRect cb = celda.getLocalBounds();
-            celda.setOrigin({ cb.position.x + cb.size.x / 2.f,
-                             cb.position.y + cb.size.y / 2.f });
-            celda.setPosition({ cx, cy });
+            celda.setOrigin({ cb.position.x + cb.size.x / 2.f, cb.position.y + cb.size.y / 2.f });
+            celda.setPosition({ offsetX + j * CELDA_W + CELDA_W / 2.f, cy });
             ventana.draw(celda);
+        }
+
+        if (i < (int)ops.size() && !ops[i].empty()) {
+            sf::Text opT(fuente, ops[i], FS - 2);
+            opT.setFillColor(C_CYAN2);
+            sf::FloatRect ob = opT.getLocalBounds();
+            opT.setOrigin({ ob.position.x, ob.position.y + ob.size.y / 2.f });
+            opT.setPosition({ opsX, cy });
+            ventana.draw(opT);
         }
     }
 
     ventana.display();
 }
 
-// ── Esperar click o ESC (avanza al siguiente paso) ───────────
-bool EsperarClick(sf::RenderWindow& ventana) {
+inline int EsperarNavegacion(sf::RenderWindow& ventana) {
     while (ventana.isOpen()) {
         while (const optional<sf::Event> ev = ventana.pollEvent()) {
-            if (ev->is<sf::Event::Closed>()) { ventana.close(); return false; }
-            if (const auto* kp = ev->getIf<sf::Event::KeyPressed>())
-                if (kp->scancode == sf::Keyboard::Scancode::Escape)
-                {
-                    ventana.close(); return false;
+            if (ev->is<sf::Event::Closed>()) {
+                ventana.close();
+                return 0;
+            }
+            if (const auto* kp = ev->getIf<sf::Event::KeyPressed>()) {
+                if (kp->scancode == sf::Keyboard::Scancode::Escape) {
+                    ventana.close();
+                    return 0;
                 }
-            if (ev->is<sf::Event::MouseButtonPressed>()) return true;
+                if (kp->scancode == sf::Keyboard::Scancode::Right) {
+                    return +1;
+                }
+                if (kp->scancode == sf::Keyboard::Scancode::Left) {
+                    return -1;
+                }
+            }
         }
     }
-    return false;
-}
-
-// ── NUEVO: Esperar cierre (NO avanza con click, solo se cierra cuando
-//    el usuario presiona ESC o la X de la ventana). Usar en el paso final,
-//    para que el resultado se quede en pantalla hasta que el usuario decida. ──
-void EsperarCierre(sf::RenderWindow& ventana) {
-    while (ventana.isOpen()) {
-        while (const optional<sf::Event> ev = ventana.pollEvent()) {
-            if (ev->is<sf::Event::Closed>()) { ventana.close(); return; }
-            if (const auto* kp = ev->getIf<sf::Event::KeyPressed>())
-                if (kp->scancode == sf::Keyboard::Scancode::Escape)
-                {
-                    ventana.close(); return;
-                }
-            // Nota: aquí NO se escucha MouseButtonPressed a propósito,
-            // un click no debe cerrar ni avanzar nada en esta pantalla.
-        }
-    }
+    return 0;
 }
