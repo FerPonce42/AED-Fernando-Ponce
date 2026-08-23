@@ -19,8 +19,9 @@ int determinarMayor(int a, int b){
         
         return b;
     }else if(a == b){
-        cout<<" ambos numeros son iguales ";
-        return 0;
+        cout<<"Ambos valores son iguales: ";
+        return a;
+        
     }else{
         
         return a;
