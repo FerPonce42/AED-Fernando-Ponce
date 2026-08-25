@@ -86,6 +86,8 @@ class LISTA_ORD{
     bool add (T e);
     bool del(T e);
     void print();
+
+    T* busquedabin(T e, int TAM, T ARR[]); 
 };
 
 template <class T, class O, int N>
@@ -185,6 +187,47 @@ bool LISTA_ORD<T,O,N>::add(T e){
         }
     }
 }
+
+
+template <class T, class O, int N>
+
+T* LISTA_ORD<T,O,N>::busquedabin(T e, int ELEM, T ARR[]){
+
+    T* ini = nullptr;
+    T* fin = nullptr;
+
+    T* mid = nullptr;
+
+    if(ELEM > 0){
+
+        ini = ARR;
+        fin = ARR + ELEM - 1;
+
+        while(ini <= fin){
+
+            mid = ini + (fin - ini) / 2 ; 
+
+            if(e == *mid){
+                return mid;
+            }else if(comparador(e, *mid)){
+
+                fin = mid - 1;
+
+            }else{
+
+                ini = mid + 1;
+            }
+
+        }
+
+    }
+
+
+    return nullptr;
+
+}
+
+
 
 
 template <class T, class O, int N>
