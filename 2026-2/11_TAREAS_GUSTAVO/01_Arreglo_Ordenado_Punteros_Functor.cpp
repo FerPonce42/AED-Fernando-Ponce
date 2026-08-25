@@ -233,19 +233,30 @@ template <class T, class O, int N>
 bool LISTA_ORD<T,O,N>::del(T e){
 
     T* ptr_encontrado = busquedabin(e, ELEM, ARR);
-
+    T* fin = nullptr; 
+    T* ptr_desplazamiento = nullptr;
 
     if(ptr_encontrado == nullptr){
         cout<< "El elemento a eliminar, no existe en nuestro arreglo. "<<endl;
         return false;
     }else{
 
-        //algoritmo que yo hare, no digas nada. solo queria queadr claro en esta sintaxis.
+        fin = ARR + ELEM - 1;
 
+        ptr_desplazamiento = ptr_encontrado + 1;
 
+        while(ptr_desplazamiento <= fin){
+
+            *ptr_encontrado = *ptr_desplazamiento;
+            ptr_desplazamiento++;
+            ptr_encontrado++;
+
+        }
+
+        ELEM--;
+
+        return true;
     }
-
-
 
 }
 
@@ -257,36 +268,65 @@ template <class T, class O, int N>
 void LISTA_ORD<T,O,N>::print(){
     T* actual = ARR;
 
+    if(ELEM == 0){
+        cout<< "Arreglo vacio"<<endl;
+        return; 
+    }
+
     for(T* i = actual ; i < actual + ELEM; i++){
         cout<< *i << " ";
     }
     
+    cout<< endl;
 }
 
-int main(){
+int main() {
+    LISTA_ORD<int, ASC<int>, 10> holi;
+
+    // LLenar aarreglo
+    holi.add(15);
+    holi.add(3);
+    holi.add(28);
+    holi.add(7);
+    holi.add(1);
+    holi.add(42);
+    holi.add(19);
+    holi.add(8);
+    holi.add(99);
+    holi.add(12);
+
+    holi.print(); // Arreglo completo
+
+    // Borrando hasta morir
+    holi.del(1);   // 1
+    holi.print();
+
+    holi.del(3);   // 2
+    holi.print();
+
+    holi.del(7);   // 3
+    holi.print();
+
+    holi.del(8);   // 4
+    holi.print();
+
+    holi.del(12);  // 5
+    holi.print();
+
+    holi.del(15);  // 6
+    holi.print();
+
+    holi.del(19);  // 7
+    holi.print();
+
+    holi.del(28);  // 8
+    holi.print();
+
+    holi.del(42);  // 9
+    holi.print();
+
+    holi.del(99);  // 10 (vacío)
+    holi.print();
 
 
-    LISTA_ORD<int, ASC<int>, 20 > hola;
-    hola.add(15);
-    hola.add(3);
-    hola.add(28);
-    hola.add(7);
-    hola.add(19);
-    hola.add(2);
-    hola.add(31);
-    hola.add(11);
-    hola.add(25);
-    hola.add(1);
-    hola.add(17);
-    hola.add(9);
-    hola.add(22);
-    hola.add(5);
-    hola.add(30);
-    hola.add(13);
-    hola.add(27);
-    hola.add(4);
-    hola.add(20);
-    hola.add(8);
-
-    hola.print();
 }
