@@ -87,7 +87,7 @@ class LISTA_ORD{
     bool del(T e);
     void print();
 
-    T* busquedabin(T e, int TAM, T ARR[]); 
+    T* busquedabin(T e, int ELEM, T ARR[]); 
 };
 
 template <class T, class O, int N>
@@ -229,12 +229,35 @@ T* LISTA_ORD<T,O,N>::busquedabin(T e, int ELEM, T ARR[]){
 
 
 
+template <class T, class O, int N>
+bool LISTA_ORD<T,O,N>::del(T e){
+
+    T* ptr_encontrado = busquedabin(e, ELEM, ARR);
+
+
+    if(ptr_encontrado == nullptr){
+        cout<< "El elemento a eliminar, no existe en nuestro arreglo. "<<endl;
+        return false;
+    }else{
+
+        //algoritmo que yo hare, no digas nada. solo queria queadr claro en esta sintaxis.
+
+
+    }
+
+
+
+}
+
+
+
+
 
 template <class T, class O, int N>
 void LISTA_ORD<T,O,N>::print(){
     T* actual = ARR;
 
-    for(T* i = actual ; i < actual + TAM ; i++){
+    for(T* i = actual ; i < actual + ELEM; i++){
         cout<< *i << " ";
     }
     
