@@ -18,3 +18,59 @@ OBJETIVO:
 Dominar la técnica de dos punteros (Two Pointers), la mutación 
 directa por referencia y la condición de convergencia (izq < der).
 */
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+void InPlace(vector<int> &v){
+
+    int* p = v.data();
+    int* q = v.data() + v.size() - 1;
+    int tmp = 0;
+    while(p <=  q){
+
+        tmp = *p;
+        *p = *q;
+        *q = tmp;
+
+        p++;
+        q--;
+
+    }
+
+
+}
+
+void print(vector<int> &v){
+
+    int* p = v.data();
+    int* q = v.data() + v.size();
+
+
+    if(v.empty()){
+        return;
+    }
+
+    while( p <  q){
+
+        cout << *p <<" ";
+        p++;
+    }
+
+    cout<<endl;
+
+}
+
+
+int main(){
+
+    vector<int> v = {1,2,3,4,5,6,7,8,9,10, 11};
+
+    print(v);
+
+    InPlace(v);
+
+    print(v);
+
+}
