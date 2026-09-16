@@ -2,6 +2,14 @@
 #include <assert.h>
 using namespace std;
 
+/*
+
+Mensaje del Alex: 
+
+
+
+
+*/
 
 struct Deque{
 
