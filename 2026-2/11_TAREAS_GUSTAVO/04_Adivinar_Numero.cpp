@@ -1,5 +1,4 @@
 /*
-
 NECESITAMOS UNA CALCULADORA (EL DE LA PC)
 
 jugaremos a las adivinanzas
@@ -61,5 +60,45 @@ tabla del 9
 9*9 = 81 -> 8+ 1 = 9
 
 no entendi ni mrd la verdad, a este hdp cada rato le fallaba su webada y lo paraban baiteando.
+ */
 
-*/
+ #include <iostream>
+ #include <vector>
+ using namespace std;
+
+
+ int main(){
+
+    int resultado = 0;
+
+    cout<<"---------------------------------------------------------------\nJUEGO! Adivina el numero que falta:\n-Multiplica por tu cuenta un numero cualquiera x 27\n-Tu resultado, quitale un numero que quieras y yo lo adivinare!\n---------------------------------------------------------------\nRESULTADO =  ";cin>>resultado;
+
+   vector<int> v;
+
+   while(resultado > 0){
+
+      int digito = resultado % 10;
+      v.push_back(digito);
+      resultado /= 10;
+
+   }
+
+// 8   7   4 = size 3
+//[0] [1] [2].  0 + 3 = 
+   int* ini = v.data();
+   int* fin = v.data() + v.size() - 1 ;
+
+   int suma = 0;
+
+// 8 + 7 + 4
+   while(ini <= fin){
+      suma += *ini;
+      ini++;
+   }
+
+   int numero_encontrado = 9 - (suma % 9);
+
+
+
+   cout<<"El numero que me OCULTAS es: "<< numero_encontrado <<endl;
+ }

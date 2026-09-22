@@ -1,100 +1,5 @@
-/*
-
-TAREA 3: 
-
-PRIMERA PARTE
-
-3 vectores aqui? alglo como 2 colas y no se que
-
-
-Algoritmo para convertir expresiones infijas es postfijas (RPN)
-
-usaremos el  vector.
-
-
-La operacion.. esta la subirá al moodle.
-
-Lo que hay que hacer es tranformar
-
-operaciones pos fijas a in fijas.
-
-Ejemplo:
-
-
--(3+5) * (7-4)
-
-
-TUS EXPRESIONES tendran sentido con 1 digito. para no pelear con 2 digitos.
-
-Para la operacion sip uedn hacerlo con todo los dijistos.
-primero ingreso
-
-El vector es todo esto 
-
-
-TU VECTOR se comportara como una pila.
-
-
-tendras que convertirlo a Templates.
-
-y vas a necesitar numeros]
-
-SIGNOS VAN A LA PILA
-
-LOS NUMEROS VAN AL DESPLIEGUE ESTE FUNCIONA COMO UNA COLA
-
-
-cuando detecta el ) hace pop a la pila o algo asi entendi y lueg o continua con lo que fatla.
-
-osea parentesis que cierra saca todos los elementos ahasta encontrar el partenisis que abre. 
-
-ya no hay nada en la lista de ingreso.
-
-coge lo que esta en la pila y lo metes al desplique.
-
-al final te queda algo como
-3 5 + 7 4 - *
-
-INFIJA -> POSTFUJA
-
-
-SEGUNDA PARTE DEL ALGORITMO:
-Usando ese resultado comenzaremos a operar para tener el resultado.
-
-
-SI NO ES OEPRADOR mete a la pila!
-
-EL QUE VENGA OPERADOR sacas los que estan en la pila y lo pegas
-hay que tener cuidado en la operacion 
-5 + 3 = 8
-
-SE DEBIO HAABER HECHO:  5 + 3? no se quediablos dijo el profe qeu se equivocó en su diapo.
-
-el orden es...
-7 - 4 = 3
-(CORRECTO)
-
-finalmente agarramos el utlimo elemento y agarra los que estan e la mipila y balbl en si las oeperaciones se hacen deotro de la pila aparentemnete.
-
-
-ENTREGABLE:
-
-INGRES AEXPRESION
-EVALUE 
-Y DE RESULTADO
-
-REVISA EL PPTX QUE DEJO EN EL MOODLE, SI OISTE BIEN, AL FIN USAN EL MOODLE
-
-*/
-
-/*
-La cumbia de los minions
-*/
-
 #include <iostream>
 using namespace std;
-
-
 
 template<class T>
 struct Vector{
@@ -289,6 +194,64 @@ void Vector<T>::print(){
     cout<<endl;
     
 }
+
+
+/*
+
+/*
+ * TAREA 3: Conversión de Expresión Infija a Postfija (RPN) y Evaluación
+ *
+ * ---------------------------------------------------------------------
+ * PRIMERA PARTE: Conversión Infija -> Postfija
+ * ---------------------------------------------------------------------
+ * - Estructura: 
+ *   Uso de vectores (el vector principal debe comportarse como una PILA).
+ *   Se requiere implementar el algoritmo usando TEMPLATES.
+ *
+ * - Formato de las expresiones:
+ *   Solo operandos de 1 DÍGITO para simplificar el parseo durante la conversión.
+ *
+ * - Reglas de flujo:
+ *   1. NUMEROS/OPERANDOS -> Pasan directo al DESPLIEGUE (funciona como una COLA).
+ *   2. SIGNOS/OPERADORES -> Van a la PILA.
+ *   3. PARÉNTESIS QUE CIERRA ')' -> Realiza 'pop' a la PILA enviando los elementos
+ *      al DESPLIEGUE hasta encontrar el PARÉNTESIS QUE ABRE '('.
+ *   4. FIN DE LA ENTRADA -> Se extrae todo lo restante de la PILA y se pasa al DESPLIEGUE.
+ *
+ * - Ejemplo:
+ *   Entrada (Infija) : -(3+5) * (7-4)
+ *   Salida (Postfija): 3 5 + 7 4 - *
+ *
+ * ---------------------------------------------------------------------
+ * SEGUNDA PARTE: Evaluación de la Expresión Postfija
+ * ---------------------------------------------------------------------
+ * - Operación:
+ *   Usando la expresión postfija obtenida, se evalúa para obtener el resultado final.
+ *   Para esta etapa de cálculo sí se opera con todos los dígitos completos.
+ *
+ * - Reglas de evaluación (usando la PILA):
+ *   1. Si NO ES OPERADOR (es número) -> Se ingresa a la PILA.
+ *   2. Si LLEGA UN OPERADOR -> Se sacan dos operandos de la PILA y se aplica la operación.
+ *   
+ * - Orden de operandos (¡MUCHO CUIDADO!):
+ *   Al hacer pop:
+ *     op2 = pop()
+ *     op1 = pop()
+ *   Para '7 - 4 = 3' (CORRECTO), la operación debe ser: op1 - op2.
+ *   (Revisar la corrección hecha por el profesor sobre la diapo del Moodle).
+ *
+ * ---------------------------------------------------------------------
+ * ENTREGABLE
+ * ---------------------------------------------------------------------
+ * 1. Ingresar expresión infija.
+ * 2. Convertir y evaluar.
+ * 3. Desplegar el resultado final.
+ *
+ * Nota: Revisar el PPTX subido al Moodle.
+ *
+ * La cumbia de los minions
+ */
+
 
 
 int main() {
