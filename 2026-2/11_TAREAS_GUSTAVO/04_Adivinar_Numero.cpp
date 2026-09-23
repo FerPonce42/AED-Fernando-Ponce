@@ -62,10 +62,10 @@ tabla del 9
 
  */
 
- #include <iostream>
- #include <vector>
+#include <iostream>
+#include <vector>
 
- using namespace std;
+using namespace std;
 
 void ConversionStraInt(const string &resultado, vector<int> &v){
 
