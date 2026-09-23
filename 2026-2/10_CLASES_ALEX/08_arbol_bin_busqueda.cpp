@@ -20,7 +20,11 @@ struct Nodo{
 struct Tree{
 
     int* root;
-
+/*
+Caso 0 : cortas
+Caso 1: matas a uno
+Caso 2: elige candidato para reemplazar
+*/
 
 };
 

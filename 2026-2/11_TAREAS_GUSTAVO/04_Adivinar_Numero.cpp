@@ -59,46 +59,93 @@ tabla del 9
 
 9*9 = 81 -> 8+ 1 = 9
 
-no entendi ni mrd la verdad, a este hdp cada rato le fallaba su webada y lo paraban baiteando.
+
  */
 
  #include <iostream>
  #include <vector>
+
  using namespace std;
+
+void ConversionStraInt(const string &resultado, vector<int> &v){
+
+   const char* p_char = resultado.data();
+   const char* p_fin = resultado.data() + resultado.length() ;
+
+   while(p_char < p_fin){
+
+      if(*p_char >= '0' && *p_char <= '9'){
+         int ins = *p_char - '0';
+         v.push_back(ins);
+      }else if(*p_char == 'X' || *p_char == 'x'){
+         v.push_back(-1);
+      }
+
+      p_char++;
+
+   }
+
+}
+
+void AdivinarNumero(vector<int> &v){
+
+   int* p = v.data();
+
+   int* ini = p;
+
+   int* q = v.data() + v.size() - 1;
+
+   int suma = 0;
+   int indice_x = 0;
+
+   while( p <= q){
+
+      if(*p >= 0){
+         suma+=*p;
+      }else{
+         indice_x = p - ini;
+      }
+
+      p++;
+
+   }
+
+   int n_encontrado = (9 - (suma % 9)) % 9;
+
+   v.operator[](indice_x) = n_encontrado;
+
+   
+
+   cout<<"-----------------------------------------"<<endl;
+   cout<<"TU NUMERO ES: ";
+   while( ini <= q){
+
+      cout<< *ini <<"";
+      ini++;
+
+   } 
+
+   cout<<endl;
+
+}
 
 
  int main(){
 
-    int resultado = 0;
+   string resultado = " ";
 
-    cout<<"---------------------------------------------------------------\nJUEGO! Adivina el numero que falta:\n-Multiplica por tu cuenta un numero cualquiera x 27\n-Tu resultado, quitale un numero que quieras y yo lo adivinare!\n---------------------------------------------------------------\nRESULTADO =  ";cin>>resultado;
+   cout << "---------------------------------------------------------------\n"
+         << "JUEGO! Adivina el numero que falta:\n"
+         << "- Multiplica por tu cuenta un numero cualquiera x 27\n"
+         << "- Tu resultado, quitale un numero poniendole 'X' encima y yo lo adivinare!\n"
+         << "---------------------------------------------------------------\n"
+         << "RESULTADO = ";
+   cin >> resultado;
 
    vector<int> v;
 
-   while(resultado > 0){
-
-      int digito = resultado % 10;
-      v.push_back(digito);
-      resultado /= 10;
-
-   }
-
-// 8   7   4 = size 3
-//[0] [1] [2].  0 + 3 = 
-   int* ini = v.data();
-   int* fin = v.data() + v.size() - 1 ;
-
-   int suma = 0;
-
-// 8 + 7 + 4
-   while(ini <= fin){
-      suma += *ini;
-      ini++;
-   }
-
-   int numero_encontrado = 9 - (suma % 9);
+   ConversionStraInt(resultado, v);
+   AdivinarNumero(v);
 
 
-
-   cout<<"El numero que me OCULTAS es: "<< numero_encontrado <<endl;
  }
