@@ -286,7 +286,7 @@ REVISA EL PPTX QUE DEJO EN EL MOODLE, SI OISTE BIEN, AL FIN USAN EL MOODLE
 
 */
 
-
+// PRIMERA PARTE:
 void ConvertidorPostfijo(string &infija, Vector<char> &despliegue, Vector<char> &operadores){
     
     char* str_ini = &infija.front();
@@ -337,7 +337,83 @@ void ConvertidorPostfijo(string &infija, Vector<char> &despliegue, Vector<char> 
 
 }
 
+// SEGUNDA PARTE:
 
+void ResultadoPostfijo(Vector<char> &despliegue , Vector<int> &operacionespila){
+
+    char* ini = despliegue.front();
+    char* q = ini;
+    char* fin = despliegue.front() + despliegue.ELEM;
+
+    char num_fake = '\0';
+    int num_real = 0;
+
+    int n1 = 0; 
+    int n2 = 0;
+    int resultado = 0;
+
+    while(q < fin){
+
+
+        if(*q == 42 || *q == 43 || *q == 45 || *q == 47){
+
+            n2 = operacionespila.back();
+            operacionespila.pop_back();
+            n1 = operacionespila.back();
+            operacionespila.pop_back();
+
+            if(*q == 43){
+
+                resultado = n1 + n2;
+                operacionespila.push_back(resultado);
+
+            }else if(*q == 45){
+                resultado = n1 - n2;
+                operacionespila.push_back(resultado);
+
+            }else if(*q == 42){
+
+                resultado = n1 * n2;
+                operacionespila.push_back(resultado);
+                
+            }else if(*q == 47){
+
+                if(n2 == 0){
+                    cout<<"Division entre 0"<<endl;
+                    return;
+                }else{
+                    resultado = n1 / n2;
+                    operacionespila.push_back(resultado);
+                }
+
+            }
+
+        }else if(*q >= 48 && *q <=  57){
+
+            num_fake = *q;
+
+            num_real = num_fake - 48;
+
+            operacionespila.push_back(num_real);
+
+        }
+
+
+        q++;
+    }
+
+    int resultado_final = 0;
+
+    if(operacionespila.ELEM == 1){
+        resultado_final = operacionespila.back();
+        operacionespila.pop_back();
+
+        cout<< resultado_final <<endl;
+    }else{
+        return;
+    }
+
+}
 
 int main() {
 
@@ -352,10 +428,15 @@ int main() {
     cout<<"INFIJA: ";getline(cin, operacion_infija);
 
     ConvertidorPostfijo(operacion_infija, numeros_cola, signos_pila);
-
+    cout<< "POSTFIJA: ";
     numeros_cola.print();
 
 
+    Vector<int> numeros_pila;
+
+
+    cout<<"RESULTADO: ";
+    ResultadoPostfijo(numeros_cola, numeros_pila);
 
 
 }
