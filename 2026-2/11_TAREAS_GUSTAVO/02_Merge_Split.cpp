@@ -129,7 +129,12 @@ void UTIL<O>::Merge(int* ini, int* mid, int* fin){
 //tengo sueño
 
 }
+/*
 
+El profe dice que en este caso el SPLIT, la peticion era..  bueno eso.
+era simple era tal cosa. PAM
+eeste es un arreglo eres de la u? te quedas. no? te vas para atras. todo lo demas corre.
+*/
 
 template <class O>
 void UTIL<O>::Split(int* ini, int* fin){
@@ -157,8 +162,7 @@ void UTIL<O>::Split(int* ini, int* fin){
 
         }
 
-        p++; // SOLUCION: fuera  del else, para que atienda tambien al caso si haay un divislb en el primer pos. (bug infinito)
-
+        p++;
     }
 
 
