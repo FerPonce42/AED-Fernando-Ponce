@@ -314,6 +314,73 @@ solo cambia los nexts
 
 */
 
+template <class T>
+struct Merge{
+
+    void Ejecutar(Nodo<T> *L1, Nodo<T> *L2);
+
+    void print(Nodo<T> *L1);
+
+};
+
+template <class T>
+void Merge<T>::Ejecutar(Nodo<T> *L1_g, Nodo<T> *L2_g){
+
+
+    Nodo<T>** L1 = &L1_g;
+    Nodo<T>** L2 = &L2_g;
+    
+    Nodo<T>* tmpL1 = nullptr;
+
+    while(*L1 != nullptr && *L2 != nullptr){
+
+        if((*L1)->valor < (*L2)->valor){
+
+            L1 = &((*L1)->next);
+
+        }else{
+
+            tmpL1 = *L1;
+            *L1 = *L2;
+            *L2 = tmpL1;
+            L1 = &((*L1)->next);
+
+        }
+
+
+    }
+
+
+    if(*L1 == nullptr){
+
+        *L1 = *L2;
+        
+    }
+
+
+}
+
+template <class T>
+void Merge<T>::print(Nodo<T> *L1){
+    Nodo<T>* p = L1;
+
+    cout<< "HEAD -> ";
+
+    while(p != nullptr){
+
+        cout<< p->valor <<" -> ";
+
+        p = p->next;
+
+    }
+
+    if(p == nullptr){
+        cout<< "NULL "<<endl;
+    }
+}
+
+
+
 
 int main(){
 
@@ -326,8 +393,9 @@ L2 -> 4 -> 5 -> 11 -> null
 
 FList<int> L1;
 FList<int> L2;
-cout<< "---------------------------------------------------------------------------\n";
 
+
+cout<< "---------------------------------------------------------------------------\n";
 L1.push_back(1);
 L1.push_back(3);
 L1.push_back(8);
@@ -346,5 +414,34 @@ cout<< "L2 = ";
 L2.print_fer();
 
 cout<< "---------------------------------------------------------------------------\n";
+
+
+
+Merge<int> merge;
+
+merge.Ejecutar(L1.head, L2.head);
+cout<< "===========================================================================\n";
+cout<< "MERGE!"<<endl;
+cout<< "===========================================================================\n";
+if(L2.head->valor < L1.head->valor){
+    L1.head = L2.head;  
+}
+
+L2.head = nullptr;
+
+cout<< "L1 = ";
+merge.print(L1.head);
+cout<< "L2 = ";
+merge.print(L2.head);
     
+
+
+/*
+===========================================================================
+MERGE!
+===========================================================================
+L1 = HEAD -> 1 -> 3 -> 4 -> 5 -> 8 -> 9 -> 10 -> 11 -> NULL 
+L2 = HEAD -> NULL 
+
+*/
 }
