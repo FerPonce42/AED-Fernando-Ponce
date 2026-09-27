@@ -24,7 +24,33 @@ DEBE QUEDAR:
 
 void bubbleSort(vector<int>& arreglo)
 {
-    // TU CÓDIGO
+    int* ini = arreglo.data();
+    int* fin = arreglo.data() + arreglo.size() - 1;
+
+    int* p = ini;
+    int* q = p + 1;
+    int* r = p;
+
+    int tmp = 0;
+
+    while(r <= fin){
+
+        while(q <= fin){
+
+            if(*p > *q){
+                tmp = *p;
+                *p = *q;
+                *q = tmp;
+            }
+            p++;
+            q++;
+        }
+
+        r++;
+        p = ini;
+        q = p + 1;
+    }
+
 }
 
 void imprimir(const vector<int>& arreglo)
