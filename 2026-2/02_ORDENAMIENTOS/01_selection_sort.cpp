@@ -24,7 +24,41 @@ DEBE QUEDAR:
 
 void selectionSort(vector<int>& arreglo)
 {
-    // TU CÓDIGO
+    int* ini = arreglo.data();
+    int* fin = arreglo.data() + arreglo.size() - 1;
+
+    int* p = ini;
+    int* q = p + 1;
+    int* menor_actual = p;
+    int tmp = 0;
+
+
+    while(p <= fin){
+
+        while(q <= fin){
+
+            if(*p < *q){
+                q++;
+            }else{
+                if(*menor_actual > *q){
+                    menor_actual = q;
+                }
+                q++;
+            }
+
+        }
+
+        tmp = *p;
+        *p = *menor_actual;
+        *menor_actual = tmp;
+
+        p++;
+        q = p + 1;
+        menor_actual = p;
+
+    }
+
+
 }
 
 void imprimir(const vector<int>& arreglo)
