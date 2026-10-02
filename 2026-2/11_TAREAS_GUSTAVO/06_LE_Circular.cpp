@@ -110,27 +110,59 @@ struct CList{
     }
 
 
+    void Kill(int n);
+
 };
 
 
+void CList::Kill(int n){
+
+    Nodo* k = head;
+    Nodo* tmp = nullptr;
+
+    while(head != nullptr){
+
+        for(int i = 0 ; i < n - 1; i++){
+
+            k = k->next;
+        }
+
+        cout<< k->valor<<" ";
+
+        tmp = k;
+        k = tmp->next; // independizar a k
+
+        if(ELEM == 1){
+
+            head = nullptr;
+
+        }else{
+
+            if(tmp == head){
+                head = tmp->next;
+            }
+
+            tmp->prev->next = tmp->next;
+
+            tmp->next->prev = tmp->prev;
+
+        }
+        
+        delete tmp;
+        
+        ELEM--;
+
+    }
+
+}
 
 
 
 int main(){
 
-    CList cl(27);
+    CList cl(8);
 
-    Nodo* p = cl.head;
-
-    for(int i = 0 ; i < 27 ; i++){
-
-
-        cout<< p->valor<<" ";
-
-        p = p->prev;
-
-    }
-
+    cl.Kill(3);
 
 
 }
