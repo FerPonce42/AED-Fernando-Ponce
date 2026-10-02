@@ -284,9 +284,19 @@ Y DE RESULTADO
 
 REVISA EL PPTX QUE DEJO EN EL MOODLE, SI OISTE BIEN, AL FIN USAN EL MOODLE
 
+ANTES DE LA REVISION, EMERGENCIA: SE AGREGO LOGICA DE PRIORIDAD CSMMMMM
+
+
 */
 
 // PRIMERA PARTE:
+
+int prioridad(char op) {
+    if (op == '*' || op == '/') return 2;
+    if (op == '+' || op == '-') return 1;
+    return 0;
+}
+
 void ConvertidorPostfijo(string &infija, Vector<char> &despliegue, Vector<char> &operadores){
     
     char* str_ini = &infija.front();
@@ -312,9 +322,15 @@ void ConvertidorPostfijo(string &infija, Vector<char> &despliegue, Vector<char> 
 
             }
             
-        }else if(*p == 40 || *p == 42 || *p == 43 || *p == 45 || *p == 47){ // ( *  +  -  /
+        }else if(*p == 40){ 
             operadores.push_back(*p);
-            
+
+        }else if(*p == 42 || *p == 43 || *p == 45 || *p == 47){ // '*' '+'  '-' '/'
+            while(operadores.ELEM > 0 && prioridad(operadores.back()) >= prioridad(*p)){
+                despliegue.push_back(operadores.back());
+                operadores.pop_back();
+            }
+            operadores.push_back(*p);
         }else if(*p >= 48 && *p <= 57){ // 0 - 9 
             despliegue.push_back(*p);
             
