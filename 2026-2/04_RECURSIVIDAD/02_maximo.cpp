@@ -20,8 +20,14 @@ Reducir el problema hasta llegar a un caso base.
 
 int maximo(const vector<int>& datos, int pos)
 {
-    // TU CÓDIGO
-    return 0;
+
+    if(pos == datos.size() - 1){
+        return 0;
+    }
+
+
+    maximo(datos, pos + 1);
+
 }
 
 int main()

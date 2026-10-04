@@ -20,8 +20,13 @@ Identificar claramente:
 
 int suma(int n)
 {
-    // TU CÓDIGO
-    return 0;
+
+    if(n == 0){
+        return 0;
+    }
+
+    return n + suma(n-1);
+
 }
 
 int main()
