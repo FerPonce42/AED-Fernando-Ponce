@@ -492,6 +492,46 @@ REVERSE          DERECHA       IMPRIMIR      IZQUIERDA
 
 /*------------------------------------------------------------------------------------*/
 
+// MAX NIVEL
+
+/*
+
+de forma con cola: se imprimmien hijos y asi
+
+
+de forma recursiva.
+void maxh(Node* n, int h, int & mh){
+
+    if(!n PTHREAD_RECURSIVE_MUTEX_INITIALIZERmaxh has_faceth +1 , mh)
+
+
+}
+
+
+ni el coso tiene nulllo
+
+el nodo 1...? 
+
+que?
+int maxh(Nodo*  n){
+
+    if(n == null){
+        return 0;
+    }
+
+}
+
+*/
+
+
+
+
+
+
+
+
+
+
 int main(){
 
     Tree t;
