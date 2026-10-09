@@ -160,9 +160,9 @@ void CList::Kill(int n){
 
 int main(){
 
-    CList cl(8);
+    CList cl(21);
 
-    cl.Kill(3);
+    cl.Kill(5);
 
 
 }

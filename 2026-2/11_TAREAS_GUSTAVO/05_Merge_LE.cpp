@@ -398,17 +398,24 @@ FList<int> L2;
 cout<< "---------------------------------------------------------------------------\n";
 L1.push_back(1);
 L1.push_back(3);
-L1.push_back(8);
-L1.push_back(9);
-L1.push_back(10);
+L1.push_back(5);
+L1.push_back(7);
+L1.push_back(11);
+L1.push_back(13);
+L1.push_back(23);
 cout<< "L1 = ";
 L1.print_fer();
 
 cout<< "---------------------------------------------------------------------------\n";
 
-L2.push_back(4);
+L2.push_back(1);
+L2.push_back(3);
 L2.push_back(5);
+L2.push_back(7);
+L2.push_back(9);
 L2.push_back(11);
+L2.push_back(13);
+L2.push_back(21);
 
 cout<< "L2 = ";
 L2.print_fer();
@@ -423,10 +430,9 @@ merge.Ejecutar(L1.head, L2.head);
 cout<< "===========================================================================\n";
 cout<< "MERGE!"<<endl;
 cout<< "===========================================================================\n";
-if(L2.head->valor < L1.head->valor){
-    L1.head = L2.head;  
+if(L1.head == nullptr || (L2.head != nullptr && L2.head->valor <= L1.head->valor)){
+    L1.head = L2.head;
 }
-
 L2.head = nullptr;
 
 cout<< "L1 = ";
