@@ -1,3 +1,8 @@
+/*
+Nombre: Fernando Ponce
+Estado: EJERCICIO COMPLETADO
+*/
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -54,13 +59,31 @@ public:
 
     void removeDuplicates() {
 
-        // =====================================================
-        // COMPLETE EL CODIGO AQUI
-        // =====================================================
+        Node* p = head;
+        Node* tmp = nullptr;
+        Node* nuevo_next = nullptr;
+
+        if (p != nullptr) {
+
+            while (p->next != nullptr) {
+
+                if (p->data != p->next->data) {
+
+                    p = p->next;
+                }
+                else {
+                    tmp = p->next;
+                    nuevo_next = p->next->next;
+
+                    delete tmp;
+
+                    p->next = nuevo_next;
+                }
+            }
+
+        }
 
 
-
-        // =====================================================
     }
 };
 
@@ -86,21 +109,21 @@ void runTest(int id, const int* values, int n, const string& expected) {
 
 int main() {
 
-    int a[] = {1, 2, 2, 3, 3, 3, 5, 7, 7};
+    int a[] = { 1, 2, 2, 3, 3, 3, 5, 7, 7 };
     runTest(1, a, 9, "1 -> 2 -> 3 -> 5 -> 7");
 
-    int b[] = {1, 1, 1, 1, 1};
+    int b[] = { 1, 1, 1, 1, 1 };
     runTest(2, b, 5, "1");
 
-    int c[] = {1, 2, 3, 4, 5};
+    int c[] = { 1, 2, 3, 4, 5 };
     runTest(3, c, 5, "1 -> 2 -> 3 -> 4 -> 5");
 
-    int d[] = {1, 1, 2, 2, 2, 3, 4, 4};
+    int d[] = { 1, 1, 2, 2, 2, 3, 4, 4 };
     runTest(4, d, 8, "1 -> 2 -> 3 -> 4");
 
     runTest(5, nullptr, 0, "(lista vacia)");
 
-    int f[] = {4, 4, 9};
+    int f[] = { 4, 4, 9 };
     runTest(6, f, 3, "4 -> 9");
 
     return 0;
