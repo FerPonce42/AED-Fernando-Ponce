@@ -1,3 +1,7 @@
+/*
+Nombre: Fernando Ponce - NODOS INTERNOS COMPLETOS
+*/
+
 #include <iostream>
 #include <string>
 using namespace std;
@@ -18,17 +22,20 @@ class BinaryTree {
 private:
     Node* root;
 
-    // isLeftBorder: el nodo pertenece a la frontera izquierda
-    // isRightBorder: el nodo pertenece a la frontera derecha
     void printNonPerimeter(Node* node, bool isLeftBorder, bool isRightBorder) {
 
-        // =====================================================
-        // COMPLETE EL CODIGO AQUI
-        // =====================================================
+        if (node == nullptr) {
+            return;
+        }
 
+        printNonPerimeter(node->left, isLeftBorder, isRightBorder && node->right == nullptr);
 
+        if ((!isLeftBorder && !isRightBorder) && (node->left != nullptr || node->right != nullptr)) {
+            cout << node->data << " ";
+        }
 
-        // =====================================================
+        printNonPerimeter(node->right, isLeftBorder && node->left == nullptr, isRightBorder);
+
     }
 
 public:
