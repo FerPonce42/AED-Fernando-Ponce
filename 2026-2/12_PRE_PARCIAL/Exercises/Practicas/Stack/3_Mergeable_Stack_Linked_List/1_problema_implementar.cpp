@@ -1,3 +1,6 @@
+/*
+Terminado mafaka
+*/
 #include <iostream>
 using namespace std;
 
@@ -43,21 +46,77 @@ Stack::~Stack()
         delete temp;
     }
 }
-// Soluciones aqui!
-//
+
 void Stack::push(int value)
 {
+
+    Node* nodo = new Node(value);
+
+    if (top == nullptr) {
+
+        top = nodo;
+        bottom = nodo;
+    }
+    else {
+
+        nodo->next = top;
+
+        top = nodo;
+
+    }
+
+
 }
-// Soluciones aqui!
-//
+
 bool Stack::pop(int& value)
 {
+
+    if (top == nullptr) {
+        return false;
+    }
+
+    Node* tmp = top;
+
+    value = top->data;
+
+    if (top == bottom) {
+        
+        top = nullptr;
+        bottom = nullptr;
+    }
+    else {
+        top = top->next;
+    }
+
+    delete tmp;
+
+    return true;
+
 }
-// Soluciones aqui!
-//
+
 void Stack::merge(Stack& other)
 {
+    
+    if (other.top == nullptr) {
+        return;
+    }
+    else if (top == nullptr) {
+        top = other.top;
+    }
+    else {
+
+        bottom->next = other.top;
+
+    }
+
+    bottom = other.bottom;
+
+    other.top = nullptr;
+    other.bottom = nullptr;
+
 }
+
+
 
 void Stack::print()
 {
