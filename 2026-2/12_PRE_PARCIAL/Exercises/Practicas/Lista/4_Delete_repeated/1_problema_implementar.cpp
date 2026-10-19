@@ -1,29 +1,29 @@
 #include <iostream>
 using namespace std;
 
-struct Node{
+struct Node {
     Node* next = nullptr;
     int val;
 
-    Node(int v){
+    Node(int v) {
         this->val = v;
     }
 };
 
-struct SortedLinkedList{
+struct SortedLinkedList {
 
     Node* head = nullptr;
 
     // Inits a linked list with array (And the array is sorted)
-    SortedLinkedList(int* arr, int size){
+    SortedLinkedList(int* arr, int size) {
         Node** p = &(head);
-        for (int i = 0; i < size; ++i){
+        for (int i = 0; i < size; ++i) {
             *p = new Node(arr[i]);
-            p = &( (*p)->next );
+            p = &((*p)->next);
         }
     }
 
-    void print(){
+    void print() {
         Node* p = head;
         for (Node* p = head; p; p = p->next) cout << p->val << " -> ";
         cout << "NULL" << endl;
@@ -31,24 +31,42 @@ struct SortedLinkedList{
 
 
     void delete_repeated() {
-        
-        // CODEA AQUI :D
 
-        
+        Node* p = head;
+        Node* q = nullptr;
+        Node* tmp = nullptr;
+
+        while (p != nullptr) {
+
+            if (p->next &&(p->val == p->next->val)) {
+
+                q = p->next->next;
+                tmp = p->next;
+
+                p->next = q;
+
+                delete tmp;
+
+            }
+            else {
+                p = p->next;
+            }
+
+        }
 
     }
 
 };
 
-int main(){
+int main() {
 
-    int arr_a[5] = {1,2,2,2,5};
+    int arr_a[5] = { 1,2,2,2,5 };
 
-    int arr_b[5] = {-4,-4,-4,-4,-4};
+    int arr_b[5] = { -4,-4,-4,-4,-4 };
 
-    int arr_c[10] = {2,2,2,7,7,7,7,9,9,9};
+    int arr_c[10] = { 2,2,2,7,7,7,7,9,9,9 };
 
-    int arr_d[10] = {2,3,5,7,11,13,17,19,23,29}; // No se elimina nada
+    int arr_d[10] = { 2,3,5,7,11,13,17,19,23,29 }; // No se elimina nada
 
 
     SortedLinkedList A(arr_a, 5);

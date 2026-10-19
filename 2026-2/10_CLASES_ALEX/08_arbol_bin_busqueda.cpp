@@ -519,6 +519,13 @@ int maxh(Nodo*  n){
         return 0;
     }
 
+    int  l, r;
+
+    l = maxh(n->left);
+    r = maxh(n->right);
+
+    return max(l,r) + 1 ;
+
 }
 
 */

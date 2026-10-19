@@ -1,5 +1,4 @@
-// AED-Luigi-Escaneo.cpp : Este archivo contiene la función "main". La ejecución del programa comienza y termina ahí.
-//
+// Al fin pude contra tu hijo de perra. CODIGO LISTO
 
 
 #include <iostream>
@@ -48,10 +47,66 @@ public:
 
     void sort() {
 
-        // CODEA AQUI :)
+        if (head != nullptr && head->next != nullptr) {
+            Node<T>** p = &head;
+            Node<T>** q = &((*p)->next);
 
+            Node<T>* next_tmp = nullptr;
+
+            Node<T>* mayor = nullptr;
+            Node<T>* menor = nullptr;
+
+            int cant_swap = 0;
+            while (1) {
+
+                while (*q != nullptr) {
+                    bool swap = false;
+                    if ((*p)->val > (*q)->val) {
+
+                        next_tmp = (*q)->next; // 8
+
+                        mayor = *p; // 5 
+                        menor = *q; // 2
+
+
+                        *p = menor; // head -> 2
+
+                        menor->next = mayor; // 2 -> 5
+
+                        mayor->next = next_tmp; // 5 -> 8
+
+                        swap = true;
+                        cant_swap++;
+                    }
+
+                    if (swap == false) {
+                        p = &((*p)->next);
+                        q = &((*q)->next);
+                    }
+                    else {
+                        p = &((*p)->next);
+                    }
+                }
+
+
+                p = &head;
+                q = &((*p)->next);
+
+                if (cant_swap == 0) {
+                    break;
+                }
+                else {
+                    cant_swap = 0;
+                }
+
+
+            }
+
+        }
+        else {
+            return;
+        }
     }
-
 };
 
 
@@ -146,12 +201,3 @@ int main() {
 }
 
 
-// Ejecutar programa: Ctrl + F5 o menú Depurar > Iniciar sin depurar
-// Depurar programa: F5 o menú Depurar > Iniciar depuración
-
-// Sugerencias para primeros pasos: 1. Use la ventana del Explorador de soluciones para agregar y administrar archivos
-//   2. Use la ventana de Team Explorer para conectar con el control de código fuente
-//   3. Use la ventana de salida para ver la salida de compilación y otros mensajes
-//   4. Use la ventana Lista de errores para ver los errores
-//   5. Vaya a Proyecto > Agregar nuevo elemento para crear nuevos archivos de código, o a Proyecto > Agregar elemento existente para agregar archivos de código existentes al proyecto
-//   6. En el futuro, para volver a abrir este proyecto, vaya a Archivo > Abrir > Proyecto y seleccione el archivo .sln
