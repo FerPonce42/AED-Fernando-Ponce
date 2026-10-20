@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 using namespace std;
 
 
@@ -217,6 +218,172 @@ Complicaiones al implementarlo:
 
 */
 
+struct Nodo{
+
+    int valor;
+    Nodo* left;
+    Nodo* right;
+    Nodo* parent;
+
+    Nodo(int v){
+        valor = v;
+        left = nullptr;
+        right = nullptr;
+        parent = nullptr;
+    }
+};
+
+
+struct Heap{
+
+    Nodo* heap;
+
+    Heap(){
+        heap = nullptr;
+    }
+
+    void top();
+    void pop();
+
+    void ins(int v);
+
+    void print_level();
+
+};
+
+
+void Heap::ins(int v){
+ // LOGICA DE INSERCCION --
+    queue<Nodo*> cola;
+
+    Nodo* actual = nullptr;
+
+    cola.push(heap);
+
+    while(!cola.empty()){
+
+        Nodo* tmp = cola.front();
+
+        cola.pop();
+
+        if(tmp == nullptr){
+            heap = new Nodo(v);
+            break;
+        }
+
+
+        if(tmp->left != nullptr){
+            cola.push(tmp->left);
+        }else{
+            actual = new Nodo(v);
+            tmp->left = actual;
+            actual->parent = tmp;
+            break;
+        }
+
+        if(tmp->right != nullptr){
+            cola.push(tmp->right);
+        }else{
+            actual = new Nodo(v);
+            tmp->right = actual;
+            actual->parent = tmp;
+            break;
+        }
+
+
+    }
+    
+
+// LOGICA DE REPOSICIONAMIENTO 
+
+    if(actual != nullptr){
+
+        while(actual->parent != nullptr && actual->valor > actual->parent->valor){
+     
+            int val_tmp = actual->valor;
+            actual->valor = actual->parent->valor;
+            actual->parent->valor = val_tmp;
+
+            actual = actual->parent;
+
+        }
+
+    }
+
+
+}
+
+
+void Heap::top(){
+
+    if(heap != nullptr){
+        cout<< heap->valor <<endl;
+    }else{
+        cout<< "Sin elementos "<<endl;
+    }
+
+}
+
+
+
+
+
+void Heap::print_level(){
+
+    queue<Nodo*> cola;
+
+    if(heap == nullptr){
+        cout<<"SIN VALORES"<<endl;
+    }else{
+
+        cola.push(heap);
+
+        while(!cola.empty()){
+
+            Nodo* tmp = cola.front();
+
+            cola.pop();
+
+            cout<< tmp->valor << " ";
+
+            if(tmp->left != nullptr){
+                cola.push(tmp->left);
+            }
+
+            if(tmp->right != nullptr){
+                cola.push(tmp->right);
+            }
+
+        }
+        
+    }
+
+    cout<<endl;
+
+}
+
+
+
 int main(){
+
+    Heap heap_test;
+
+    heap_test.ins(30);
+    heap_test.ins(20);
+    heap_test.ins(25);
+    heap_test.ins(15);
+    heap_test.ins(10);
+    heap_test.ins(50);
+
+
+    heap_test.print_level();
+
+
+    
+
+    cout<< "TOP: "; heap_test.top(); 
+
+    heap_test.ins(100);
+    cout<< "TOP: "; heap_test.top(); 
 
 }
