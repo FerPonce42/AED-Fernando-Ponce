@@ -47,7 +47,7 @@ por esta razon max es O(n) porque solo accedes a la cabeza.
 
 
 
-La logica de inserccion siempre es en esa forma 
+La logica de inserccion siempre es en esa forma
 
 1. se inserta y trepa hasta donde tenga que trepar para hacer cambios.
 2. la logica de menores izq mar der ya no viene aca.
@@ -69,7 +69,7 @@ ins 20
             30
         15      23
     12     17  20
-    
+
 ins 4
 
             30
@@ -93,7 +93,7 @@ Complicaiones al implementarlo:
     como si fuera un.. arbol B+?... ni idea.
     la mierda sube y baja para enconrar el siguietne.
 
-    Subida y Next 
+    Subida y Next
 
     tons.. INS -> LOG 2 (N) + SUBIDA + NEXT
 
@@ -108,6 +108,14 @@ Complicaiones al implementarlo:
     12     17  20  4
    6  8   11
 
+
+   si lo meto en cola:
+   30
+   15 23
+   23 12 17
+   12 17 20 4
+   17 20 4 6 8
+   20 4 6 8 11
 
    para:
 
@@ -158,7 +166,7 @@ Complicaiones al implementarlo:
 
    nelem = 9
 
-   la siguiene es 9 p. 
+   la siguiene es 9 p.
    entonces el calculo de la version de nodos esun a mierda, pero en el de arreglo es recontra simple.
    ya que se aascoai al tamano dle array.
 
@@ -166,15 +174,15 @@ Complicaiones al implementarlo:
    pero se puede deducir:
    digamos que esta posicion i es el 9 (donde isnerte)
 
-   el padre de i seria... 
+   el padre de i seria...
    p(i) = (i - 1)/ 2
 
-   con esa trepada sube en una 
+   con esa trepada sube en una
 
 
    y para borrar?
 
-   agarra el ultimo, y lo cambias por el primero y 
+   agarra el ultimo, y lo cambias por el primero y
    reduces el numero y ya
 
    el unico inconeeninte es la expansion eventual que tendra que crecer.
@@ -190,7 +198,7 @@ Complicaiones al implementarlo:
    pero la de queue es más eficiente.
 
     DELCARA UN VECOTR NE STL
-    y los push backs hacen todo lio p. cosa que solito se redimesiona 
+    y los push backs hacen todo lio p. cosa que solito se redimesiona
 
     crea tu heap y lo metes adentro p
 
@@ -218,14 +226,14 @@ Complicaiones al implementarlo:
 
 */
 
-struct Nodo{
+struct Nodo {
 
     int valor;
     Nodo* left;
     Nodo* right;
     Nodo* parent;
 
-    Nodo(int v){
+    Nodo(int v) {
         valor = v;
         left = nullptr;
         right = nullptr;
@@ -234,56 +242,59 @@ struct Nodo{
 };
 
 
-struct Heap{
+struct Heap {
 
     Nodo* heap;
 
-    Heap(){
+    Heap() {
         heap = nullptr;
     }
 
-    void top();
+    void top(); // LISTO
     void pop();
 
-    void ins(int v);
+    void ins(int v); // LISTO
 
-    void print_level();
+    void print_level(); // LISTO
 
 };
 
 
-void Heap::ins(int v){
- // LOGICA DE INSERCCION --
+
+/*
+    // LOGICA DE INSERCCION -- USANDO COLA O(N)
     queue<Nodo*> cola;
 
     Nodo* actual = nullptr;
 
     cola.push(heap);
 
-    while(!cola.empty()){
+    while (!cola.empty()) {
 
         Nodo* tmp = cola.front();
 
         cola.pop();
 
-        if(tmp == nullptr){
+        if (tmp == nullptr) {
             heap = new Nodo(v);
             break;
         }
 
 
-        if(tmp->left != nullptr){
+        if (tmp->left != nullptr) {
             cola.push(tmp->left);
-        }else{
+        }
+        else {
             actual = new Nodo(v);
             tmp->left = actual;
             actual->parent = tmp;
             break;
         }
 
-        if(tmp->right != nullptr){
+        if (tmp->right != nullptr) {
             cola.push(tmp->right);
-        }else{
+        }
+        else {
             actual = new Nodo(v);
             tmp->right = actual;
             actual->parent = tmp;
@@ -292,14 +303,19 @@ void Heap::ins(int v){
 
 
     }
-    
+*/
 
-// LOGICA DE REPOSICIONAMIENTO 
 
-    if(actual != nullptr){
+void Heap::ins(int v) {
 
-        while(actual->parent != nullptr && actual->valor > actual->parent->valor){
-     
+
+
+    // LOGICA DE REPOSICIONAMIENTO 
+
+    if (actual != nullptr) {
+
+        while (actual->parent != nullptr && actual->valor > actual->parent->valor) {
+
             int val_tmp = actual->valor;
             actual->valor = actual->parent->valor;
             actual->parent->valor = val_tmp;
@@ -314,12 +330,123 @@ void Heap::ins(int v){
 }
 
 
-void Heap::top(){
+/*
+LOGICA DE ENCONTRAR AL ULTIMO INSERTADO: CON COLA O(N)
+    queue<Nodo*> cola;
 
-    if(heap != nullptr){
-        cout<< heap->valor <<endl;
-    }else{
-        cout<< "Sin elementos "<<endl;
+    Nodo* ultimo_ins = nullptr;
+
+    if (heap != 0) {
+        cola.push(heap);
+    }
+
+    while (!cola.empty()) {
+
+        ultimo_ins = cola.front();
+
+        cola.pop();
+
+        if (ultimo_ins->left != 0) {
+            cola.push(ultimo_ins->left);
+        }
+
+        if (ultimo_ins->right != 0) {
+            cola.push(ultimo_ins->right);
+        }
+
+    }
+
+*/
+void Heap::pop() {
+
+
+
+
+
+    // Intercambio.
+
+    if (ultimo_ins != 0) {
+
+        int tmp = ultimo_ins->valor;
+        ultimo_ins->valor = heap->valor;
+        heap->valor = tmp;
+
+        //eliminacion:
+
+        if (heap == ultimo_ins) {
+            
+            delete heap;
+            heap = 0;
+        }
+        else {
+            // creo que aqui pude dejarlo en else, pero por si las dudas...
+            if (ultimo_ins->parent->left == ultimo_ins) {
+                ultimo_ins->parent->left = 0;
+            }
+
+            if (ultimo_ins->parent->right == ultimo_ins) {
+                ultimo_ins->parent->right = 0;
+            }
+
+            delete ultimo_ins;
+
+        }
+
+
+    }
+
+    // reposicionamiento:
+
+    if (heap != 0) {
+
+        Nodo* cambio = heap;
+        
+        while (cambio != 0) {
+            int tmp = 0;
+            Nodo* mayor = 0;
+            // elegir cual hijo es el mayor de los dos
+            if (cambio->left != 0) {
+                mayor = cambio->left;
+            }
+
+            if (cambio->right != 0) {
+                if (mayor == 0 || cambio->right->valor > mayor->valor) {
+                    mayor = cambio->right;
+                }
+            }
+
+            // si hubo un hijo mayor y ese hijo es mayor al padre, CAMBIO HACIA ABAJO
+
+            if (mayor != 0 && mayor->valor  > cambio->valor) {
+
+                tmp = cambio->valor;
+                cambio->valor = mayor->valor;
+                mayor->valor = tmp;
+
+                cambio = mayor;
+
+            }
+            else {
+                break; // cerrar bucle, para no avanzar
+            }
+
+            
+
+        }
+
+
+    }
+}
+
+
+
+void Heap::top() {
+
+    if (heap != nullptr) {
+        cout << heap->valor << endl;
+    }
+    else {
+        cout << "Sin elementos " << endl;
     }
 
 }
@@ -328,43 +455,44 @@ void Heap::top(){
 
 
 
-void Heap::print_level(){
+void Heap::print_level() {
 
     queue<Nodo*> cola;
 
-    if(heap == nullptr){
-        cout<<"SIN VALORES"<<endl;
-    }else{
+    if (heap == nullptr) {
+        cout << "SIN VALORES" << endl;
+    }
+    else {
 
         cola.push(heap);
 
-        while(!cola.empty()){
+        while (!cola.empty()) {
 
             Nodo* tmp = cola.front();
 
             cola.pop();
 
-            cout<< tmp->valor << " ";
+            cout << tmp->valor << " ";
 
-            if(tmp->left != nullptr){
+            if (tmp->left != nullptr) {
                 cola.push(tmp->left);
             }
 
-            if(tmp->right != nullptr){
+            if (tmp->right != nullptr) {
                 cola.push(tmp->right);
             }
 
         }
-        
+
     }
 
-    cout<<endl;
+    cout << endl;
 
 }
 
 
 
-int main(){
+int main() {
 
     Heap heap_test;
 
@@ -379,11 +507,17 @@ int main(){
     heap_test.print_level();
 
 
-    
-
-    cout<< "TOP: "; heap_test.top(); 
-
-    heap_test.ins(100);
-    cout<< "TOP: "; heap_test.top(); 
+    heap_test.pop();
+    heap_test.print_level();
+    heap_test.pop();
+    heap_test.print_level();
+    heap_test.pop();
+    heap_test.print_level();
+    heap_test.pop();
+    heap_test.print_level();
+    heap_test.pop();
+    heap_test.print_level();
+    heap_test.pop();
+    heap_test.print_level();
 
 }
