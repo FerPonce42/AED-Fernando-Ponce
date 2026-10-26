@@ -1,3 +1,278 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+template<class T>
+struct Less {
+	bool operator()(T a, T b) {
+		return a < b;
+	}
+};
+
+template<class T>
+struct Greater {
+	bool operator()(T a, T b) {
+		return a > b;
+	}
+};
+
+
+template<class T, class O>
+struct HeapVector {
+
+	vector<T> datos;
+
+	O comparador;
+	
+
+	void ins(T v);
+	void pop();
+
+	void top();
+
+	void print();
+
+};
+
+
+template<class T, class O>
+void HeapVector<T,O>::ins(T v) {
+
+
+	datos.push_back(v);
+
+	int i = datos.size() - 1;
+
+	int padre = (i - 1) / 2;
+
+	while (i > 0 && comparador(datos[i] , datos[padre])) {
+		T val_tmp = datos[i];
+		datos[i] = datos[padre];
+		datos[padre] = val_tmp;
+
+
+		i = padre;
+		padre = (i - 1) / 2;
+	}
+
+
+}
+
+
+template<class T, class O>
+void HeapVector<T,O>::pop() {
+
+	if (datos.empty()) {
+		cout << "VECTOR VACIO - IMPOSIBLE POP " << endl;
+		return;
+	}
+
+	T val_tmp = datos.front();
+	datos.front() = datos.back();
+	datos.back() = val_tmp;
+
+	datos.pop_back();
+
+
+	int i = 0; 
+
+	int h_izq = (i * 2) + 1;
+
+	int h_der = (i * 2) + 2;
+
+	while (h_izq < datos.size()) { 
+		
+		int candidato = h_izq; 
+
+		if (h_der < datos.size() && comparador(datos[h_der] , datos[candidato])) { 
+			candidato = h_der;
+		}
+
+		if (comparador(datos[candidato] , datos[i])) {
+
+			val_tmp = datos[i];
+			datos[i] = datos[candidato];
+			datos[candidato] = val_tmp;
+
+			i = candidato;
+
+		}
+		else {
+			break;
+		}
+
+
+		h_izq = (i * 2) + 1;
+
+		h_der = (i * 2) + 2;
+
+	}
+
+
+}
+
+
+template<class T, class O>
+void HeapVector<T,O>::top() {
+
+	if (datos.empty()) {
+		cout << " VECTOR VACIO " << endl;
+	}
+	else {
+		cout << "TOP = "<< datos.front() << endl;
+	}
+	
+}
+
+template<class T, class O>
+void HeapVector<T,O>::print() {
+
+	for (auto x : datos) {
+		cout << x << " ";
+	}
+	cout << endl;
+}
+
+int main() {
+
+    cout << "========== TEST 1: MIN HEAP ==========" << endl;
+
+    HeapVector<int, Less<int>> h1;
+
+    h1.ins(70);
+    h1.ins(30);
+    h1.ins(20);
+    h1.ins(50);
+
+    h1.print();
+    h1.top();
+    h1.pop();
+    h1.print();
+
+
+    cout << "\n========== TEST 2: MAX HEAP ==========" << endl;
+
+    HeapVector<int, Greater<int>> h2;
+
+    h2.ins(70);
+    h2.ins(30);
+    h2.ins(20);
+    h2.ins(50);
+
+    h2.print();
+    h2.top();
+    h2.pop();
+    h2.print();
+
+
+    cout << "\n========== TEST 3: INSERCIONES DESORDENADAS ==========" << endl;
+
+    HeapVector<int, Greater<int>> h3;
+
+    for (int x : {15, 90, 35, 10, 80, 45, 100, 5, 60}) {
+        h3.ins(x);
+    }
+
+    h3.print();
+    h3.top();
+
+
+    cout << "\n========== TEST 4: MULTIPLES POP (MAX HEAP) ==========" << endl;
+
+    HeapVector<int, Greater<int>> h4;
+
+    for (int x : {90, 70, 80, 40, 60, 50, 75}) {
+        h4.ins(x);
+    }
+
+    cout << "Inicial: ";
+    h4.print();
+
+    while (!h4.datos.empty()) {
+        h4.top();
+        h4.pop();
+
+        cout << "Despues de pop: ";
+        h4.print();
+    }
+
+
+    cout << "\n========== TEST 5: MULTIPLES POP (MIN HEAP) ==========" << endl;
+
+    HeapVector<int, Less<int>> h5;
+
+    for (int x : {45, 10, 80, 5, 30, 60, 20}) {
+        h5.ins(x);
+    }
+
+    cout << "Inicial: ";
+    h5.print();
+
+    while (!h5.datos.empty()) {
+        h5.top();
+        h5.pop();
+
+        cout << "Despues de pop: ";
+        h5.print();
+    }
+
+
+    cout << "\n========== TEST 6: VALORES REPETIDOS ==========" << endl;
+
+    HeapVector<int, Greater<int>> h6;
+
+    for (int x : {50, 20, 50, 80, 20, 80, 50}) {
+        h6.ins(x);
+    }
+
+    cout << "Inicial: ";
+    h6.print();
+
+    while (!h6.datos.empty()) {
+        h6.top();
+        h6.pop();
+    }
+
+
+    cout << "\n========== TEST 7: UN SOLO ELEMENTO ==========" << endl;
+
+    HeapVector<int, Less<int>> h7;
+
+    h7.ins(42);
+    h7.print();
+    h7.top();
+
+    h7.pop();
+
+    cout << "Despues de pop: ";
+    h7.print();
+
+    h7.top();
+
+
+    cout << "\n========== TEST 8: HEAP VACIO ==========" << endl;
+
+    HeapVector<int, Greater<int>> h8;
+
+    h8.top();
+    h8.pop();
+
+    cout << "Insertando despues de estar vacio..." << endl;
+
+    h8.ins(25);
+    h8.ins(10);
+    h8.ins(40);
+
+    h8.print();
+    h8.top();
+
+    return 0;
+}
+
+/*
+                                                                                                    HEAP VERSION ARBOL
+
 
 #include <iostream>
 #include <queue>
@@ -291,3 +566,6 @@ int main() {
 
     return 0;
 }
+
+
+*/
