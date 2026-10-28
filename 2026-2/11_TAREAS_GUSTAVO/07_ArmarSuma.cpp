@@ -95,6 +95,7 @@ PORFA, que no sea un grafico huachafa
 */
 
 #include <iostream>
+#include <vector>
 #include "DibujarArbol.h"
 using namespace std;
 
@@ -268,50 +269,77 @@ template <class T>
 bool BinTreeSearch<T>::armarSuma(T* A, int cant) {
 
 	int potencia = 1;
+
 	while (potencia < cant) {
-		potencia = potencia * 2;
+		potencia *= 2;
 	}
 
-	if (cant <= 0 || potencia != cant) {
+	if (potencia != cant) {
+		cout << "No sera posible el armarSuma porque no se cumple el 2^n = cant" << endl;
 		return false;
 	}
 
-	Nodo<T>** nodos = new Nodo<T>*[cant];
+
+	//---------------------------
+	//int A[] = { 1, 5, 8, 3, 20, 11, 7, 8 };
+
+	vector<Nodo<T>*> HIJOS(cant);
 
 	for (int i = 0; i < cant; i++) {
-		nodos[i] = new Nodo<T>(A[i]);
+		Nodo<T>* hijo = new Nodo<T>(A[i]);
+		HIJOS[i] = hijo;
 	}
 
 	while (cant > 1) {
 
-		for (int i = 0; i < cant; i = i + 2) {
+		//int A[] = { direc, direc, direc, direc, direc, direc, direc, direc };
 
-			Nodo<T>* padre = new Nodo<T>(nodos[i]->valor + nodos[i + 1]->valor);
-			padre->left = nodos[i];
-			padre->right = nodos[i + 1];
+		vector<Nodo<T>*> PADRES(cant / 2);
 
-			nodos[i / 2] = padre;
+		for (int i = 0, j = 0; i < cant - 1; i += 2, j++) {
+
+			Nodo<T>* hizq = (HIJOS[i]);
+
+			Nodo<T>* hder = (HIJOS[i + 1]);
+
+			Nodo<T>* padre = new Nodo<T>(hizq->valor + hder->valor);
+
+			padre->left = hizq;
+			padre->right = hder;
+
+			PADRES[j] = padre;
+
 		}
 
-		cant = cant / 2;
+		cant /= 2;
+
+		//---------------------------
+	//padre pasa a reutilizar al hijo de de su su arreglo p;
+
+		for (int i = 0; i < cant; i++) {
+
+			HIJOS[i] = PADRES[i];
+
+		}
+
 	}
 
-	root = nodos[0];
-	delete[] nodos;
+
+
+	root = HIJOS[0];
 
 	return true;
 
+
 }
-
-
 
 int main() {
 
 	BinTreeSearch<int> arbol;
 
-	int A[] = { 1, 5, 8, 3, 20, 11, 7, 8 };
+	int A[] = { 1, 5, 8, 3, 20, 11, 7, 8, 5, 4 , 5 , 6,  3, 7, 16, 9};
 
-	arbol.armarSuma(A, 8);
+	arbol.armarSuma(A, 16);
 
 	dibujar(arbol.root);
 
