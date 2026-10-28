@@ -4,7 +4,7 @@ TAREA 7:
 
 Usa SFML, el recomienda esa.
 
-el menciona algo de nuggets 
+el menciona algo de nuggets
 
 2019 instalar en el proyecto
 
@@ -52,15 +52,15 @@ luego:
 
 
 Luego
-      17              46            
+	  17              46
   6       11      31      15
 1   5   8   3   20  11  7   8
 
 
 Luego
 
-              63
-      17              46            
+			  63
+	  17              46
   6       11      31      15
 1   5   8   3   20  11  7   8
 
@@ -95,6 +95,7 @@ PORFA, que no sea un grafico huachafa
 */
 
 #include <iostream>
+#include "DibujarArbol.h"
 using namespace std;
 
 template <class T>
@@ -126,14 +127,26 @@ struct BinTreeSearch {
 		destruir(root);
 	}
 
-	bool find(T v, Nodo<T>**& p);
-	bool ins(T v);
-	bool rem(T v);
+	void destruir(Nodo<T>* n) {
+		if (n == nullptr) {
+			return;
+		}
 
-	void inorder(Nodo<T>* n);
-	void destruir(Nodo<T>* n);
+		destruir(n->left);
+		destruir(n->right);
+		delete n;
+	}
+
+	//bool find(T v, Nodo<T>**& p);
+	//bool ins(T v);
+	//bool rem(T v);
+	bool armarSuma(T* A, int cant);
+
+	//void inorder(Nodo<T>* n);
 
 };
+
+/*
 
 template <class T>
 bool BinTreeSearch<T>::find(T v, Nodo<T>**& p) {
@@ -249,45 +262,57 @@ void BinTreeSearch<T>::inorder(Nodo<T>* n) {
 }
 
 
-template <class T>
-void BinTreeSearch<T>::destruir(Nodo<T>* n) {
+*/
 
-	if (n == nullptr) {
-		return;
+template <class T>
+bool BinTreeSearch<T>::armarSuma(T* A, int cant) {
+
+	int potencia = 1;
+	while (potencia < cant) {
+		potencia = potencia * 2;
 	}
 
-	destruir(n->left);
-	destruir(n->right);
-	delete n;
+	if (cant <= 0 || potencia != cant) {
+		return false;
+	}
+
+	Nodo<T>** nodos = new Nodo<T>*[cant];
+
+	for (int i = 0; i < cant; i++) {
+		nodos[i] = new Nodo<T>(A[i]);
+	}
+
+	while (cant > 1) {
+
+		for (int i = 0; i < cant; i = i + 2) {
+
+			Nodo<T>* padre = new Nodo<T>(nodos[i]->valor + nodos[i + 1]->valor);
+			padre->left = nodos[i];
+			padre->right = nodos[i + 1];
+
+			nodos[i / 2] = padre;
+		}
+
+		cant = cant / 2;
+	}
+
+	root = nodos[0];
+	delete[] nodos;
+
+	return true;
+
 }
+
+
 
 int main() {
 
-	BinTreeSearch<int> bts;
+	BinTreeSearch<int> arbol;
 
-	bts.ins(20);
-	bts.ins(10);
-	bts.ins(30);
-	bts.ins(5);
-	bts.ins(25);
-	bts.ins(27);
-	bts.ins(50);
-	bts.ins(40);
+	int A[] = { 1, 5, 8, 3, 20, 11, 7, 8 };
 
-	bts.inorder(bts.root); cout << endl;
+	arbol.armarSuma(A, 8);
 
-	bts.rem(5);
-	bts.inorder(bts.root); cout << endl;
-
-	bts.rem(50);
-	bts.inorder(bts.root); cout << endl;
-
-	bts.rem(20);
-	bts.inorder(bts.root); cout << endl;
-
-	cout << bts.rem(99) << endl;
-
-	bts.rem(25);
-	bts.inorder(bts.root); cout << endl;
+	dibujar(arbol.root);
 
 }
