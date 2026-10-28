@@ -1,4 +1,43 @@
 #include <iostream>
+#include <queue>
+using namespace std;
+
+/*
+// MAX HEAP: mayor a menor
+priority_queue<int> maxHeap;
+
+// MIN HEAP: menor a mayor
+priority_queue<int, vector<int>, greater<int>> minHeap;
+*/
+
+int main(){
+
+    priority_queue<int, vector<int>, greater<int>> pq;
+
+    pq.push(10);
+    pq.push(70);
+    pq.push(120);
+    pq.push(62);
+    pq.push(13);
+    pq.push(75);
+
+    pq.top();
+
+
+    while(!pq.empty()){
+        cout<< pq.top() <<" ";
+        pq.pop();
+    }
+    
+
+}
+
+
+
+
+/*
+//                                                              HEAP CON VECTOR
+#include <iostream>
 #include <vector>
 
 using namespace std;
@@ -269,6 +308,8 @@ int main() {
 
     return 0;
 }
+*/
+
 
 /*
                                                                                                     HEAP VERSION ARBOL
