@@ -194,3 +194,130 @@ PRUEBAS:
 
 
 */
+
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+template <class T>
+struct Nodo {
+
+	T valor;
+	int altura;
+
+	Nodo* right;
+	Nodo* left;
+
+	
+
+	Nodo(T v) {
+		valor = v;
+		right = nullptr;
+		left = nullptr;
+		altura = 1;
+	}
+
+};
+
+
+template <class T>
+struct AVL {
+
+	Nodo<T>* root;
+
+	AVL() {
+		root = nullptr;
+	}
+
+	~AVL() {
+		destruir(root);
+	}
+
+	void destruir(Nodo<T>* n) {
+		if (n == nullptr) {
+			return;
+		}
+
+		destruir(n->left);
+		destruir(n->right);
+		delete n;
+	}
+
+
+
+
+	int mostrarAltura(Nodo<T>* n);
+	int mostrarFB(Nodo<T>* n);
+
+	void actualizarAltura(Nodo<T>* n);
+
+
+	Nodo<T>* rotarL(Nodo<T>* n);
+	Nodo<T>* rotarR(Nodo<T>* n);
+
+
+
+};
+
+template <class T>
+int AVL<T>::mostrarAltura(Nodo<T>* n) {
+
+	if (n == nullptr) {
+		return 0;
+	}
+	else {
+		return n->altura;
+	}
+
+
+}
+
+template <class T>
+int AVL<T>::mostrarFB(Nodo<T>* n) {
+
+	int hizq = mostrarAltura(n->left);
+	int hder = mostrarAltura(n->right);
+
+	return hder - hizq;
+
+}
+
+template <class T>
+void AVL<T>::actualizarAltura(Nodo<T>* n) {
+
+	int hizq = mostrarAltura(n->left);
+	int hder = mostrarAltura(n->right);
+
+	n->altura = max(hizq, hder) + 1;
+
+}
+
+template <class T>
+Nodo<T>* AVL<T>::rotarL(Nodo<T>* n) {
+
+	Nodo<T>* sube = n->right;
+
+	n->right = n->right->left;
+
+	sube->left = n;
+
+	actualizarAltura(n);
+	actualizarAltura(sube);
+
+
+	return sube;
+}
+
+template <class T>
+Nodo<T>* AVL<T>::rotarR(Nodo<T>* n) {
+
+
+}
+
+int main() {
+
+	AVL<int> avl;
+
+
+
+}
