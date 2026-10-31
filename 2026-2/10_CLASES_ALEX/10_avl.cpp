@@ -194,7 +194,6 @@ PRUEBAS:
 
 
 */
-
 #include <iostream>
 #include <algorithm>
 using namespace std;
@@ -246,7 +245,7 @@ struct AVL {
 
 
 
-	int mostrarAltura(Nodo<T>* n);
+	int mostrarAltura(Nodo<T>* n); 
 	int mostrarFB(Nodo<T>* n);
 
 	void actualizarAltura(Nodo<T>* n);
@@ -255,6 +254,17 @@ struct AVL {
 	Nodo<T>* rotarL(Nodo<T>* n);
 	Nodo<T>* rotarR(Nodo<T>* n);
 
+	Nodo<T>* balancear(Nodo<T>* n);
+
+	Nodo<T>* ins(Nodo<T>* n, T v);
+
+
+	// para evitar re declaracion:
+	void ins(T v);
+
+	// ver:
+
+	void inorder(Nodo<T>* n);
 
 
 };
@@ -294,6 +304,7 @@ void AVL<T>::actualizarAltura(Nodo<T>* n) {
 
 template <class T>
 Nodo<T>* AVL<T>::rotarL(Nodo<T>* n) {
+	// Me convierto en hijo izquierdo de mi hijo derecho
 
 	Nodo<T>* sube = n->right;
 
@@ -308,16 +319,198 @@ Nodo<T>* AVL<T>::rotarL(Nodo<T>* n) {
 	return sube;
 }
 
+/*
+	ROTAR L (cuando el peso es a la derecha) 
+	  30
+  20      50
+		40  70
+			  80
+*/
+
+
 template <class T>
 Nodo<T>* AVL<T>::rotarR(Nodo<T>* n) {
+	// Me convierto en hijo derecho de mi hijo izquierdo.
+
+	Nodo<T>* sube = n->left;
+
+	n->left = sube->right;
+
+	sube->right = n;
+
+	actualizarAltura(n);
+
+	actualizarAltura(sube);
+
+	return sube;
+
+}
+/*
+	ROTAR R (cuando el peso esta a la izquierda)
+
+		  80
+	  60      90
+	40  50
+  30
+
+*/
+
+
+template <class T>
+Nodo<T>* AVL<T>::balancear(Nodo<T>* n) {
+
+	// FULL DERECHA
+	if (mostrarFB(n) == 2) {
+
+		if (mostrarFB(n->right) < 0) { // cambio de signo?
+			n->right = rotarR(n->right);
+		}
+
+		return rotarL(n);
+	}
+	//FULL IZQUIERDA
+	else if (mostrarFB(n) == -2) {
+
+		if (mostrarFB(n->left) > 0) {
+			n->left = rotarL(n->left);
+		}
+
+		return rotarR(n);
+	}
+	else {
+		return n; // Nunca hubo desbalanceo, tons toma noma esto y no jodas
+	}
 
 
 }
 
+/*
+
+	ESTE HIJO DE PERRA
+		50
+	20      60
+  10  30
+	25
+
+*/
+template <class T>
+Nodo<T>* AVL<T>::ins(Nodo<T>* n, T v) {
+
+	if (n == nullptr) {
+		return new Nodo<T>(v);
+	}
+
+	if (v > n->valor) {
+		n->right = ins(n->right, v); // (guardarlos en varaibles pra que se aplique la recursivdad de ida y vuelta)
+	}
+	else if (v < n->valor) {
+		n->left = ins(n->left,v);
+	}
+
+	actualizarAltura(n);
+
+	return balancear(n);
+
+}
+
+template <class T>
+void AVL<T>::ins(T v) {
+	root = ins(root, v);
+}
+
+
+template <class T>
+void AVL<T>::inorder(Nodo<T>* n) {
+
+	if (n == nullptr) {
+		return;
+	}
+
+	inorder(n->left);
+	cout << n->valor <<" ";
+	inorder(n->right);
+}
+
+#include <string>
+
+template <class T>
+void mostrar(const string& titulo, AVL<T>& avl) {
+
+	cout << "=== " << titulo << " ===" << endl;
+	cout << "inorder: ";
+	avl.inorder(avl.root);
+	cout << endl;
+
+	if (avl.root == nullptr) {
+		cout << "arbol vacio" << endl << endl;
+		return;
+	}
+
+	cout << "root: " << avl.root->valor << "  altura: " << avl.root->altura << endl;
+
+	cout << "hijo izq: ";
+	if (avl.root->left != nullptr) cout << avl.root->left->valor;
+	else cout << "-";
+
+	cout << "  hijo der: ";
+	if (avl.root->right != nullptr) cout << avl.root->right->valor;
+	else cout << "-";
+
+	cout << endl << endl;
+}
+
 int main() {
 
-	AVL<int> avl;
+	{
+		AVL<int> avl;
+		avl.ins(10);
+		avl.ins(20);
+		avl.ins(30);
+		mostrar("TEST 1: RR (10, 20, 30)", avl);
+	}
 
+	{
+		AVL<int> avl;
+		avl.ins(30);
+		avl.ins(20);
+		avl.ins(10);
+		mostrar("TEST 2: LL (30, 20, 10)", avl);
+	}
 
+	{
+		AVL<int> avl;
+		avl.ins(50);
+		avl.ins(20);
+		avl.ins(30);
+		mostrar("TEST 3: LR (50, 20, 30)", avl);
+	}
 
+	{
+		AVL<int> avl;
+		avl.ins(10);
+		avl.ins(30);
+		avl.ins(20);
+		mostrar("TEST 4: RL (10, 30, 20)", avl);
+	}
+
+	{
+		AVL<int> avl;
+		avl.ins(50);
+		avl.ins(20);
+		avl.ins(60);
+		avl.ins(10);
+		avl.ins(30);
+		avl.ins(25);
+		mostrar("TEST 5: LR con subarboles (50, 20, 60, 10, 30, 25)", avl);
+	}
+
+	{
+		AVL<int> avl;
+		for (int i = 10; i <= 100; i += 10) {
+			avl.ins(i);
+		}
+		mostrar("TEST 6: creciente (10 a 100)", avl);
+	}
+
+	return 0;
 }
