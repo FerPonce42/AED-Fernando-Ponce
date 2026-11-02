@@ -301,3 +301,225 @@ y que todas aacabem con la ilterfaz final
 
 
 */
+
+#include <iostream>
+using namespace std;
+
+struct Nodo {
+
+	int valor;
+	int fila;
+	int columna;
+
+	Nodo* next;
+
+	Nodo(int v, int f, int c) {
+		valor = v;
+		fila = f;
+		columna = c;
+		next = nullptr;
+	}
+
+};
+
+struct MatrizLE {
+
+	Nodo* head;
+	int tamano;
+
+	MatrizLE(int t) {
+		tamano = t;
+		head = nullptr;
+	}
+
+	~MatrizLE() {
+
+		Nodo* p = head;
+		Nodo* tmp = nullptr;
+
+		while (p != nullptr) {
+			tmp = p;
+
+			p = p->next;
+
+			delete tmp;
+		}
+
+	}
+
+	bool find(Nodo**& p, int f, int c);
+	bool ins(int v, int f, int c);
+	bool rem(int f, int c);
+
+	void set(int v, int f, int c);
+
+	int get(int f, int c);
+
+
+	int operator()(int f, int c);
+
+
+	void print();
+};
+
+
+
+bool MatrizLE::find(Nodo**& p, int f, int c) {
+
+	while (*p &&  ((*p)->fila < f   ||  ((*p)->fila == f && (*p)->columna < c) ) ){
+		p = &((*p)->next);
+	}
+
+	return *p && ((*p)->fila == f && (*p)->columna == c);
+}
+
+
+
+bool MatrizLE::ins(int v, int f, int c) {
+
+	Nodo** p = &head;
+
+	if (!find(p, f, c)) {
+
+		Nodo* nuevo = new Nodo(v, f, c);
+
+		nuevo->next = *p;
+
+		*p = nuevo;
+
+		return true;
+
+	}
+	else {
+		return false;
+	}
+
+}
+
+bool MatrizLE::rem(int f, int c) {
+
+	Nodo** p = &head;
+
+	if (find(p, f, c)) {
+
+		Nodo* tmp = *p;
+
+		*p = (*p)->next;
+
+		delete tmp;
+
+		return true;
+
+	}
+	else {
+		return false;
+	}
+
+
+}
+
+int MatrizLE::get(int f, int c) {
+
+	if (!((f >= 0 && f < tamano) && (c >= 0 && c < tamano))) {
+		cout << "TAMANO FUERA DE MATRIZ" << endl;
+		return -1;
+	}
+
+	Nodo** p = &head;
+
+	if (find(p, f, c)) {
+		return (*p)->valor;
+	}
+	else {
+		return 0;
+	}
+
+
+}
+
+
+void MatrizLE::set(int v, int f, int c) {
+
+	if (!((f >= 0 && f < tamano) && (c >= 0 && c < tamano))) {
+		cout << "TAMANO FUERA DE MATRIZ" << endl;
+		return;
+	}
+
+	if (v == 0) { // si el v es cero, llamar a remover.
+		rem(f, c);
+	}
+	else {
+
+		if (!ins(v, f, c)) { // el ins se ejecuta si o si. asi que ya insertamos; si no se pudo. REEMPLAZAMOS.
+
+			Nodo** p = &head;
+			find(p, f, c);
+
+			(*p)->valor = v;
+
+		}
+
+	}
+
+}
+
+
+int MatrizLE::operator()(int f, int c) {
+
+	return get(f, c);
+
+}
+
+void MatrizLE::print() {
+
+	for (int i = 0; i < tamano; i++) {
+		for (int j = 0; j < tamano; j++) {
+			cout << get(i, j) << "\t";
+		}
+		cout << endl;
+	}
+
+}
+
+
+int main() {
+
+	MatrizLE m(4);
+
+	cout << "=== TEST 1: insertar ===" << endl;
+	m.set(5, 0, 3);
+	m.set(15, 1, 3);
+	m.set(28, 3, 2);
+	m.print();
+	cout << endl;
+
+	cout << "=== TEST 2: actualizar uno existente (1,3) -> 99 ===" << endl;
+	m.set(99, 1, 3);
+	cout << "m(1,3) = " << m(1, 3) << endl;
+	m.print();
+	cout << endl;
+
+	cout << "=== TEST 3: borrar con 0 en (3,2) ===" << endl;
+	m.set(0, 3, 2);
+	cout << "m(3,2) = " << m(3, 2) << endl;
+	m.print();
+	cout << endl;
+
+	cout << "=== TEST 4: posicion inexistente (2,2) ===" << endl;
+	cout << "m(2,2) = " << m(2, 2) << endl;
+	cout << endl;
+
+	cout << "=== TEST 5: insertar en medio y al inicio (orden) ===" << endl;
+	m.set(7, 0, 0);
+	m.set(8, 0, 1);
+	m.set(3, 2, 1);
+	m.print();
+	cout << endl;
+
+	cout << "=== TEST 6: fuera de rango ===" << endl;
+	m.set(2, 4, 4);
+	m.set(2, -1, 0);
+	cout << "m(0,4) = " << m(0, 4) << endl;
+
+	return 0;
+}
