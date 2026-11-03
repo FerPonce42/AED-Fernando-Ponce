@@ -302,6 +302,131 @@ y que todas aacabem con la ilterfaz final
 
 */
 
+/*
+
+
+11 - 02 - 26
+
+El profesor acaba de agregar: 
+
+IMPLEMENTAR ESTO USANDO CONTENEDORES <LIST> y <SET>
+
+
+ADemáß:
+
+Volvio a reeptir la mierdaesta de los 2 vectores.
+
+segun el 
+
+hicimos
+
+finv(int x, int y, NOde**& r)
+findh(int x, int y , NOde**& h)
+
+Que sigue la misma logica que hacia con una lista elenzada normal..
+
+lo que buscabmoas era un tipo si no lo que vbuscamos es un..
+
+
+la idea del profe es que el puntero tenga 
+
+x,y
+valor
+ptr down, ptr right
+
+
+dice que cuando lo deaclras..
+
+SMATRIX m(4,4); matriz de 4x4
+
+dice que la matriz  puede hacer las operaciones asi
+
+a = m(2,0);
+b = m(0,1);
+
+aca ponemos un operador parentesis. es mas estiticap ara el no es funcional, es estetico.
+
+
+*/
+
+
+/*
+
+VERSION 2 A MANO DE LA MATRIZ ESPARTANA.
+
+*/
+
+#include <iostream>
+using namespace std;
+
+class CNode {
+
+public:
+	int value;
+	int columna; 
+	CNode* next;
+
+	CNode(int v, int c) {
+		value = v;
+		columna = c;
+		next = nullptr;
+	}
+};
+
+
+
+class MatrizV2 {
+
+private:
+
+	int tamano;
+	CNode** FILAS;
+
+
+public:
+
+	MatrizV2(int t) {
+
+		tamano = t;
+		FILAS = new CNode * [tamano];
+
+		for (CNode** tmp = FILAS; tmp < FILAS + tamano; tmp++) {
+			*tmp = nullptr;
+
+		}
+	}
+
+	~MatrizV2() {
+
+		for (CNode** tmp = FILAS; tmp < FILAS + tamano; tmp++) {
+
+			CNode* p = *tmp; 
+			CNode* borrar = nullptr;
+
+			while (p != nullptr) {
+				
+				borrar = p;
+
+				p = p->next;
+
+				delete borrar;
+
+			}
+
+		}
+
+		delete[]FILAS;
+	}
+
+
+
+
+};
+/*
+
+VERSION 1 - LE SIMPLE
+
+
 #include <iostream>
 using namespace std;
 
@@ -523,3 +648,6 @@ int main() {
 
 	return 0;
 }
+
+
+*/
