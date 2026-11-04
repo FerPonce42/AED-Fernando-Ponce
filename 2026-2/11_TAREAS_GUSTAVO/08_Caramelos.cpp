@@ -181,3 +181,173 @@ en este ocasion le voy a dar uno de mis paramelos...
 
           CON ESE AROBL TIENE QUE FUNCIONAR SEGUN EL N NOS METERA WEBADAS.
 */
+
+
+#include <iostream>
+#include "DibujarArbol.h"
+#include <queue>
+using namespace std;
+
+class CNode {
+
+public:
+
+	int valor;
+	CNode* left;
+	CNode* right;
+
+	CNode(int v) {
+		valor = v;
+		left = nullptr;
+		right = nullptr;
+	}
+
+};
+
+
+
+class BinTree {
+
+public:
+	CNode* root;
+
+	BinTree() {
+		root = nullptr;
+	}
+
+	void ins(int v);
+
+	bool EsCero(CNode* n);
+
+	void inorder(CNode* n);
+
+};
+
+
+void BinTree::ins(int v) {
+
+	if (root == nullptr) {
+		root = new CNode(v);
+		return;
+	}
+
+	CNode* p = root;
+
+	queue<CNode*> cola;
+
+	cola.push(p);
+
+	while (!cola.empty()) {
+
+		CNode* tmp = cola.front();
+
+		cola.pop();
+
+		if (tmp->right == nullptr) {
+			tmp->right = new CNode(v);
+			return;
+		}
+		else {
+			cola.push(tmp->right);
+		}
+
+
+		if (tmp->left == nullptr) {
+			tmp->left = new CNode(v);
+			return;
+		}
+		else {
+			cola.push(tmp->left);
+		}
+
+	}
+
+}
+
+
+bool BinTree::EsCero(CNode* n) {
+
+	if (n == nullptr) {
+		return false;
+	}
+
+	queue<CNode*> cola;
+	cola.push(n);
+
+	while (!cola.empty()) {
+
+		CNode* tmp = cola.front();
+		cola.pop();
+
+		if (tmp->valor == 0) {
+			return true;
+		}
+
+		if (tmp->left != nullptr) {
+			cola.push(tmp->left);
+		}
+		if (tmp->right != nullptr) {
+			cola.push(tmp->right);
+		}
+	}
+
+	return false;
+}
+
+void BinTree::inorder(CNode* n) {
+
+	if (n == nullptr) {
+		return;
+	}
+
+	inorder(n->left);
+
+	// padre a hijo
+	if (n->valor > 1 && EsCero(n->left)) {
+		n->valor--;
+		n->left->valor++;
+	}
+	else if (n->valor > 1 && EsCero(n->right)) {
+		n->valor--;
+		n->right->valor++;
+	}
+	// hijo a padre
+	else if (n->left != nullptr && n->left->valor > 1 && !EsCero(n->left)) {
+		n->left->valor--;
+		n->valor++;
+	}
+	else if (n->right != nullptr && n->right->valor > 1 && !EsCero(n->right)) {
+		n->right->valor--;
+		n->valor++;
+	}
+
+	inorder(n->right);
+
+}
+
+int main() {
+
+	BinTree arbol;
+
+	arbol.ins(0);
+	arbol.ins(0);
+	arbol.ins(0);
+	arbol.ins(0);
+	arbol.ins(0);
+	arbol.ins(0);
+	arbol.ins(7);
+	cout << "ANTES" << endl;
+	dibujar(arbol.root);
+
+	int pasadas = 0;
+	while (arbol.EsCero(arbol.root)) {
+		arbol.inorder(arbol.root);
+		pasadas++;
+	}
+
+	cout << "DESPUES" << endl;
+	dibujar(arbol.root);
+
+	cout << "Pasadas: " << pasadas << endl;
+
+}
