@@ -184,170 +184,169 @@ en este ocasion le voy a dar uno de mis paramelos...
 
 
 #include <iostream>
-#include "DibujarArbol.h"
+#include "DibujarArbolSkip.h"
 #include <queue>
+
 using namespace std;
 
 class CNode {
-
 public:
+    int valor;
+    bool marcado;
+    CNode* left;
+    CNode* right;
 
-	int valor;
-	CNode* left;
-	CNode* right;
-
-	CNode(int v) {
-		valor = v;
-		left = nullptr;
-		right = nullptr;
-	}
-
+    CNode(int v) {
+        valor = v;
+        marcado = false;
+        left = nullptr;
+        right = nullptr;
+    }
 };
-
-
 
 class BinTree {
-
 public:
-	CNode* root;
+    CNode* root;
 
-	BinTree() {
-		root = nullptr;
-	}
+    BinTree() {
+        root = nullptr;
+    }
 
-	void ins(int v);
-
-	bool EsCero(CNode* n);
-
-	void inorder(CNode* n);
-
+    void ins(int v);
+    bool todosUno(CNode* n);
+    void reiniciarMarcas(CNode* n);
+    bool paso(CNode* n, int modo);
+    void transferir(CNode* de, CNode* a);
 };
-
 
 void BinTree::ins(int v) {
 
-	if (root == nullptr) {
-		root = new CNode(v);
-		return;
-	}
+    CNode* nuevo = new CNode(v);
 
-	CNode* p = root;
+    if (root == nullptr) {
+        root = nuevo;
+        return;
+    }
 
-	queue<CNode*> cola;
+    queue<CNode*> cola;
+    cola.push(root);
 
-	cola.push(p);
+    while (!cola.empty()) {
 
-	while (!cola.empty()) {
+        CNode* actual = cola.front();
+        cola.pop();
 
-		CNode* tmp = cola.front();
+        if (actual->right == nullptr) {
+            actual->right = nuevo;
+            return;
+        }
+        else {
+            cola.push(actual->right);
+        }
 
-		cola.pop();
-
-		if (tmp->right == nullptr) {
-			tmp->right = new CNode(v);
-			return;
-		}
-		else {
-			cola.push(tmp->right);
-		}
-
-
-		if (tmp->left == nullptr) {
-			tmp->left = new CNode(v);
-			return;
-		}
-		else {
-			cola.push(tmp->left);
-		}
-
-	}
-
+        if (actual->left == nullptr) {
+            actual->left = nuevo;
+            return;
+        }
+        else {
+            cola.push(actual->left);
+        }
+    }
 }
 
-
-bool BinTree::EsCero(CNode* n) {
-
-	if (n == nullptr) {
-		return false;
-	}
-
-	queue<CNode*> cola;
-	cola.push(n);
-
-	while (!cola.empty()) {
-
-		CNode* tmp = cola.front();
-		cola.pop();
-
-		if (tmp->valor == 0) {
-			return true;
-		}
-
-		if (tmp->left != nullptr) {
-			cola.push(tmp->left);
-		}
-		if (tmp->right != nullptr) {
-			cola.push(tmp->right);
-		}
-	}
-
-	return false;
+bool BinTree::todosUno(CNode* n) {
+    if (n == nullptr) return true;
+    return n->valor == 1 && todosUno(n->left) && todosUno(n->right);
 }
 
-void BinTree::inorder(CNode* n) {
+void BinTree::reiniciarMarcas(CNode* n) {
+    if (n == nullptr) return;
+    n->marcado = false;
+    reiniciarMarcas(n->left);
+    reiniciarMarcas(n->right);
+}
 
-	if (n == nullptr) {
-		return;
-	}
+void BinTree::transferir(CNode* de, CNode* a) {
+    de->valor--;
+    a->valor++;
+    de->marcado = true;
+    a->marcado = true;
+}
 
-	inorder(n->left);
+// modo 0: padre con 2 o mas le da a un hijo con 0
+// modo 1: hijo con mas de 1 le da a su padre
+// modo 2: padre con 1 le da a un hijo con 0 (para bajar el caramelo un nivel)
+bool BinTree::paso(CNode* n, int modo) {
 
-	// padre a hijo
-	if (n->valor > 1 && EsCero(n->left)) {
-		n->valor--;
-		n->left->valor++;
-	}
-	else if (n->valor > 1 && EsCero(n->right)) {
-		n->valor--;
-		n->right->valor++;
-	}
-	// hijo a padre
-	else if (n->left != nullptr && n->left->valor > 1 && !EsCero(n->left)) {
-		n->left->valor--;
-		n->valor++;
-	}
-	else if (n->right != nullptr && n->right->valor > 1 && !EsCero(n->right)) {
-		n->right->valor--;
-		n->valor++;
-	}
+    if (n == nullptr) return false;
 
-	inorder(n->right);
+    if (paso(n->left, modo)) return true;
 
+    if (modo == 0 || modo == 2) {
+        int minPadre = (modo == 0) ? 2 : 1;
+
+        if (n->valor >= minPadre && n->left != nullptr && n->left->valor == 0) {
+            transferir(n, n->left);
+            return true;
+        }
+        if (n->valor >= minPadre && n->right != nullptr && n->right->valor == 0) {
+            transferir(n, n->right);
+            return true;
+        }
+    }
+    else {
+        if (n->left != nullptr && n->left->valor > 1) {
+            transferir(n->left, n);
+            return true;
+        }
+        if (n->right != nullptr && n->right->valor > 1) {
+            transferir(n->right, n);
+            return true;
+        }
+    }
+
+    return paso(n->right, modo);
 }
 
 int main() {
 
-	BinTree arbol;
+    BinTree arbol;
 
-	arbol.ins(0);
-	arbol.ins(0);
-	arbol.ins(0);
-	arbol.ins(0);
-	arbol.ins(0);
-	arbol.ins(0);
-	arbol.ins(7);
-	cout << "ANTES" << endl;
-	dibujar(arbol.root);
+    arbol.ins(2);
+    arbol.ins(0);
+    arbol.ins(0);
+    arbol.ins(0);
+    arbol.ins(3);
 
-	int pasadas = 0;
-	while (arbol.EsCero(arbol.root)) {
-		arbol.inorder(arbol.root);
-		pasadas++;
-	}
+    int pasadas = 0;
 
-	cout << "DESPUES" << endl;
-	dibujar(arbol.root);
+    cout << "ARBOL INICIAL" << endl;
+    dibujar(arbol.root, pasadas);
 
-	cout << "Pasadas: " << pasadas << endl;
+    while (!arbol.todosUno(arbol.root)) {
 
+        arbol.reiniciarMarcas(arbol.root);
+
+        bool movio = arbol.paso(arbol.root, 0)
+            || arbol.paso(arbol.root, 1)
+            || arbol.paso(arbol.root, 2);
+
+        if (!movio || pasadas >= 10000) {
+            cout << "No se pudo seguir distribuyendo." << endl;
+            break;
+        }
+
+        pasadas++;
+        cout << "PASADA: " << pasadas << endl;
+        dibujar(arbol.root, pasadas);
+    }
+
+    arbol.reiniciarMarcas(arbol.root);
+
+    cout << "ARBOL FINAL" << endl;
+    dibujar(arbol.root, pasadas);
+
+    cout << "Total de pasadas: " << pasadas << endl;
+
+    return 0;
 }
