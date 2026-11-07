@@ -352,9 +352,9 @@ aca ponemos un operador parentesis. es mas estiticap ara el no es funcional, es 
 
 /*
 
+
 VERSION 2 A MANO DE LA MATRIZ ESPARTANA.
 
-*/
 
 #include <iostream>
 using namespace std;
@@ -363,7 +363,7 @@ class CNode {
 
 public:
 	int value;
-	int columna; 
+	int columna;
 	CNode* next;
 
 	CNode(int v, int c) {
@@ -383,6 +383,13 @@ private:
 	CNode** FILAS;
 
 
+	bool find(CNode**& p, int f, int c);
+
+	CNode* ins(int v, int f, int c);
+
+	bool rem(int f, int c);
+
+
 public:
 
 	MatrizV2(int t) {
@@ -400,11 +407,11 @@ public:
 
 		for (CNode** tmp = FILAS; tmp < FILAS + tamano; tmp++) {
 
-			CNode* p = *tmp; 
+			CNode* p = *tmp;
 			CNode* borrar = nullptr;
 
 			while (p != nullptr) {
-				
+
 				borrar = p;
 
 				p = p->next;
@@ -419,9 +426,225 @@ public:
 	}
 
 
+	void set(int v, int f, int c);
+
+	int get(int f, int c);
+
+	int operator()(int f, int c);
+
+	void print();
 
 
 };
+
+
+
+
+bool MatrizV2::find(CNode**& p, int f, int c) {
+
+	p = FILAS + f;
+
+	while (*p && ((*p)->columna < c) ) {
+		p = &((*p)->next);
+	}
+
+	return *p && ((*p)->columna == c);
+
+}
+
+
+CNode* MatrizV2::ins(int v, int f, int c) {
+
+	CNode** p;
+
+	if (!find(p, f, c)) {
+
+		CNode* nodo = new CNode(v, c);
+		nodo->next = *p;
+		*p = nodo;
+		return nodo;
+
+	}
+	else {
+		return *p;
+	}
+
+
+}
+
+
+bool MatrizV2::rem(int f, int c) {
+
+	CNode** p;
+
+	if (find(p, f, c)) {
+
+		CNode* tmp = *p;
+		*p = (*p)->next;
+
+		delete tmp;
+		return true;
+	}
+	else {
+		return false;
+	}
+
+}
+
+
+
+void MatrizV2::set(int v, int f, int c) {
+
+	if (f >= tamano || c >= tamano || f < 0 || c < 0) {
+		cout << "TAMANO INVALIDO" << endl;
+		return;
+	}
+
+	if (v == 0) {
+		rem(f, c);
+	}
+	else {
+
+		CNode* rmlpzar = ins(v, f, c); 
+
+		rmlpzar->value = v;
+
+	}
+}
+
+int MatrizV2::get(int f, int c) {
+
+	if (f >= tamano || c >= tamano || f < 0 || c < 0) {
+		cout << "TAMANO INVALIDO" << endl;
+		return -1;
+	}
+
+
+	CNode** p;
+
+	if (find(p, f, c)) {
+		return (*p)->value;
+	}
+	else {
+		return 0;
+	}
+
+}
+
+int MatrizV2::operator()(int f, int c) {
+
+	return get(f, c);
+
+}
+
+void MatrizV2::print() {
+
+	CNode** q = FILAS;
+	CNode* s = nullptr;
+
+	for (int i = 0; q < FILAS + tamano; q++, i++) {
+
+		cout << "FILA " << i << ": ";
+
+		s = *q;
+		if (s != nullptr) {
+
+			while (s != nullptr) {
+				cout << "(col " << s->columna << " = " << s->value << ")  ";
+				s = s->next;
+			}
+
+		}
+		else {
+			cout << "vacia";
+		}
+
+		cout << endl;
+	}
+	cout << endl;
+}
+
+int main() {
+
+	MatrizV2 m(4);
+
+	// TEST 1: 1000 ceros en matriz vacia
+	for (int i = 0; i < 1000; i++) {
+		m.set(0, i % 4, i % 4);
+	}
+	m.print();
+	// Las 4 filas: vacia
+
+
+	// TEST 2: insertar desordenado y pisar un valor
+	m.set(8, 0, 3);
+	m.set(5, 0, 1);
+	m.set(9, 0, 1);
+	m.print();
+	// FILA 0: (col 1 = 9)  (col 3 = 8)
+	// FILA 1: vacia
+	// FILA 2: vacia
+	// FILA 3: vacia
+
+
+	// TEST 3: get y operator()
+	cout << m.get(0, 1) << endl;   // 9
+	cout << m(0, 3) << endl;       // 8
+	cout << m(2, 2) << endl;       // 0
+	cout << m.get(0, 4) << endl;   // TAMANO INVALIDO y luego -1
+
+
+	// TEST 4: set fuera de rango
+	m.set(5, 4, 0);    // TAMANO INVALIDO
+	m.set(5, 0, -1);   // TAMANO INVALIDO
+	m.set(5, -1, 0);   // TAMANO INVALIDO
+	m.print();
+	// Igual que el TEST 2
+
+
+	// TEST 5: borrar con cero
+	m.set(0, 0, 1);
+	m.print();
+	// FILA 0: (col 3 = 8)
+	// Las demas: vacia
+
+
+	// TEST 6: fila llena, borrar medio, primero y ultimo
+	m.set(4, 2, 3);
+	m.set(2, 2, 1);
+	m.set(1, 2, 0);
+	m.set(3, 2, 2);
+	m.print();
+	// FILA 0: (col 3 = 8)
+	// FILA 2: (col 0 = 1)  (col 1 = 2)  (col 2 = 3)  (col 3 = 4)
+
+	m.set(0, 2, 1);
+	m.print();
+	// FILA 2: (col 0 = 1)  (col 2 = 3)  (col 3 = 4)
+
+	m.set(0, 2, 0);
+	m.print();
+	// FILA 2: (col 2 = 3)  (col 3 = 4)
+
+	m.set(0, 2, 3);
+	m.print();
+	// FILA 2: (col 2 = 3)
+
+
+	// TEST 7: borrar algo que no existe
+	m.set(0, 1, 1);
+	m.set(0, 3, 2);
+	m.print();
+	// Igual que el anterior
+
+	return 0;
+}
+
+*/
+
+
+
+
 /*
 
 VERSION 1 - LE SIMPLE
@@ -447,17 +670,17 @@ struct Nodo {
 
 };
 
-struct MatrizLE {
+struct MatrizV1 {
 
 	Nodo* head;
 	int tamano;
 
-	MatrizLE(int t) {
+	MatrizV1(int t) {
 		tamano = t;
 		head = nullptr;
 	}
 
-	~MatrizLE() {
+	~MatrizV1() {
 
 		Nodo* p = head;
 		Nodo* tmp = nullptr;
@@ -489,7 +712,7 @@ struct MatrizLE {
 
 
 
-bool MatrizLE::find(Nodo**& p, int f, int c) {
+bool MatrizV1::find(Nodo**& p, int f, int c) {
 
 	while (*p &&  ((*p)->fila < f   ||  ((*p)->fila == f && (*p)->columna < c) ) ){
 		p = &((*p)->next);
@@ -500,7 +723,7 @@ bool MatrizLE::find(Nodo**& p, int f, int c) {
 
 
 
-bool MatrizLE::ins(int v, int f, int c) {
+bool MatrizV1::ins(int v, int f, int c) {
 
 	Nodo** p = &head;
 
@@ -521,7 +744,7 @@ bool MatrizLE::ins(int v, int f, int c) {
 
 }
 
-bool MatrizLE::rem(int f, int c) {
+bool MatrizV1::rem(int f, int c) {
 
 	Nodo** p = &head;
 
@@ -543,7 +766,7 @@ bool MatrizLE::rem(int f, int c) {
 
 }
 
-int MatrizLE::get(int f, int c) {
+int MatrizV1::get(int f, int c) {
 
 	if (!((f >= 0 && f < tamano) && (c >= 0 && c < tamano))) {
 		cout << "TAMANO FUERA DE MATRIZ" << endl;
@@ -563,7 +786,7 @@ int MatrizLE::get(int f, int c) {
 }
 
 
-void MatrizLE::set(int v, int f, int c) {
+void MatrizV1::set(int v, int f, int c) {
 
 	if (!((f >= 0 && f < tamano) && (c >= 0 && c < tamano))) {
 		cout << "TAMANO FUERA DE MATRIZ" << endl;
@@ -589,13 +812,13 @@ void MatrizLE::set(int v, int f, int c) {
 }
 
 
-int MatrizLE::operator()(int f, int c) {
+int MatrizV1::operator()(int f, int c) {
 
 	return get(f, c);
 
 }
 
-void MatrizLE::print() {
+void MatrizV1::print() {
 
 	for (int i = 0; i < tamano; i++) {
 		for (int j = 0; j < tamano; j++) {
@@ -609,7 +832,7 @@ void MatrizLE::print() {
 
 int main() {
 
-	MatrizLE m(4);
+	MatrizV1 m(4);
 
 	cout << "=== TEST 1: insertar ===" << endl;
 	m.set(5, 0, 3);
