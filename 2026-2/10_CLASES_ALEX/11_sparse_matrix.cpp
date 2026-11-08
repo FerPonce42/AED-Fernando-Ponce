@@ -352,6 +352,339 @@ aca ponemos un operador parentesis. es mas estiticap ara el no es funcional, es 
 
 /*
 
+VERSION 3 DE LA MATRIZ 
+
+
+#include <iostream>
+#include <assert.h>
+using namespace std;
+
+class CNode {
+
+public:
+
+	int value;
+	int fila;
+	int columna;
+
+	CNode* next;
+	CNode* down;
+
+	CNode(int v, int f, int c) {
+		next = nullptr;
+		down = nullptr;
+		value = v;
+		fila = f;
+		columna = c;
+	}
+};
+
+
+class MatrizV3; // declarar que mas abajo esta todo el cuerpo.
+
+struct CX {
+
+	int fila;
+	int columna;
+	MatrizV3* pm;
+
+	CX(MatrizV3* mv3, int f, int c) {
+
+		pm = mv3; // guardamos el objeto del main
+		fila = f;
+		columna = c;
+
+	}
+
+	operator int(); // para cuando piden get
+
+	CX& operator= (int v);
+
+};
+
+class MatrizV3 {
+
+private:
+
+
+	int TAM_F;
+	int TAM_C;
+
+	CNode** FILAS;
+
+	CNode** COLUM;
+
+
+	bool findF(CNode**& p, int f, int c);
+
+	bool findC(CNode**& p, int f, int c);
+
+
+	bool ins(int v, int f, int c);
+
+	bool rem(int f, int c);
+
+
+
+public:
+
+
+
+	MatrizV3(int tf, int tc) {
+		TAM_F = tf;
+		TAM_C = tc;
+
+
+		FILAS = new CNode * [TAM_F];
+		COLUM = new CNode * [TAM_C];
+
+
+		for (CNode** x = FILAS; x < FILAS + TAM_F; x++) {
+			*x = nullptr;
+		}
+
+		for (CNode** y = COLUM; y < COLUM + TAM_C; y++) {
+			*y = nullptr;
+		}
+
+	}
+
+	~MatrizV3() {
+
+		CNode** p = FILAS;
+		CNode* pp = nullptr;
+		CNode* tmp = nullptr;
+
+		while (p < FILAS + TAM_F) {
+
+			pp = *p;
+
+			while (pp != nullptr) {
+				tmp = pp;
+				pp = pp->next;
+				delete tmp;
+			}
+
+
+			p++;
+		}
+
+		delete[] FILAS;
+		delete[] COLUM;
+
+	}
+
+
+	int get(int f, int c);
+
+	void set(int v, int f, int c);
+
+	CX operator()(int f, int c);
+
+
+};
+
+
+bool MatrizV3::findF(CNode**& p, int f, int c) {
+	
+	p = FILAS + f;
+
+	while (*p && (*p)->columna < c) {
+		p = &((*p)->next);
+	}
+
+	return *p && (*p)->columna == c;
+
+}
+
+bool MatrizV3::findC(CNode**& p, int f, int c) {
+
+	p = COLUM + c;
+
+	while (*p && (*p)->fila < f) {
+		p = &((*p)->down);
+	}
+
+	return *p && (*p)->fila == f;
+
+}
+
+bool MatrizV3::ins(int v, int f, int c) {
+
+	CNode** pf;
+	CNode** pc;
+
+	if (!findF(pf, f, c) && !findC(pc, f, c)) {
+
+		CNode* nodo = new CNode(v, f, c);
+		nodo->next = *pf;
+		*pf = nodo; 
+
+		nodo->down = *pc;
+		*pc = nodo;
+
+		return true; 
+	}
+	else {
+		(*pf)->value = v;
+		return false;
+	}
+
+
+}
+
+bool MatrizV3::rem(int f, int c) {
+
+	CNode** pf;
+	CNode** pc;
+
+	if (findF(pf, f, c) && findC(pc, f, c)) {
+
+		CNode* tmpfc = *pf;
+
+		*pf = (*pf)->next;
+		*pc = (*pc)->down;
+
+		delete tmpfc;
+		
+		return true;
+
+	}
+	else {
+		return false;
+	}
+
+}
+
+
+int MatrizV3::get(int f, int c) {
+
+	assert(f >= 0 && c >= 0 && f < TAM_F && c < TAM_C);
+	CNode** pf;
+	if (findF(pf, f, c)) {
+		return (*pf)->value;
+	}
+	else {
+		return 0;
+	}
+
+}
+
+void MatrizV3::set(int v, int f, int c) {
+
+	assert(f >= 0 && c >= 0 && f < TAM_F && c < TAM_C);
+
+	if (v == 0) {
+		rem(f, c);
+	}
+	else {
+		ins(v, f, c); // el caso de insertar y setear un valor se resolve directamente en ins.
+	}
+
+
+}
+
+// LOGICA PARA LA MATRIZ.
+CX MatrizV3::operator()(int f, int c) {
+
+	return CX(this, f, c);
+
+}
+
+
+//LOGICA QUE ESTA DENTRO DE CX, AL RECIBIR LO QUE LO ANTERIOR LE DIO
+
+CX::operator int() {
+	return pm->get(fila, columna);
+}
+
+
+CX& CX::operator= (int v) {
+
+	pm->set(v, fila, columna);
+
+	return *this;
+}
+
+
+
+
+
+
+
+
+// aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+void check(const char* nombre, int obtenido, int esperado) {
+	cout << (obtenido == esperado ? "[OK]    " : "[FALLO] ")
+		<< nombre << " -> " << obtenido
+		<< " (esperado " << esperado << ")" << endl;
+}
+
+int main() {
+	MatrizV3 m(4, 4);
+
+	// 1. casilla vacía
+	check("vacia (1,3)", m(1, 3), 0);
+
+	// 2. set y get
+	m(1, 3) = 7;
+	check("guardar 7 en (1,3)", m(1, 3), 7);
+
+	// 3. sobrescribir
+	m(1, 3) = 8;
+	check("sobrescribir (1,3)", m(1, 3), 8);
+
+	// 4. varios nodos (fila 1 y columna 3)
+	m(1, 0) = 3;
+	m(1, 2) = 5;
+	m(0, 3) = 4;
+	m(2, 3) = 6;
+	check("(1,0)", m(1, 0), 3);
+	check("(1,2)", m(1, 2), 5);
+	check("(0,3)", m(0, 3), 4);
+	check("(2,3)", m(2, 3), 6);
+	check("(1,3) sigue", m(1, 3), 8);
+
+	// 5. borrar con 0
+	m(1, 3) = 0;
+	check("borrar (1,3)", m(1, 3), 0);
+
+	// 6. los vecinos no se rompieron
+	check("(1,0) intacto", m(1, 0), 3);
+	check("(1,2) intacto", m(1, 2), 5);
+	check("(0,3) intacto", m(0, 3), 4);
+	check("(2,3) intacto", m(2, 3), 6);
+
+	// 7. volver a insertar donde se borró
+	m(1, 3) = 9;
+	check("reinsertar (1,3)", m(1, 3), 9);
+
+
+
+	// 8. borrar una casilla que ya está vacía
+	m(2, 2) = 0;
+	check("borrar vacia (2,2)", m(2, 2), 0);
+	check("(1,3) intacto", m(1, 3), 9);
+
+
+	return 0;   // aquí corre tu destructor
+}
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+/*
+
 
 VERSION 2 A MANO DE LA MATRIZ ESPARTANA.
 
