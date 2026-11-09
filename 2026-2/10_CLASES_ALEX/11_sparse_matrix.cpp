@@ -350,6 +350,388 @@ aca ponemos un operador parentesis. es mas estiticap ara el no es funcional, es 
 */
 
 
+
+
+/*
+
+VERSION 4 DE LA MATRIZ, UN ARBOL BST MODIFICADO: 
+
+#include <iostream>
+#include <assert.h>
+
+#include <cstdlib> // para imprimir nomas
+
+
+
+using namespace std;
+
+
+class CNode {
+public:
+	int value;
+	int row;
+	int column;
+
+	CNode* left;
+	CNode* right;
+
+	CNode(int v, int r, int c) {
+		value = v;
+		row = r;
+		column = c;
+		left = nullptr;
+		right = nullptr;
+	}
+};
+
+class MatrizV4;
+
+
+class CX {
+private:
+	
+	int row;
+	int column;
+
+	MatrizV4* pm;
+public:
+	CX(int r, int c, MatrizV4* ptr_this) {
+		row = r;
+		column = c;
+		pm = ptr_this;
+	}
+
+
+
+	CX& operator= (int v);
+
+	operator int();
+
+};
+
+class MatrizV4 {
+
+private:
+
+	CNode* root;
+
+	int TAM_ROW;
+	int TAM_COLUMN;
+
+	void destruir(CNode* n);
+
+	bool find(CNode**& p, int r, int c);
+	bool ins(int v, int r , int c);
+	bool rem(int r, int c);
+
+public:
+
+	MatrizV4(int tam_r, int tam_c) {
+		TAM_ROW = tam_r;
+		TAM_COLUMN = tam_c;
+		root = nullptr;
+	}
+
+	~MatrizV4() {
+		destruir(root);
+	}
+
+	int get(int r, int c);
+
+	void set(int v, int r, int c);
+
+	CX operator()(int r, int c);
+
+
+	// solo para imprimir:
+	void mostrar();
+
+};
+
+void MatrizV4::destruir(CNode* n) {
+	if (n == nullptr) {
+		return;
+	}
+	// para liberar imagina un postorden:
+
+	destruir(n->left);
+
+	destruir(n->right);
+
+	delete n;
+}
+
+bool MatrizV4::find(CNode**& p, int r, int c) {
+
+	while (*p) {
+
+		if ((*p)->row > r) {
+
+			p = &((*p)->left);
+
+		}
+		else if ((*p)->row == r) {
+
+			if ((*p)->column > c) {
+
+				p = &((*p)->left);
+
+			}
+			else if ((*p)->column == c) {
+
+				return true;
+
+			}
+			else {
+
+				p = &((*p)->right);
+
+			}
+
+
+		}
+		else {
+			p = &((*p)->right);
+		}
+	}
+
+	return false;
+
+}
+
+
+bool MatrizV4::ins(int v, int r, int c) {
+
+	CNode** p = &root;
+
+	if (!find(p, r, c)) {
+		CNode* nodo = new CNode(v, r, c);
+		*p = nodo;
+		return true;
+	}
+	else {
+		(*p)->value = v;
+		return false;
+	}
+
+}
+
+
+bool MatrizV4::rem(int r, int c) {
+
+	CNode** p = &root;
+
+	if (find(p, r, c)) {
+
+		CNode* tmp;
+
+
+		if ((*p)->left != nullptr && (*p)->right != nullptr) {
+
+			CNode* padre = *p;
+			p = &((*p)->left);
+
+			while ((*p)->right != nullptr) {
+				p = &((*p)->right);
+			}
+
+			tmp = *p;
+
+			padre->value = tmp->value;
+			padre->row = tmp->row;
+			padre->column = tmp->column;
+
+		}
+
+
+		if ((*p)->left != nullptr || (*p)->right != nullptr) {
+			tmp = *p;
+			if ((*p)->left != nullptr) {
+				*p = (*p)->left;
+			}
+			else {
+				*p = (*p)->right;
+			}
+		}
+		else {
+			tmp = *p;
+			*p = nullptr;
+		}
+		delete tmp; 
+		return true;
+
+
+	}
+	else {
+		return false;
+	}
+
+}
+
+int MatrizV4::get(int r, int c) {
+
+	assert(r >= 0 && r < TAM_ROW && c >= 0 && c < TAM_COLUMN);
+
+	CNode** p = &root;
+
+	if (find(p, r, c)) {
+		return (*p)->value;
+	}
+	else {
+		return 0;
+	}
+
+}
+
+
+void MatrizV4::set(int v, int r, int c) {
+
+	assert(r >= 0 && r < TAM_ROW && c >= 0 && c < TAM_COLUMN);
+
+	if (v == 0) {
+		rem(r, c);
+	}
+	else {
+		ins(v, r, c);
+	}
+
+}
+
+
+CX MatrizV4::operator()(int r, int c) {
+
+	return CX(r, c, this);
+
+}
+
+
+CX& CX::operator= (int v) {
+
+	pm->set(v, row, column);
+
+	return *this;
+
+}
+
+CX::operator int() {
+
+	return pm->get(row, column);
+}
+
+
+void MatrizV4::mostrar() {
+	for (int r = 0; r < TAM_ROW; r++)
+		for (int c = 0; c < TAM_COLUMN; c++)
+			if (get(r, c) != 0)
+				cout << "(" << r << "," << c << ") = " << get(r, c) << endl;
+}
+
+
+
+
+int main() {
+	const int N = 6;
+	int fallos = 0;
+
+	// compara una matriz contra un arreglo normal (la "verdad") y reporta
+	auto verificar = [&](MatrizV4& m, int ref[N][N], const char* test) {
+		for (int r = 0; r < N; r++)
+			for (int c = 0; c < N; c++)
+				if (m.get(r, c) != ref[r][c]) {
+					cout << "FALLO " << test << " en (" << r << "," << c << "): get="
+						<< m.get(r, c) << " esperado=" << ref[r][c] << endl;
+					fallos++;
+					return;
+				}
+		cout << "OK    " << test << endl;
+		};
+
+	// TEST 1: ceros en todos lados (no deben crear nada)
+	{
+		MatrizV4 m(N, N); int ref[N][N] = {};
+		for (int r = 0; r < N; r++) for (int c = 0; c < N; c++) m.set(0, r, c);
+		verificar(m, ref, "TEST 1a: set(0) en toda la matriz vacia");
+		m.set(7, 2, 2); ref[2][2] = 7;
+		for (int r = 0; r < N; r++) for (int c = 0; c < N; c++)
+			if (r != 2 || c != 2) m.set(0, r, c);          // ceros alrededor de un unico dato
+		verificar(m, ref, "TEST 1b: ceros alrededor de un dato");
+	}
+
+	// TEST 2: full bucle: llenar todo, vaciar en orden raro, volver a llenar
+	{
+		MatrizV4 m(N, N); int ref[N][N] = {};
+		for (int r = 0; r < N; r++) for (int c = 0; c < N; c++) { m.set(r * N + c + 1, r, c); ref[r][c] = r * N + c + 1; }
+		verificar(m, ref, "TEST 2a: llena completa");
+		for (int r = N - 1; r >= 0; r--) for (int c = 0; c < N; c += 2) { m.set(0, r, c); ref[r][c] = 0; }
+		verificar(m, ref, "TEST 2b: vaciado parcial (reves)");
+		for (int c = 0; c < N; c++) for (int r = 0; r < N; r++) { m.set(0, r, c); ref[r][c] = 0; }
+		verificar(m, ref, "TEST 2c: vaciada total (por columnas)");
+		for (int r = 0; r < N; r++) for (int c = N - 1; c >= 0; c--) { m.set(1, r, c); ref[r][c] = 1; }
+		verificar(m, ref, "TEST 2d: llena de nuevo (orden inverso)");
+	}
+
+	// TEST 3: sobrescribir, borrar inexistentes y borrar dos veces lo mismo
+	{
+		MatrizV4 m(N, N); int ref[N][N] = {};
+		m.set(1, 4, 4); m.set(9, 4, 4); m.set(9, 4, 4); ref[4][4] = 9;
+		m.set(3, 1, 1); ref[1][1] = 3;
+		m.set(0, 5, 5); m.set(0, 0, 0);                     // inexistentes
+		m.set(0, 1, 1); m.set(0, 1, 1); ref[1][1] = 0;      // borrar dos veces
+		verificar(m, ref, "TEST 3: sobrescribir / inexistentes / doble borrado");
+	}
+
+	// TEST 4: borrar con 0, 1 y 2 hijos (incluida la raiz)
+	{
+		MatrizV4 m(N, N); int ref[N][N] = {};
+		int datos[][2] = { {3,3},{1,1},{5,5},{0,0},{2,2},{4,4},{5,0} };   // raiz (3,3) con dos hijos
+		for (auto& d : datos) { m.set(1, d[0], d[1]); ref[d[0]][d[1]] = 1; }
+		int borrar[][2] = { {0,0},{5,5},{1,1},{3,3},{2,2} };               // hoja, 1 hijo, 2 hijos, raiz...
+		for (auto& d : borrar) { m.set(0, d[0], d[1]); ref[d[0]][d[1]] = 0; }
+		verificar(m, ref, "TEST 4: borrados con 0/1/2 hijos y raiz");
+	}
+
+	// TEST 5: estres aleatorio (~1/3 ceros), verificando cada paso
+	{
+		MatrizV4 m(N, N); int ref[N][N] = {};
+		srand(12345);
+		int antes = fallos;
+		for (int i = 0; i < 30000 && fallos == antes; i++) {
+			int r = rand() % N, c = rand() % N;
+			int v = (rand() % 3 == 0) ? 0 : rand() % 9 + 1;
+			m.set(v, r, c); ref[r][c] = v;
+			for (int a = 0; a < N && fallos == antes; a++)
+				for (int b = 0; b < N; b++)
+					if (m.get(a, b) != ref[a][b]) {
+						cout << "FALLO TEST 5 en la operacion " << i << ", celda (" << a << "," << b << ")" << endl;
+						fallos++; break;
+					}
+		}
+		if (fallos == antes) cout << "OK    TEST 5: estres aleatorio" << endl;
+	}
+
+	// TEST 6: mv4(r,c) lectura y escritura
+	{
+		MatrizV4 m(4, 4);
+		m(1, 2) = 5; m(0, 3) = 7; m(2, 1) = 9;
+		int x = m(1, 2);
+		m(1, 2) = 0;
+		if (x == 5 && m(1, 2) == 0 && m(0, 3) == 7) cout << "OK    TEST 6: operator()" << endl;
+		else { cout << "FALLO TEST 6: operator()" << endl; fallos++; }
+		m.mostrar();
+	}
+
+	cout << (fallos == 0 ? "\nTODOS LOS TESTS PASARON" : "\nHAY FALLOS") << endl;
+}
+
+*/
+
+
+
+
+
+
+
+
 /*
 
 VERSION 3 DE LA MATRIZ 
