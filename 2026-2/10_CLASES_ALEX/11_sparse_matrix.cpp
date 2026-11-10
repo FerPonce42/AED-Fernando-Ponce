@@ -352,6 +352,304 @@ aca ponemos un operador parentesis. es mas estiticap ara el no es funcional, es 
 
 
 
+
+
+
+
+
+
+
+
+
+
+/*
+VERSION 5 DE LA MATRIZ, AHORA CON EL CONTENEDOR SET QUE ASCO.
+
+#include <iostream>
+#include <set>
+using namespace std;
+
+// VERSION PARA USAR EL COMPARADOR FUERA DEL NODO:
+class CNode {
+public:
+	int value;
+	int row;
+	int column;
+
+	CNode(int v, int r, int c) {
+		value = v;
+		row = r;
+		column = c;
+	}
+	// sin operator<
+};
+
+// función suelta, fuera de todas las clases
+bool comparar(const CNode& a, const CNode& b) {
+
+	if (a.row < b.row) {          // a va antes que b
+		return true;
+	}
+	else if (a.row == b.row) {
+		return a.column < b.column;
+	}
+	else {
+		return false;
+	}
+
+}
+
+class MatrizV5 {
+
+private:
+
+	set<CNode, bool(*)(const CNode&, const CNode&)> contenedor;
+	int TAM_ROW;
+	int TAM_COLUM;
+
+public:
+
+	MatrizV5(int tr, int tc) : contenedor(comparar) {
+		TAM_ROW = tr;
+		TAM_COLUM = tc;
+	}
+
+	// get, set, operator() no cambian
+};
+// NADA MAS, solo eso cambia, el resto se mantiene igual como nosoros lo habiamos hecho aqui:
+// ESTA VERSION DE ABAJO SERIA LA.. MAS TRANQUILA?...
+
+class CNode {
+public:
+	int value;
+	int row;
+	int column;
+
+	CNode(int v, int r, int c) {
+		value = v;
+		row = r;
+		column = c;
+	}
+
+	bool operator<(const CNode& n) const;
+
+};
+
+class MatrizV5;
+
+class CX {
+private:
+	int r;
+	int c;
+	MatrizV5* pm;
+public:
+	CX(int row, int column, MatrizV5* direccion) {
+		r = row;
+		c = column;
+		pm = direccion;
+	}
+
+	operator int();
+
+	CX& operator= (int v);
+
+};
+
+class MatrizV5 {
+
+private:
+
+	set<CNode> contenedor;
+	int TAM_ROW;
+	int TAM_COLUM;
+
+public:
+
+	MatrizV5(int tr, int tc) {
+		TAM_ROW = tr;
+		TAM_COLUM = tc;
+	}
+
+	int get(int r, int c);
+
+	void set(int v, int r, int c);
+
+	CX operator() (int r, int c);
+
+};
+
+
+
+/// Logica para el SET
+// row : el que vive dentro
+// n.row : el que venimos a meter
+
+//  Se que es un arbol, pero imaginalo como vector. no hay de otra.
+
+bool CNode::operator<(const CNode& n) const {
+
+	if (row < n.row) { // row va antes que n.row
+		return true;
+	}
+	else if (row == n.row) {
+		return column < n.column;
+	}
+	else {
+		return false;
+	}
+
+}
+
+
+int MatrizV5::get(int r, int c) {
+
+	CNode n(0, r, c);
+
+	auto encontrado = contenedor.find(n);
+
+	if (encontrado != contenedor.end()) {
+		return encontrado->value;
+	}
+	else {
+		return 0;
+	}
+
+}
+
+void MatrizV5::set(int v, int r, int c) {
+
+	CNode n(v, r, c);
+
+	auto encontrado = contenedor.find(n);
+
+	if (v == 0) {
+		
+		if (encontrado != contenedor.end()) {
+			contenedor.erase(encontrado); // borra porque es 0 p
+		}
+
+	}
+	else {
+		
+		if (encontrado != contenedor.end()) { // si estaba, (no podemos reemplzar directo) ; borra e inserta.
+			contenedor.erase(encontrado);
+			contenedor.insert(n);
+		}
+		else {
+			contenedor.insert(n); // si no estaba, insertar normal
+		}
+
+	}
+
+
+}
+
+
+
+CX MatrizV5::operator() (int r, int c) {
+
+	return CX(r, c, this);
+
+}
+
+
+CX::operator int() {
+
+	return pm->get(r,c);
+
+}
+
+CX& CX::operator= (int v) {
+
+	pm->set(v,r,c);
+
+	return *this;
+}
+
+
+
+// RELLENO PARA PODER IMPRIMIR  Y VER LOS TESTS:
+
+void probar(const char* nombre, int obtenido, int esperado) {
+	if (obtenido == esperado)
+		cout << "OK    " << nombre << endl;
+	else
+		cout << "FALLO " << nombre << " -> salio " << obtenido
+		<< ", esperaba " << esperado << endl;
+}
+
+int main() {
+
+	MatrizV5 m(4, 4);
+
+	// 1. casilla vacía
+	probar("vacia devuelve 0", m(0, 3), 0);
+
+	// 2. guardar y leer
+	m(0, 3) = 4;
+	probar("guardar 4 en (0,3)", m(0, 3), 4);
+
+	// 3. sobrescribir una casilla que ya existe
+	m(0, 3) = 9;
+	probar("sobrescribir (0,3) con 9", m(0, 3), 9);
+
+	// 4. guardar 0 borra el nodo
+	m(0, 3) = 0;
+	probar("guardar 0 en (0,3)", m(0, 3), 0);
+
+	// 5. guardar 0 en casilla vacía (no debe romper nada)
+	m(2, 2) = 0;
+	probar("0 en casilla vacia", m(2, 2), 0);
+
+	// 6. varias casillas no se pisan entre sí
+	m(1, 1) = 5;
+	m(1, 2) = 6;
+	m(2, 1) = 7;
+	m(0, 0) = 8;
+	probar("(1,1)", m(1, 1), 5);
+	probar("(1,2)", m(1, 2), 6);
+	probar("(2,1)", m(2, 1), 7);
+	probar("(0,0)", m(0, 0), 8);
+
+	// 7. borrar una no afecta a las demás
+	m(1, 2) = 0;
+	probar("(1,2) borrada", m(1, 2), 0);
+	probar("(1,1) sigue", m(1, 1), 5);
+	probar("(2,1) sigue", m(2, 1), 7);
+
+	// 8. volver a llenar una casilla borrada
+	m(1, 2) = 3;
+	probar("(1,2) reinsertada", m(1, 2), 3);
+
+	// 9. esquinas
+	m(0, 3) = 1;
+	m(3, 0) = 2;
+	m(3, 3) = 3;
+	probar("esquina (0,3)", m(0, 3), 1);
+	probar("esquina (3,0)", m(3, 0), 2);
+	probar("esquina (3,3)", m(3, 3), 3);
+
+	// 10. misma fila, distinta columna / misma columna, distinta fila
+	probar("(3,1) vacia", m(3, 1), 0);
+	probar("(1,3) vacia", m(1, 3), 0);
+
+	// 11. valor negativo
+	m(2, 3) = -5;
+	probar("negativo en (2,3)", m(2, 3), -5);
+
+}
+
+
+
+
+*/
+
+
+
+
+
+
+
 /*
 
 VERSION 4 DE LA MATRIZ, UN ARBOL BST MODIFICADO: 
