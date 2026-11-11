@@ -349,7 +349,214 @@ aca ponemos un operador parentesis. es mas estiticap ara el no es funcional, es 
 
 */
 
+/*
 
+VERSION 6 MATRIZ ESPARTANA LIST CONTENEDOR RARO PERO CON FE ES FIJA.
+
+
+#include <iostream>
+#include <list>
+
+using namespace std;
+
+class CNode {
+public:
+	int value;
+	int row;
+	int column;
+
+	CNode(int v, int r, int c) {
+		value = v;
+		row = r;
+		column = c;
+	}
+
+};
+
+
+class MatrizV6;
+
+class CX {
+private:
+
+	int r;
+	int c;
+	MatrizV6* pm;
+public:
+
+	CX(int row, int column, MatrizV6* ptr) {
+		r = row;
+		c = column;
+		pm = ptr;
+	}
+
+	operator int();
+
+	CX& operator=(int v);
+
+};
+
+
+
+class MatrizV6 {
+private:
+	list<CNode> l;
+
+public:
+
+	int get(int r, int c);
+
+	void set(int v, int r, int c);
+
+	CX operator()(int r, int c);
+
+
+};
+
+int MatrizV6::get(int r, int c) {
+
+	CNode nodo(0, r, c);
+
+
+	for (auto i = l.begin(); i != l.end(); i++) {
+		if (nodo.row ==  i->row && nodo.column == i->column ) {
+			return i->value;
+		}
+	}
+
+	return 0;
+
+}
+
+void MatrizV6::set(int v, int r, int c) {
+
+	CNode nodo(v, r, c);
+
+	if (v == 0) {
+
+		for (auto i = l.begin(); i != l.end(); i++) {
+			if (nodo.row == i->row && nodo.column == i->column) {
+
+				l.erase(i);
+
+				return;
+
+			}
+		}
+
+	}
+	else {
+
+		auto i = l.begin();
+
+		for (i ; i != l.end(); i++) {
+			if (nodo.row == i->row && nodo.column == i->column) {
+
+				i = l.erase(i);
+
+				l.insert(i, nodo);
+
+				return;
+
+			}
+		}
+
+		l.insert(i, nodo);
+	}
+
+
+}
+
+CX MatrizV6::operator()(int r, int c) {
+
+	return CX(r, c, this);
+
+}
+
+CX::operator int() {
+
+	return pm->get(r, c);
+}
+
+CX& CX::operator=(int v) {
+	pm->set(v, r, c);
+	return *this;
+}
+
+
+// para rpobar:
+
+void probar(const char* nombre, int obtenido, int esperado) {
+	if (obtenido == esperado)
+		cout << "OK    " << nombre << endl;
+	else
+		cout << "FALLO " << nombre << " -> salio " << obtenido
+		<< ", esperaba " << esperado << endl;
+}
+
+int main() {
+
+	MatrizV6 m;
+
+	// 1. casilla vacía
+	probar("vacia devuelve 0", m(0, 3), 0);
+
+	// 2. guardar y leer
+	m(0, 3) = 4;
+	probar("guardar 4 en (0,3)", m(0, 3), 4);
+
+	// 3. sobrescribir una casilla que ya existe
+	m(0, 3) = 9;
+	probar("sobrescribir (0,3) con 9", m(0, 3), 9);
+
+	// 4. guardar 0 borra el nodo
+	m(0, 3) = 0;
+	probar("guardar 0 en (0,3)", m(0, 3), 0);
+
+	// 5. guardar 0 en casilla vacía (no debe romper nada)
+	m(2, 2) = 0;
+	probar("0 en casilla vacia", m(2, 2), 0);
+
+	// 6. varias casillas no se pisan entre sí
+	m(1, 1) = 5;
+	m(1, 2) = 6;
+	m(2, 1) = 7;
+	m(0, 0) = 8;
+	probar("(1,1)", m(1, 1), 5);
+	probar("(1,2)", m(1, 2), 6);
+	probar("(2,1)", m(2, 1), 7);
+	probar("(0,0)", m(0, 0), 8);
+
+	// 7. borrar una no afecta a las demás
+	m(1, 2) = 0;
+	probar("(1,2) borrada", m(1, 2), 0);
+	probar("(1,1) sigue", m(1, 1), 5);
+	probar("(2,1) sigue", m(2, 1), 7);
+
+	// 8. volver a llenar una casilla borrada
+	m(1, 2) = 3;
+	probar("(1,2) reinsertada", m(1, 2), 3);
+
+	// 9. esquinas
+	m(0, 3) = 1;
+	m(3, 0) = 2;
+	m(3, 3) = 3;
+	probar("esquina (0,3)", m(0, 3), 1);
+	probar("esquina (3,0)", m(3, 0), 2);
+	probar("esquina (3,3)", m(3, 3), 3);
+
+	// 10. misma fila, distinta columna / misma columna, distinta fila
+	probar("(3,1) vacia", m(3, 1), 0);
+	probar("(1,3) vacia", m(1, 3), 0);
+
+	// 11. valor negativo
+	m(2, 3) = -5;
+	probar("negativo en (2,3)", m(2, 3), -5);
+
+}
+
+
+*/
 
 
 
