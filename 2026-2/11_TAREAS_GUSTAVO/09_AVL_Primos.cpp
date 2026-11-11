@@ -43,7 +43,6 @@
 
 bf = 0
 */
-
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -203,8 +202,7 @@ void AVL::ins(int v) {
 	root = ins(root, v);
 }
 
-// find de toda la vida, pero ademas cuenta cuantos niveles bajo
-// y guarda al padre del nodo por el que va pasando
+// find para buscar al nodo marcao, su padre y su nivel.
 bool AVL::find(Nodo**& p, int v, int& nivel, Nodo*& padre) {
 
 	nivel = 0;
@@ -231,9 +229,7 @@ bool AVL::find(Nodo**& p, int v, int& nivel, Nodo*& padre) {
 	return false;
 }
 
-// n : nodo que visito, padre : el padre de n, nivel : nivel donde estoy
-// nivelElegido y padreElegido : los datos del nodo que se eligio
-// guarda en lista a los que estan en el mismo nivel pero con distinto padre
+
 void AVL::primos(Nodo* n, Nodo* padre, int nivel, int nivelElegido, Nodo* padreElegido, vector<Nodo*>& lista) {
 
 	if (n == nullptr) {
@@ -258,7 +254,7 @@ void AVL::primos(Nodo* n, Nodo* padre, int nivel, int nivelElegido, Nodo* padreE
 
 AVL avl;
 
-// se llama cada vez que haces clic en un nodo
+// para dibujarlo 
 void calcular(Nodo* elegido, vector<Nodo*>& lista) {
 
 	lista.clear();
@@ -275,9 +271,11 @@ void calcular(Nodo* elegido, vector<Nodo*>& lista) {
 
 int main() {
 
-	int datos[] = { 20, 10, 50, 5, 15, 30, 60, 3, 7, 11, 17, 40, 70 };
+	int datos[] = { 1,3,5,7,11,13,15,2,4,6,8,9,10,12,14 };
 
-	for (int i = 0; i < 13; i++) {
+	int n = sizeof(datos) / sizeof(datos[0]); 
+
+	for (int i = 0; i < n; i++) {
 		avl.ins(datos[i]);
 	}
 
