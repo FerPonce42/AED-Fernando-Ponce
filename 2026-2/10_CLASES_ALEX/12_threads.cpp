@@ -193,314 +193,166 @@ por eso tu algoritmo tienes que partirlo en esa cantidad de pedazos..
 Asi que tu algoritmo saca ventaja de tu hardware.
 
 
+*/
+
 
 #include <iostream>
 #include <thread>
 using namespace std;
 
-
-este es el proceso quqe ecutaremos.
-void F1(char c, int n){
-    imprime ese char n veces jaja
-    for(int i = 0 ; i < n ; i++){
-        cout<< c;
-    }
-
-}
-
-
-int main(){
-
-
-    el trehad t = es un puntero a funcion... y ya. en ese momento don dde haces thread
-    salta y corre a otro lado, mientras que el main sigue corriendo.
-
-    thread t(F1, 'c',50);
-    t.join();
-    cout<<"\n";
-
-}
-
-
-
-Lo qu pasa si lo ejecutamos sin el JOIN osea //t.join();
-
-en la terminal sale...
-menos cccccc
-denuvo
-
-ccc
-ccccccccccc
-cccc
-
-ccccccccccccccc
-
-que sucede?
-el main esta corrideno crea el thread y el main sigue corriendo... esta craend o2 proceso en paralelo. el main se pasa de golpe y  
-el main termina! y mata a todas las demas, hayan terminado o no. mato a todos los threads que se crearon. entonces
-no los dejan trabjar, el main la mata y listo. podria quedar memoria suelta , cualqueri cosa.
-
-etnoncesp ara eso
-
-esta el JOIN
-
-
-
-lo que hace el join es: OBLIGA AL MAIN y se sienta a esperar.
-
-asi conseguimos que imprima los c = 50
-osea cccc....ccc n veces 
-
-
-AQUI OTRO EJEMPLo...
-
-
-Solo que hara el main creará N threads... PEROOO
-
-usara la funcion
-
-nThreads = thread:hardware_concurrency(); <- esto nos da la cantidade nucleos que tu tienetes en tu maquina...
-
-#include <iostream>
 #include <vector>
-#include <thread>
-using namespace std;
 
+void reparto(long* arr, int n, int* s) {
 
-//este es el proceso quqe ecutaremos.
-void F1(char c, int n){
-    //imprime ese char n veces jaja
-    for(int i = 0 ; i < n ; i++){
-        cout<< c;
-    }
+	for (int i = 0; i < n; i++) {
+
+		*s += arr[i];
+
+	}
+
 
 }
 
-int main(){
-    int i = 0, nThreads = thread:hardware_concurrency();
-    vector<thread> ths(nThreads); //<-- vecotr de treashs de 8, parar que cada vez que se cree se almance en este vetor.
+int main() {
 
-    for(int = 0 ; i < nThreads ; i++){
-        ths[i] = thread(F1, char('a'+ 1), 100); 
-    }
+	long arr[] = { 2,6,3,1,7,8,9,6,4,3,2,8,9,11,13,1 };
 
-    for(int i = 0; i < nThreads; i++){
-        ths[i].join();
-    }
+	int s[] = { 0,0,0,0 };
 
-    cout<<"\n";
-}
+	vector<thread> t(4);
 
+	for (int i = 0; i < 4; i++) {
+		t[i] = thread(reparto, arr + i*4, 4, s + i);
+	}
 
+	for (int i = 0; i < 4; i++) {
 
-O---------------------
+		t[i].join();
 
-otro ejepm plo:
+	}
 
+	long suma = 0;
 
-void F1 (int x, int n){
+	for (int i = 0; i < 4; i++) {
+		suma += s[i];
+	}
 
-    for(int i = 0 ; i < n ; i++){
-    
-        sum+=x;
-
-
-    }
+	cout << suma;
 
 }
 
-int main(){
-    int i = 0, nt = thread:hardware_concurrency();
-    vector<thread> ths(nt); 
-
-    for(int = 0 ; i < nt ; i++){
-        ths[i] = thread(F1, i, 1000); 
-    }
-
-    for(int i = 0; i < nt; i++){
-        ths[i].join();
-    }
-
-    cout<<"\nsum: "<< sum;
-}
-
-aqui los threasd se pueden pelear por esa suma, por lo que haria q
-esa varaible quede como una mazamorra, una suma incoherente.
-los 8 threads sumen a la misma varaible. esa varaible esta en la ram
-y lso threas estan en la misma ram...
-entoncees eso daraia mala suma....
-
-la solucion/.... bueno, esa suma es la CRITICAL SECTION.. hay race conditino.
-
-La lectura no probelma
-cunando hay escritura es el problema...
-
-mientras mas cantidad hagan, mas proabblidad de que lancen sumas falsas. menor, cuesta mas 
-y aparentenete todo suma bien pero en un momento saldra error. (compila pero no es coherente)
-
-SOLUCION::
-
-#include <mutex> <-- es como un boolaeano que... hace
-
-mutex m;
-long sum = 0;
 
 
-void F1 (int x, int n){
 
-    for(int i = 0 ; i < n ; i++){
-    
-        m.lock();
+/*
 
-        sum+=x;
+SIN MUTEX Y RESULTADO CORRECTO (RAPIDO)
 
-        m.unlock();
+long parcial[2];
 
-    }
+void sumarmejor(int n, long* s) {
+
+	for (int i = 0; i < n; i++) {
+
+		*s += 1;
+
+	}
 
 }
 
-int main(){
-    int i = 0, nt = thread:hardware_concurrency();
-    vector<thread> ths(nt); 
 
-    for(int = 0 ; i < nt ; i++){
-        ths[i] = thread(F1, i, 1000); 
-    }
+int main() {
 
-    for(int i = 0; i < nt; i++){
-        ths[i].join();
-    }
+	thread t1(sumarmejor, 10000000, &parcial[0]);
 
-    cout<<"\nsum: "<< sum;
+	thread t2(sumarmejor, 10000000, &parcial[1]);
+
+
+	t1.join();
+	t2.join();
+
+
+	long total = parcial[0] + parcial[1];
+
+	cout << total;
 }
-
-Con esto la suma queda perfecta... pero...
-las 8 threasds estaran sumiendo secuencialmente YA NO SON PARALELAS!!!
-
-osea lo mismo que nada jajajaj.
-
-Entonces....
-
-Como salimos de esto..?
-
-usar esa version, pero perdemos lo paralelo.
-Lo unic oqe hace F1, bloqueamos su coso, entonces bloqueamos TODO hace ese lio...
-
-
-entonces el queire que o bueno pensamos que hagas todo, pero en cierto momento 
-haces ese ojito...
-
-para que sea menos probable que se lentee todo
-osea bloqueas.. de vez en cuand oal thread reucperas esa velocidad.
-
-
-mutex intrusivo : bloqueas todo. eso es malo
-
-
-mutex que mutea.. cada mil veces... eso es bueno!
-podrias conservar la coherencia...
-
-
-
-Lo idea es un proceso que te alusines una forma sin MUTEX! eso seria lo ideal...
-
-y si no hay salida...
-ve la forma que el mutex no mutee mucho...
-
-
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-Ahora la FORMA DE SUMAR.... SIN MUTEX?/....
-
-no quiero mutear ni bloquear.. ni que se corrommpa el resultado.
-
-el problemas es que todso estan sumando en el mismo resultado...
-
-
-
-Lo ideal..
-8 threads cada threas que sume en el general, haga una subsuma. solo acumulas. asi que no pides permiso a nadie...
-etnonces si todos somos threas todos ahacemos nuestra sub suma y corremos en paralelo
-y ya no usamos mutex..
-
-
-y... leugo hacemoms una suma parcial luego del join...
-
-
-
-
 
 */
 
 
-void F1 (int* ar, int n, int* s){// algunas son variables de entrada y otras de salida usa... referencia o punteros. para atrapar.
-
-    for(int i = 0 ; i < n ; i++){
-
-        *s += ar[i];
-
-    }
-
-}// por si un loco te pide meter 5 o mas argumentos.. ni modo, haz un struct y a ese le pasas algo para que llene.
-
-int main(){
-    int ar[16] = {2,6,3,1,7,8,9,6,4,3,2,8,9,11,13,1};
-// de algnua forma podrias pasarle los codos en 4 pedazos aquie el profe uso i* 4 como puntero o algo asi. 
-// procesas tu n pedazos, los espera y luego consolidads con los pedazos que te dieron..
-
-//1, partes
-// 2. esperas
-// 3. unes...
-
-// este arreglo fue de 16... que pasa si fueraa 17 y tienes 4 nucleso?
-
-// los pdeazos... tmr.. 4 4 4 5 no te queda de otra..
-
-// lo mas equivalentes que puedas..
-
-//lo que no se debe hacer son pedazos como.. 4000... no 4002! cuales serian los pedazos.. 1000 1000 1001 1001
-
-// LO QUE NO DEBES HACER... es 1000 1000 1000 1002... entonces.. despedrdicias un nucleo porque otros acabn antes...
-
-//haz lo q uer queiras pero que los pedazos sean masomenos equivalentes. funciona pero no es lo que buscamos...
-
-// osea considea que las partes podrian no ser iguales... aya no 16 si no 18. asi que tiens que hacer algo para qye la operacion te salga equivalente.
-
-// por eso esa particion equivalente es un reto.
-    int xsum[4] = {0,0,0,0};
-    int sum = 0;
-
-    int i = 0, nt = 4;
-
-    vector<thread> ths(nt);
-
-    for(int i = 0 ; i < nt ; i++){
-        ths[i] = thread(F1, &ar[i*4], 4, &xsum[i]); // le pasas la funcion y sus parametros... thread es un objeto que es un puntero a la funcion
-        // con eso puede s ejecutar la fucnon y lo ejecuta dentro del thread. si es funcion retorna algo...  lo retorna a quien lo llamo..
-        // y tu no tienes acceso a ese retorno... tu oslo le dices ejecuta esto.. asi que si reotrna algo o no no hay gofrma de qu tu lo tengas.
-        // entonces por eso... que F1 es void. POR ENDE NO HAY UN RETURN, DESCARTA ESO! no hay forma de acceder a ese return.
-        // Por eso procesar y agarra proceos y es via ... int* s (3er parametro...  de F1)
-
-        //entonces los threads se hacen solo con fuciones VOID.
 
 
-    }
 
 
-    for(i = 0 ; i < nt ; i++){
-        ths[i].join();
-    }
 
-    for(i = 0 ; i < nt ; i++){
-        sum+=xsum[i];
-    }
 
-    cout<< "\n sum: "<<sum;
 
-    getchar();
 
-    return 0;
+/*
+
+CON MUTEX Y RESULTADO CORRECTO (LENTO)
+
+#include <mutex>
+
+using namespace std;
+
+long total = 0;
+mutex m;
+
+void sumar(int n) {
+
+	for (int i = 0; i < n; i++) {
+
+		m.lock();
+		total += 1;
+		m.unlock();
+
+	}
+
 }
+
+int main() {
+
+	thread t1(sumar, 10000000);
+
+	thread t2(sumar, 10000000);
+
+	t1.join();
+	t2.join();
+
+	cout << total;
+}
+
+*/
+
+/*
+
+SIN MUTEX Y RESULTADO INCORRECTO
+
+#include <iostream>
+#include <thread>
+
+using namespace std;
+
+void F1(char c, int n) {
+
+	for (int i = 0; i < n; i++) {
+		cout << c;
+	}
+
+}
+
+int main() {
+
+	thread t1(F1, 'a', 10000);
+
+	thread t2(F1, 'b', 10000);
+
+	t1.join();
+	t2.join();
+
+	cout << endl;
+
+}
+
+*/
