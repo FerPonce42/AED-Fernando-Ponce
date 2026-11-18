@@ -74,7 +74,6 @@ ADEMAS, le presentas el ESPARSA (que felizmente ya lo construi)
 */
 
 
-
 #include <iostream>
 #include <assert.h>
 #include <cstdlib>
@@ -333,39 +332,49 @@ CX& CX::operator= (int v) {
 
 bool esSeguro(MatrizV3& m, int n, int f, int c) {
 
-	for (int r = 0; r < f; r++) {
-		if (m.get(r, c) != 0) {
+
+	for (int r = 0; r < f; r++) {  // solo un X por columna
+
+		if (m.get(r, c) != 0) { // verticalmente
 			return false;
 		}
+
 	}
 
-	if (f > 0) {
 
-		if (c > 0 && m.get(f - 1, c - 1) != 0) {
-			return false;
+	if (f > 0) { // para evitar el assert
+
+		if (c > 0 && m.get(f - 1, c - 1) != 0) { // arriba izq   X?
+			return false;                                    //    O
 		}
 
-		if (c < n - 1 && m.get(f - 1, c + 1) != 0) {
-			return false;
+		if (c < n - 1 && m.get(f - 1, c + 1) != 0) { // arriba der	   X?
+			return false;							         //      O	
 		}
+
 	}
+
 
 	return true;
 }
 
+
+
 bool resolver(MatrizV3& m, int n, int f) {
 
-	if (f == n) {
+	if (f == n) { // base: ya comi todas las filas.
 		return true;
 	}
 
-	int inicio = rand() % n;
+	int inicio = rand() % n; // columna al azar.
 
-	for (int i = 0; i < n; i++) {
 
-		int c = (inicio + i) % n;
+	for (int i = 0; i < n; i++) { // intentar columnas
 
-		if (esSeguro(m, n, f, c)) {
+		int c = (inicio + i) % n; // columna aleatoria pa iniciar.
+
+
+		if (esSeguro(m, n, f, c)) { // sirve esa posible ubicacion?
 
 			m(f, c) = 1;
 
@@ -374,6 +383,7 @@ bool resolver(MatrizV3& m, int n, int f) {
 			}
 
 			m(f, c) = 0;
+
 		}
 	}
 
