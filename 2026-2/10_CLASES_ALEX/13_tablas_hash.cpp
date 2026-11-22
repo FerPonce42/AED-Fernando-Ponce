@@ -156,3 +156,177 @@ PERO NO TOMARA ESO, ESO NO HACEMOS EN EL CURSO, SOLO ES UN EJEMPLO AL AIRE. ajja
 es una fumada lo que esta haciendo ya nos dijo que esto no enetra a lexamen jaajjajajajajajaj
 
 */
+
+/*
+HASH
+
+V1: un vector normal, vector<int>. Se llena "feo" porque si la casilla está ocupada, avanzas a la siguiente.
+V2: también un vector normal, vector<int>. Lo único distinto es que al colisionar usas f2 en vez de avanzar. El vector no hace doble cosa, 
+la que hace doble cosa es tu función.
+V3: un vector de listas enlazadas, vector<list<int>>. Eso sí cambia la estructura.
+*/
+
+
+/*-------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+
+/*
+// V1 Vector normal
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+
+class HashV1 {
+
+private:
+	// numero, colision
+	vector<pair<int,int>> v;
+	int tam;
+	int elem;
+
+public:
+
+	HashV1(int t) {
+
+		tam = t;
+		elem = 0;
+		v.assign(t, make_pair(-1,0));
+
+	}
+
+	void buscar(int x);
+
+	void insertar(int x);
+
+	int hash(int x);
+
+
+	void mostrar();
+
+};
+
+
+int HashV1::hash(int x) {
+
+	int pos = x % tam;
+
+	return pos;
+}
+
+void HashV1::buscar(int x) {
+
+	int i = hash(x); 
+	int cont = 0;
+
+
+	if (v[i].first == -1) {
+		cout << x << " -> " << "NO" << endl;
+		return;
+	}
+	else {
+
+		while (cont < tam && v[i].first != -1) {
+
+			if (v[i].first == x) {
+				cout << x << " -> " << "SI" << endl;
+				return;
+			}
+
+			i = (i + 1) % tam;
+			cont++;
+
+		}
+
+	}
+
+	cout << x << " -> " << "NO" << endl;
+}
+
+void HashV1::insertar(int x) {
+
+	if (elem == tam) {
+		cout << "CASILLAS LLENAS" << endl;
+		return;
+	}
+
+	int i = hash(x);
+	int cont = 0;
+
+	while (cont < tam && v[i].first != -1) {
+
+		v[i].second += 1; // entrar a lbucle + 1 colision a ese lleno.
+		
+		i = (i + 1) % tam;
+		cont++;
+	}
+
+	if (v[i].first == -1) {
+		v[i].first = x;
+		elem++;
+		
+	}
+
+}
+
+
+
+void HashV1::mostrar() {
+
+	cout << "====== TABLA HASH - V1 ======" << endl;
+	cout << "-------------------------" << endl;
+	cout << "POS"<<"  -  " << "DATO" << "    -    " << "COLISIONES" << endl;
+	cout<< "-------------------------" << endl;
+
+	for (int p = 0; p < v.size(); p++) {
+
+		cout << "["<<p<<"]"<<"  |  " << v[p].first << "      |      " << v[p].second << endl;
+
+	}
+
+
+}
+
+int main() {
+
+	HashV1 h(7);
+
+	cout << "--- TABLA VACIA ---" << endl;
+	h.mostrar();
+
+	cout << endl << "--- INSERTANDO 2, 9, 16, 5, 12, 23 ---" << endl;
+	h.insertar(2);
+	h.insertar(9);
+	h.insertar(16);
+	h.insertar(5);
+	h.insertar(12);
+	h.insertar(23);
+	h.mostrar();
+
+	cout << endl << "--- INSERTANDO 6 ---" << endl;
+	h.insertar(6);
+
+	cout << endl << "--- ANTES de intentar el 13 ---" << endl;
+	h.mostrar();
+
+	cout << endl << "--- intento insertar 13 ---" << endl;
+	h.insertar(13);
+
+	cout << endl << "--- DESPUES de intentar el 13 ---" << endl;
+	h.mostrar();
+
+	cout << endl << "--- INSERTANDO 30 (ya no hay espacio) ---" << endl;
+	h.insertar(30);
+
+	cout << endl << "--- BUSQUEDAS ---" << endl;
+	h.buscar(9);
+	h.buscar(23);
+	h.buscar(13);
+	h.buscar(6);
+	h.buscar(4);
+	h.buscar(30);
+}
+
+*/
