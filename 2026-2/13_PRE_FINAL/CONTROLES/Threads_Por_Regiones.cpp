@@ -35,14 +35,23 @@ int contarNegativos(int** A, int n) {
 }
 
 // Cada thread procesa las filas [f0, f1) y las columnas [c0, c1)
+
 void procesarRegion(int** A, int f0, int f1, int c0, int c1, int& reemplazos) {
+    for (int i = f0; i < f1; i++) {
 
-    // =====================================================
-    // COMPLETE EL CODIGO AQUI
-    // =====================================================
+        for (int j = c0; j < c1; j++) {
+            if (A[i][j] < 0) {
 
-    // =====================================================
+                A[i][j] = 0;
+
+                reemplazos++;
+
+            }
+        }
+    }
 }
+
+
 
 // Imprime los reemplazos de cada thread y el total, o un mensaje si T no es valido
 void limpiarNegativos(int** A, int n, int T) {
@@ -53,9 +62,47 @@ void limpiarNegativos(int** A, int n, int T) {
     for (int t = 0; t < T; t++)
         reemplazos[t] = 0;
 
-    // =====================================================
-    // COMPLETE EL CODIGO AQUI
-    // =====================================================
+
+    // Codigo completado:
+
+
+    int k = 0;
+
+    while (k * k < T) {
+        k++;
+    }
+
+    if (T <= 0 || k * k != T || k > n) {
+        valido = false;
+    }
+
+    if (valido) {
+        int M = n / k;
+
+        for (int t = 0; t < T; t++) {
+            int filaRegion = t / k;
+            int colRegion = t % k;
+
+            int f0 = filaRegion * M;
+            int f1 = f0 + M;
+            int c0 = colRegion * M;
+            int c1 = c0 + M;
+
+            if (filaRegion == k - 1) {
+                f1 = n;
+            }
+
+            if (colRegion == k - 1) {
+                c1 = n;
+            }
+
+            hilos[t] = thread(procesarRegion, A, f0, f1, c0, c1, ref(reemplazos[t]));
+        }
+
+        for (int t = 0; t < T; t++) {
+            hilos[t].join();
+        }
+    }
 
     // =====================================================
 
@@ -74,6 +121,10 @@ void limpiarNegativos(int** A, int n, int T) {
     delete[] reemplazos;
     delete[] hilos;
 }
+
+
+
+
 
 void runTest(int n, int T, const int* datos, bool mostrar) {
     int** A = crearMatriz(n);
