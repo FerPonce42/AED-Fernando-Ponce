@@ -153,14 +153,65 @@ public:
         cout << endl;
     }
 
+
+//intento 4:
+
     void rotate90() {
+        SNode* nuevoFil[TAM];
+        SNode* nuevoCol[TAM];
 
-        // =====================================================
-        // COMPLETE EL CODIGO AQUI
-        // =====================================================
+        for (int i = 0; i < TAM; i++) {
+            nuevoFil[i] = nullptr;
+            nuevoCol[i] = nullptr;
+        }
 
-        // =====================================================
+        for (int i = 0; i < filas; i++) {
+            nuevoCol[filas - 1 - i] = arrFil[i];
+        }
+
+        for (int j = 0; j < columnas; j++) {
+            SNode* anterior = nullptr;
+            SNode* actual = arrCol[j];
+
+            while (actual != nullptr) {
+                SNode* siguiente = actual->nextVer;
+                actual->nextVer = anterior;
+                anterior = actual;
+                actual = siguiente;
+            }
+
+            nuevoFil[j] = anterior;
+        }
+
+        for (int j = 0; j < columnas; j++) {
+            SNode* pos = nuevoFil[j];
+
+            while (pos != nullptr) {
+                SNode* siguiente = pos->nextVer;
+                int filaVieja = pos->fila;
+
+                pos->nextVer = pos->nextHor;
+                pos->nextHor = siguiente;
+
+                pos->fila = pos->col;
+                pos->col = filas - 1 - filaVieja;
+
+                pos = siguiente;
+            }
+        }
+
+        for (int i = 0; i < TAM; i++) {
+            arrFil[i] = nuevoFil[i];
+            arrCol[i] = nuevoCol[i];
+        }
+
+        int temp = filas;
+        filas = columnas;
+        columnas = temp;
     }
+
+
+
 };
 
 // elementos: tripletas {val, fila, col}
