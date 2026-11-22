@@ -48,23 +48,79 @@ public:
         cout << "]" << endl;
     }
 
+    // con fe compila
     void push(const T& valor) {
+        if (n == capacidad) {
+            return;
+        }
 
-        // =====================================================
-        // COMPLETE EL CODIGO AQUI
-        // =====================================================
+        datos[n] = valor;
+        int i = n;
+        n++;
 
-        // =====================================================
+        while (i > 0) {
+            int padre = (i - 1) / X;
+
+            if (prio(datos[i], datos[padre])) {
+                T val_tmp = datos[i];
+                datos[i] = datos[padre];
+                datos[padre] = val_tmp;
+
+                i = padre;
+            }
+            else {
+                break;
+            }
+        }
     }
+
+
 
     void pop() {
+        if (n == 0) {
+            return;
+        }
 
-        // =====================================================
-        // COMPLETE EL CODIGO AQUI
-        // =====================================================
+        datos[0] = datos[n - 1];
+        n--;
 
-        // =====================================================
+        int i = 0;
+
+        while (true) {
+            int primerHijo = X * i + 1;
+
+            if (primerHijo >= n) {
+                break;
+            }
+
+            int candidato = primerHijo;
+
+            for (int k = 1; k < X; k++) {
+                int hijo = primerHijo + k;
+
+                if (hijo >= n) {
+                    break;
+                }
+
+                if (prio(datos[hijo], datos[candidato])) {
+                    candidato = hijo;
+                }
+            }
+
+            if (prio(datos[candidato], datos[i])) {
+                T val_tmp = datos[i];
+                datos[i] = datos[candidato];
+                datos[candidato] = val_tmp;
+
+                i = candidato;
+            }
+            else {
+                break;
+            }
+        }
     }
+
+    
 };
 
 template <int X, typename Prioridad>
