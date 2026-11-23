@@ -170,7 +170,145 @@ V3: un vector de listas enlazadas, vector<list<int>>. Eso sí cambia la estructu
 /*-------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
+/*
+// VERSION 4 VECTOR -> LE PERO CON STRINGS
 
+#include <iostream>
+#include <vector>
+#include <list>
+using namespace std;
+
+
+class HashV3 {
+
+private:
+
+	int tam;
+	vector<list<string>> v;
+
+public:
+
+	HashV3(int t) {
+
+		tam = t;
+
+		v.assign(tam, list<string>());
+	}
+
+
+	int hash(string x);
+
+	void buscar(string x);
+
+	void insertar(string x);
+
+	void mostrar();
+
+
+};
+
+
+
+int HashV3::hash(string x) {
+
+	int cant_car = 0;
+	for (int i = 0; i < x.length(); i++) {
+		cant_car = cant_car + x[i];
+	}
+
+	int pos = cant_car % tam;
+
+	return pos;
+
+}
+
+
+void HashV3::insertar(string x) {
+
+	int i = hash(x);
+
+	v[i].push_back(x);
+
+
+}
+
+void HashV3::buscar(string x) {
+
+	int i = hash(x);
+
+	for (auto j = v[i].begin(); j != v[i].end(); j++) {
+
+		if (x == *j) {
+			cout << x << "   ->   SI"<<endl;
+			return;
+		}
+	}
+	cout << x << "   ->   NO" << endl;
+
+}
+
+void HashV3::mostrar() {
+	int i = 0;
+
+	while (i < tam) {
+
+		cout << "[" << i << "]  =  ";
+
+		for (auto j = v[i].begin(); j != v[i].end(); j++) {
+			cout << *j << " -> ";
+		}
+
+		cout << "null";
+		cout << "  |    cant. colisiones = ";
+
+		if (v[i].size() == 0) {
+			cout << "Ninguna" << endl;
+		}
+		else {
+			cout<<v[i].size() - 1 << endl;;
+		}
+
+
+
+		i++;
+	}
+
+
+
+}
+
+
+int main() {
+
+	HashV3 h(11);
+
+	cout << "--- TABLA VACIA ---" << endl;
+	h.mostrar();
+
+	cout << endl << "--- INSERTANDO ana, sol, hola ---" << endl;
+	h.insertar("ana");
+	h.insertar("sol");
+	h.insertar("hola");
+	h.mostrar();
+
+	cout << endl << "--- INSERTANDO naa, halo, casa, mesa ---" << endl;
+	h.insertar("naa");
+	h.insertar("halo");
+	h.insertar("casa");
+	h.insertar("mesa");
+	h.mostrar();
+
+	cout << endl << "--- BUSQUEDAS ---" << endl;
+	h.buscar("ana");
+	h.buscar("naa");
+	h.buscar("hola");
+	h.buscar("halo");
+	h.buscar("casa");
+	h.buscar("perro");
+	h.buscar("aan");
+}
+
+*/
 
 
 
