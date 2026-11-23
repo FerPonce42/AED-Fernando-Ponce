@@ -171,6 +171,330 @@ V3: un vector de listas enlazadas, vector<list<int>>. Eso sí cambia la estructu
 
 
 
+
+
+
+
+/*
+
+// VERSION 3 VECTOR -> LE
+
+#include <iostream>
+#include <vector>
+#include <list>
+using namespace std;
+
+
+class HashV3 {
+
+private:
+
+	int tam;
+	vector<list<int>> v;
+
+public:
+
+	HashV3(int t) {
+
+		tam = t;
+
+		v.assign(tam, list<int>());
+	}
+
+
+	int hash(int x);
+
+	void buscar(int x);
+
+	void insertar(int x);
+
+	void mostrar();
+
+
+};
+
+
+
+int HashV3::hash(int x) {
+
+	int pos = x % tam;
+
+	return pos;
+
+}
+
+
+void HashV3::insertar(int x) {
+
+	int i = hash(x);
+
+	v[i].push_back(x);
+
+
+}
+
+void HashV3::buscar(int x) {
+
+	int i = hash(x);
+
+	for (auto j = v[i].begin(); j != v[i].end(); j++) {
+
+		if (x == *j) {
+			cout << x << "   ->   SI"<<endl;
+			return;
+		}
+	}
+	cout << x << "   ->   NO" << endl;
+
+}
+
+void HashV3::mostrar() {
+	int i = 0;
+
+	while (i < tam) {
+
+		cout << "[" << i << "]  =  ";
+
+		for (auto j = v[i].begin(); j != v[i].end(); j++) {
+			cout << *j << " -> ";
+		}
+
+		cout << "null";
+		cout << "  |    cant. colisiones = ";
+
+		if (v[i].size() == 0) {
+			cout << "Ninguna" << endl;
+		}
+		else {
+			cout<<v[i].size() - 1 << endl;;
+		}
+
+
+
+		i++;
+	}
+
+
+
+}
+
+int main() {
+
+	HashV3 h(11);
+
+	cout << "--- TABLA VACIA ---" << endl;
+	h.mostrar();
+
+	cout << endl << "--- INSERTANDO 2, 9, 16 ---" << endl;
+	h.insertar(2);
+	h.insertar(9);
+	h.insertar(16);
+	h.mostrar();
+
+	cout << endl << "--- INSERTANDO 5, 12, 3, 10, 23, 30 ---" << endl;
+	h.insertar(5);
+	h.insertar(12);
+	h.insertar(3);
+	h.insertar(10);
+	h.insertar(23);
+	h.insertar(30);
+	h.mostrar();
+
+	cout << endl << "--- BUSQUEDAS ---" << endl;
+	h.buscar(2);
+	h.buscar(9);
+	h.buscar(16);
+	h.buscar(23);
+	h.buscar(30);
+	h.buscar(12);
+	h.buscar(4);
+	h.buscar(37);
+}
+
+
+*/
+
+
+
+
+
+/*
+
+// VERSION 2 : vector con 2 fucniones hash
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+
+class HashV2 {
+private:
+
+	int tam;
+	vector<pair<int, int>> v;
+
+public:
+
+
+	HashV2(int t) {
+
+		tam = t;
+
+		v.assign(tam, make_pair(-1, 0));
+	}
+
+
+	int hash1(int x);
+	int hash2(int x);
+
+
+	void buscar(int x);
+
+	void insertar(int x);
+
+	void mostrar();
+
+
+
+};
+
+
+
+int HashV2::hash1(int x) {
+
+	int pos1 = x % tam;
+
+	return pos1;
+
+}
+int HashV2::hash2(int x) {
+
+	int pos2 = (x * x) % tam;
+
+	return pos2;
+
+}
+
+
+void HashV2::insertar(int x) {
+
+	int i = hash1(x);
+
+	if (v[i].first == -1) {
+		v[i].first = x;
+	}
+	else {
+
+		v[i].second += 1;
+
+		i = hash2(x);
+
+		if ((v[i].first == -1)) {
+			v[i].first = x;
+		}
+		else {
+			v[i].second += 1;
+
+			cout << "NO SE PUDO INSERTAR " << x << endl;
+			return;
+		}
+	}
+
+}
+
+
+void HashV2::buscar(int x) {
+
+	int i = hash1(x);
+
+	if (v[i].first == -1) {
+		cout << x << "   ->    NO" << endl;
+		return;
+	}
+	
+	
+	if (v[i].first == x) {
+		cout << x << "   ->    SI" << endl;
+	}
+	else {
+
+		i = hash2(x);
+		if (v[i].first == x) {
+			cout << x << "   ->    SI" << endl;
+		}
+		else {
+			cout << x << "   ->    NO" << endl;
+		}
+	}
+
+
+}
+
+
+void HashV2::mostrar() {
+
+	cout << "====== TABLA HASH - V2 ======" << endl;
+	cout << "-------------------------" << endl;
+	cout << "POS" << "  -  " << "DATO" << "    -    " << "COLISIONES" << endl;
+	cout << "-------------------------" << endl;
+
+	for (int p = 0; p < v.size(); p++) {
+
+		cout << "[" << p << "]" << "  |  " << v[p].first << "      |      " << v[p].second << endl;
+
+	}
+}
+
+
+int main() {
+
+	HashV2 h(7);
+
+	cout << "--- TABLA VACIA ---" << endl;
+	h.mostrar();
+
+	cout << endl << "--- INSERTANDO 2, 9, 16 ---" << endl;
+	h.insertar(2);
+	h.insertar(9);
+	h.insertar(16);
+	h.mostrar();
+
+	cout << endl << "--- INSERTANDO 5, 12, 3, 10 ---" << endl;
+	h.insertar(5);
+	h.insertar(12);
+	h.insertar(3);
+	h.insertar(10);
+	h.mostrar();
+
+	cout << endl << "--- BUSQUEDAS ---" << endl;
+	h.buscar(2);
+	h.buscar(9);
+	h.buscar(16);
+	h.buscar(5);
+	h.buscar(12);
+	h.buscar(3);
+	h.buscar(10);
+	h.buscar(4);
+}
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 // V1 Vector normal
 #include <iostream>
