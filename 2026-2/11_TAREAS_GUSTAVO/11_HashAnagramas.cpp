@@ -87,8 +87,6 @@ int HashV4::hash(string x) {
 
 bool HashV4::esAnagrama(string a, string b) {
 
-    // ordena las letras de las dos palabras: si quedan iguales, tenian las mismas letras
-    // se comparan dos porque el hash solo dice "misma suma", no "mismas letras"
     sort(a.begin(), a.end());
     sort(b.begin(), b.end());
 
@@ -171,52 +169,4 @@ int main() {
 
     cout << endl;
 
-
-    cout << "===== CASOS RAROS =====" << endl;
-
-    HashV4 tabla(7);
-
-    // los de la pizarra
-    tabla.insertar("eat");
-    tabla.insertar("tea");
-    tabla.insertar("ate");
-    tabla.insertar("nat");
-    tabla.insertar("tan");
-    tabla.insertar("bat");
-
-    // misma suma pero NO son anagramas, mezclados a proposito
-    tabla.insertar("ad");
-    tabla.insertar("bc");
-    tabla.insertar("da");
-    tabla.insertar("cb");
-
-    // palabra repetida
-    tabla.insertar("eat");
-
-    // una letra sola, cae en el mismo bucket que eat
-    tabla.insertar("a");
-
-    // mayuscula (no es anagrama de "eat")
-    tabla.insertar("Eat");
-
-    // palabra vacia
-    tabla.insertar("");
-
-    tabla.mostrar();
-
-    cout << endl;
-
-
-    cout << "===== TABLA DE TAMANO 1 =====" << endl;
-
-    HashV4 una(1);
-
-    una.insertar("eat");
-    una.insertar("bat");
-    una.insertar("tea");
-    una.insertar("tab");
-
-    una.mostrar();
-
-    return 0;
 }
