@@ -169,6 +169,254 @@ V3: un vector de listas enlazadas, vector<list<int>>. Eso sí cambia la estructu
 
 /*-------------------------------------------------------------------------------------------------------------------------------------------------*/
 
+/*
+
+
+//HASH VERSION DEFINITIVA PARA TODO!
+
+#include <iostream>
+#include <vector>
+#include <list>
+using namespace std;
+
+struct FHashChar {
+
+	int operator()(string s) {
+
+		int cantidad = 0;
+
+		for (int i = 0; i < s.length(); i++) {
+
+			cantidad += s[i];
+
+		}
+
+		return cantidad;
+
+	}
+
+	
+};
+
+struct FHashCharMejorado {
+
+	int operator()(string s) {
+
+		int cantidad = 0;
+
+		for (int i = 0; i < s.length(); i++) {
+
+			cantidad += s[i] * (i + 1);
+
+		}
+
+		return cantidad;
+
+	}
+
+
+};
+
+struct FHashInt {
+
+	int operator()(int x) {
+		return x;
+
+	}
+
+
+};
+
+
+
+template<typename T, typename S, typename F, int Z>
+class CHashTable {
+
+private:
+
+	S estructura[Z];
+
+	F tipo_funcion;
+
+public:
+
+	int hash(T x) {
+
+		int valor = tipo_funcion(x);
+
+		int POS = valor % Z;
+
+		return POS;
+
+	}
+
+	void insertar(T x) {
+
+		int pos_hash = hash(x);
+
+		estructura[pos_hash].push_back(x);
+
+
+	}
+
+	void buscar(T x) {
+
+		int pos_hash = hash(x);
+
+		for (auto i = estructura[pos_hash].begin(); i != estructura[pos_hash].end(); i++) {
+
+			if (*i == x) {
+
+				cout << x << " -> SI" << endl;
+				return;
+
+			}
+
+		}
+
+		cout << x << " -> NO" << endl;
+
+	}
+
+	void mostrar() {
+		//EXTRA:
+		int TOTAL_COLISIONES = 0;
+		int MAX_COLISIONES = 0;
+		//FIN EXTRA:
+
+		for (int i = 0; i < Z; i++) {
+
+			cout << "[" << i << "]= ";
+			for (auto j = estructura[i].begin(); j != estructura[i].end(); j++) {
+
+				  cout<<* j << "-> ";
+
+			}
+
+			cout << "null     |   ";
+
+			if (estructura[i].empty()) {
+				cout << "colisiones : " << 0 << endl;
+			}
+			else {
+				cout << "colisiones : " << estructura[i].size() - 1 << endl;
+				//extra
+				TOTAL_COLISIONES += estructura[i].size() - 1;
+
+				if (MAX_COLISIONES < estructura[i].size() - 1) {
+					MAX_COLISIONES = estructura[i].size() - 1;
+				}
+
+
+			}
+
+		}
+
+		//extraa
+		cout << "=======================================" <<endl;
+		cout << "TAMANO ACTUAL = " << Z << endl;
+		cout << "TOTAL COLISIONES = " << TOTAL_COLISIONES << endl;
+		cout << "MAXIMA COLISION POR FILA = " << MAX_COLISIONES << endl;
+	}
+
+
+};
+
+int main() {
+
+	CHashTable<string, list<string>, FHashCharMejorado, 101> h;
+
+	string estudiantes[] = {
+		"Andrade Rios Jaime Gabriel",
+		"Apaza Calizaya Sergio Derzu",
+		"Baca Flores Gabriel Alejandro",
+		"Barreros Rodriguez Olga Angelica",
+		"Benique Huaman Ruth Mery",
+		"Bravo Rivera Rodrigo Diogo Emanuel",
+		"Bustamante Mamani Gustavo Raul",
+		"Cama Choque Edison Nicolas",
+		"Camaña Champi Fernando Jose",
+		"Carrera Alfaro Samir Fabrizio",
+		"Conchacalla Quispe Miguel Angel",
+		"Concha Castro Ana Cecilia",
+		"Cruz Ponce Fernanda Raquel",
+		"Failoc Castro Ariana Camila",
+		"Farfan Begazo Luciana Milagros",
+		"Gonzales Begazo Ivan Alexandrovich",
+		"Huaman Amanqui Victor Santiago",
+		"Lajo Atayupanqui Anibal",
+		"Loayza Paucar Leonardo Andre",
+		"Luna Carpio Maricielo Karen",
+		"Mansilla Lujan Camila Andrea Yanela",
+		"Mazza Cordova Kael Alexander",
+		"Medina Chino Esteban Andres",
+		"Mendoza Maque Eduardo Sebastian",
+		"Mollapaza Apaza Jean Paul",
+		"Murillo Rivera Nayemy",
+		"Paredes Hallasi Karoline Mishell",
+		"Patiño Delgado Alvaro Alejandro",
+		"Payehuanca Diaz Mauricio Jerson",
+		"Perez Flores Alyson Gisely",
+		"Perez Vega Mary Angela",
+		"Pino Charun Julio Eduardo",
+		"Ponce Molina Angel Fernando",
+		"Prado Manrique Piero Estefano",
+		"Pumacayo Gonzales Paola Del Pilar",
+		"Quispe Montes Alejandro Adriel",
+		"Revilla Calderon Andre Jafeth",
+		"Rocha Alvis Nicol Fernanda",
+		"Rodriguez Vilcapaza Edgard Edward",
+		"Rosas Lipa Gianella Ariana",
+		"Rospigliosi Escalante Cristhian Daniel",
+		"Salazar Guillen Alejandro Alfredo",
+		"Sana Flores Christian Gabriel",
+		"Saravia Apaza Ilenne Damaris",
+		"Sierra Huaracha Rodrigo Adolfo",
+		"Stelman Melo Fabricio Hector",
+		"Vargas Llerena Bryan Aron",
+		"Villachica Cuentas Giancarlo",
+		"Villacis Espinoza Erick Darvis",
+		"Villagomez Iquira Angel Gabriel",
+		"Virrueta Marquez Mauricio Sebastian"
+	};
+
+
+	for (int i = 0; i < 51; i++) {
+
+		h.insertar(estudiantes[i]);
+
+	}
+
+
+
+	h.mostrar();
+}
+
+
+
+
+
+
+
+
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 // VERSION 4 VECTOR -> LE PERO CON STRINGS

@@ -153,7 +153,7 @@ algoritmos encima de ello.
 
 
 
-
+/*
 #include <iostream>
 #include <list>
 using namespace std;
@@ -220,6 +220,8 @@ clas Graph{
     node<N,e>
 
 }
+
+*/
 
 /*
 basiacment solo usa lo del stl para hacer todo... ahi tiene que darle una estudiada con calma par aentederlo
@@ -313,5 +315,275 @@ habria un grafo base y ahi mismo aharias un algorimto..
 entonces entiendan bien el grafo base...
 
 porque en el examen pdoria venir un algorimo de eso p.
+
+*/
+
+
+/*
+EN TEORIY A A ESTAN LOS CODIGOS DE EESE PERRO EN EL DRIVE... con fe nomas.
+*/
+
+
+
+
+
+
+
+
+
+/*
+
+CLASE DEL LUNES:::
+
+
+La clase grafo que les he propuesto se define asi:
+
+
+Grap<char,int> g;
+
+con eso
+
+Gestionas insertados elimnr de arsitas y eso. Es lo ujnico que hace.
+
+Si entrase una pregunta del examen... seria basado en ESTE GRAFO.
+
+Parte de la pregunta seria ese grafo + una funcion que acceda.
+
+El vector es un vecto de NODOS...
+
+y cada nodo tiene una LISTA de aristas...
+
+Todo con STL claro
+
+osea vector y  list
+
+
+y recorridos de vectors y de lists...
+
+Igual revisenlo para que lo tengan en mente...
+
+
+
+La idea del grafo... es..
+que si usamos este grafo para el de una ciudad... seria...
+
+
+class CityGraph : public Graph<Coord,int>
+
+algo asi seria el examen hipoteticamente hablando.
+
+
+
+Esto de grafos.. se ve mas en ADA
+
+algoritmos diseós de alogirnos..
+
+
+Este curso se ddedica a la estructura como tal.
+
+
+
+
+
+
+DADO ESTO se pueden hacer 2 cosas..
+
+cual seria la forma para lir de A hasta X...
+
+el caminimo minimo...
+
+Como no hay cordenadas... esto es matematico...
+
+Como no hay forma de orientarnos...
+
+
+BARRE TODO NOMAS.
+
+De A ve por todas las aristas. recursivamente... y sales de a AC co.. ac = 7
+luego de AB seria ab3
+luego abc5 y con c ace y asi contodoslos caminos...
+
+una qeudaria abce9
+y otro
+abcex11
+
+y eventualmente llegan a todos los lados...
+abdx7
+
+abcedx20...
+
+de todos los caminos se escoge el que tiene menor peso p. ese fue el camino mas corto.
+
+pero es un costo computacional fuerte. pero recorres todo p
+osea consigues pero ese el problem...
+
+lo qu podrias hacer es qeu  ac7 vs abc5 y crear optimizaciones para crear caminos y asi p.
+
+Ese bueno.. el algorimo base...
+
+SI FUERA UNA PREGUNTA EN EL EXAMENS
+VER EL GRAFO PROPUESTO
+RECORRER SUS VECTORS Y LISTS...
+LA IDEA ES RECORRER PRO TODO LADO, OSEA... ES ReCURSIVO...
+
+en este caso fue para letras..
+
+
+Esto solo tiene sentido para grafos pequenos...
+
+pero esto se convertitira en algo cuadratico.
+
+
+
+
+ese fue el algorimo basico...
+
+
+
+AHORA:
+
+
+otro caso.. que pasaria si...
+
+
+fuesen coordenadas... si hbuieran 100000 milloes de elementos..
+
+
+
+x,y             x,y
+
+
+Con ese algorimo barre todo lo de arriba sin mas, porque va por todo lado..
+ESO ES IMPENSABLE!
+
+
+Usando las coordenadas...
+
+buscas las opciones de salida de la coordenada 
+
+
+SACANDO LA DISTANCIA ECLIDIANA entre las salidas al nodo al que quieres llegar.
+
+haz los 2 algoritmos
+
+el generico que sale a todo lado
+y el especifico que sale por cordenadas de prioridad de eso.
+
+
+ambos basasdos en el grafo que tenemos como codigo.
+
+
+
+
+UN CASO:
+
+el profe nos podria poner..
+
+Este fue... una pregunta de une examen.. les planteo la idea...
+
+tienes 50 nodos..
+un grafo con 50 nodos...
+con 30 mejor.
+
+y te digo
+
+haz una funcion para que busque cualquier camine de cualqueri nodo a cuqlueir nodo...
+
+haz un algoritmo pero en tiempo ... CONSTANTE!
+
+Cosntatne = acceso a un array / maatriz.. o una ecuacinos que calcuals algo y ya sale constante..
+
+ahi hay varais claves:
+
+asi sea un grafo chiquit ocom oeste...
+si tu...
+
+digmaoas 6 nodos. si te mueves de aca aca pierdes.
+
+osea no hagas la busqueda en el tiempo qeu te la pida.
+osea el acceso es..
+
+
+EL TIEMPO QUE SEA CONSANTE...
+
+
+es que tengas todos los caminos de todos contra todos..
+
+ya contados
+
+osea los 30 vs los 30
+
+
+osea haz una tabla.. de todos contra todos..
+de A a B
+y ahi registras el camino..
+
+
+Enotnces si tuvieras es tabla de todos los caminos posibles...
+
+
+Esta mierda lo hace MAPS
+
+  A B C D E
+A 
+B
+C
+D
+E
+
+
+eso ya estaria y solo vas y lo sacas.
+
+
+Entonces esta pregunta implica... precalculalo al iniciar tu main..
+
+y y acon esa matriz lista...
+
+
+ahora con la funcion de consulta... vas y tomas esa p.
+
+
+
+osea tu main tendrai qu eser algo asi:
+
+
+
+main()
+
+
+declaragracion de grafo... g;
+
+g.precalc();
+esa funcoion calcula todos contra todos y lo guarda en una matriz.
+
+y...
+
+g.path('A','B'); y esta chekea lo que ya fue calculado y retorna el coso
+
+
+
+oseason 2 proceso...
+
+
+el precalculo... 1 vez por semana...
+
+
+de lgrap coord tiene precalc y el otro solo usa path.. (EJEMPLO DENTRO DEL OS CODIGOS QUE ESTE SINVERGUENZA SUBIO A SU DRIVE)
+
+
+ESE PRECALCULO....
+
+
+tons haz 3 csas.
+
+1. algoritmo de busqeuda intensiva. (acplicado en grafo no automatizado con char int )
+
+
+2. algoritmo con coordenadas. porque en vez de solir por todo sales por el que mas se acerca. es una pequena optimizacion 
+
+
+3. hacer UN PRECALCULO... dependiendo de la RAM y del tamano del grafo. osea hacesu na funcion de precalculos que haga todo.
+y cuando vayas a buscar hace un accesos tipo tabla hash y pam
+
 
 */
