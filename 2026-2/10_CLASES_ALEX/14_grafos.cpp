@@ -587,3 +587,320 @@ y cuando vayas a buscar hace un accesos tipo tabla hash y pam
 
 
 */
+
+/*--------------------------------------------------------------------------------------------------------------------------------------*/
+
+
+/*
+
+//GRAPH_COORD_INT.CPP
+#include "graph.h"
+
+struct Coord {
+
+	float x;
+	float y;
+
+};
+
+
+ostream& operator<<(ostream& out, const Coord& c) {
+
+	out << "[" << c.x << "," << c.y << "]";
+
+	return out;
+}
+
+
+
+int main() {
+	// en este caso no hay constructor por mera decisión. Otra forma:
+
+	Graph<Coord, int> g;
+
+	//{0,0}, {3,4}, {6,0} y {3,-4}
+
+	int n0 = g.AddNode({0,0});
+	int n1 = g.AddNode({ 3,4 });
+	int n2 = g.AddNode({ 6,0 });
+	int n3 = g.AddNode({ 3,-4 });
+
+
+	g.AddEdge(n0, n1, 5);
+	g.AddEdge(n0, n3, 5);
+	g.AddEdge(n1, n2, 5);
+	g.AddEdge(n3, n2, 5);
+	
+
+	cout << "GRAFO, CON COORD (STRUCT): " << endl;
+	g.print();
+	cout << "--------------- " << endl;
+	cout << g.hasEdge(n0, n1) << endl;
+	cout << g.hasEdge(n1, n3) << endl;
+	cout << "--------------- " << endl;
+	g.RemEdge(n0, n1);
+	g.print();
+	cout << "--------------- " << endl;
+	cout << g.hasEdge(n0, n1) << endl;
+	cout << "--------------- " << endl;
+	g.RemoveNode(n3);
+	g.print();
+	cout << "--------------- " << endl;
+	cout << g.vertexCount() << endl;
+}
+
+
+*/
+
+
+
+
+
+
+/*
+
+// GRAPH_CHAR_INT.CPP
+
+#include "graph.h"
+
+int main() {
+
+	Graph<char, int> g;
+
+	int nodoA = g.AddNode('A');
+	int nodoB = g.AddNode('B');
+	int nodoC = g.AddNode('C');
+	int nodoD = g.AddNode('D');
+
+	g.AddEdge(nodoA, nodoB, 5);
+	g.AddEdge(nodoA, nodoC, 3);
+	g.AddEdge(nodoB, nodoD, 7);
+	g.AddEdge(nodoC, nodoD, 2);
+
+	cout << "VERIFICAR QUE FUNCIONE ESTA MIERDA: " << endl;
+	g.print();
+
+	g.RemoveNode(nodoB);
+	cout << "Quitar B:  " << endl;
+	g.print();
+
+}
+
+*/
+
+
+
+
+
+
+/*
+
+// GRAPH.H
+#pragma once
+#include <iostream>
+#include <vector>
+#include <list>
+
+using namespace std;
+
+
+template<typename E>
+class Edge {
+public:
+	int from;
+	int to;
+	E data;
+
+	Edge(int f, int t, E d) {
+
+		from = f;
+		to = t;
+		data = d;
+	}
+
+};
+
+template<typename N, typename E>
+class Node {
+public:
+	int index;
+	N value;
+	list<Edge<E>> aristas;
+
+	Node(int i, N v) {
+
+		index = i;
+		value = v;
+	}
+
+	void AddEdge(int t, E d) {
+
+		Edge<E> e(index, t, d);
+
+		aristas.push_back(e);
+
+	}
+
+	void RemEdge(int t) {
+
+		for (auto i = aristas.begin(); i != aristas.end(); i++) {
+			if ((*i).to == t) {
+				aristas.erase(i);
+				return;
+			}
+		}
+	}
+
+	bool hasEdge(int t) {
+
+		for (auto i = aristas.begin(); i != aristas.end(); i++) {
+			if ((*i).to == t) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+};
+
+
+
+template<typename N, typename E>
+class Graph {
+protected:
+
+	int cant_nodos;
+	bool dirigido;
+
+	vector<Node<N, E>> nodos;
+
+public:
+
+	Graph(bool d = false) {
+		cant_nodos = 0;
+		dirigido = d;
+	}
+
+
+	int AddNode(N v) {
+
+		int pos = nodos.size();
+
+		Node<N, E> nodo(pos, v);
+
+		nodos.push_back(nodo);
+
+		cant_nodos++;
+
+		return pos;
+
+	}
+
+	void AddEdge(int f, int t, E d) {
+
+		nodos[f].AddEdge(t, d);
+
+		if (!dirigido) {
+			nodos[t].AddEdge(f, d);
+		}
+
+	}
+
+
+	void RemEdge(int f, int t) {
+
+		nodos[f].RemEdge(t);
+
+		if (!dirigido) {
+			nodos[t].RemEdge(f);
+		}
+	}
+
+	bool hasEdge(int f, int t) {
+
+		return nodos[f].hasEdge(t);
+
+	}
+
+	int vertexCount() {
+		return cant_nodos;
+	}
+
+
+	Node<N, E>& getNode(int f) {
+		return nodos[f];
+	}
+
+
+	void print() {
+
+		for (int i = 0; i < nodos.size(); i++) {
+
+			cout << nodos[i].value << " -> ";
+
+			for (auto j = nodos[i].aristas.begin(); j != nodos[i].aristas.end(); j++) {
+
+				cout << nodos[(*j).to].value << "(" << (*j).data << ") ";
+
+			}
+			cout << endl;
+
+		}
+	}
+
+	void RemoveNode(int t) {
+		//matar aristas que apuntaban al nodo que matamos
+		for (int i = 0; i < nodos.size(); i++) {
+
+			auto j = nodos[i].aristas.begin();
+
+			while (j != nodos[i].aristas.end()) {
+
+				if ((*j).to == t) {
+
+					j = nodos[i].aristas.erase(j);
+
+				}
+				else {
+					j++;
+				}
+
+			}
+		}
+
+		//matar al nodo
+		nodos.erase(nodos.begin() + t);
+		cant_nodos--;
+
+
+		//arreglar a los nodos afectados por el desplazamiento
+
+		for (int i = 0; i < nodos.size(); i++) {
+
+			auto j = nodos[i].aristas.begin();
+
+			while (j != nodos[i].aristas.end()) {
+
+				(*j).from = i; // actualizar los froms de las aristas.
+
+				if ((*j).to > t) {
+
+					(*j).to -= 1; //actualizar los tos de las aristas.
+
+				}
+				j++;
+			}
+
+			nodos[i].index = i; // actualizar la pos de cada nodo existente.
+
+
+		}
+
+	}
+};
+
+
+
+
+
+*/
